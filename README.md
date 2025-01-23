@@ -15,7 +15,7 @@
 ## Premessa
 
 In questa guida si fa riferimento ai seguenti host:
-*	**host-sviluppo**: dove vengono scaricati i e compilati i file sorgenti dell'applicativo PAF
+*	**host-sviluppo**: dove vengono scaricati e compilati i file sorgenti dell'applicativo PAF
 *	**host-backend**: dove viene eseguito il componente backend dell'applicativo PAF
 *	**host-geoserver**: dove viene eseguito il componente backend dell'applicativo PAF
 *	**host-pubblicazione**: con il server web con cui viene pubblicato l'applicativo PAF
@@ -29,11 +29,14 @@ Tali host non devono necessariamente esser diversi, ma è importante che i coman
 
 Sugli host **host-sviluppo** e **host-geoserver** occorre:
 *	installare unzip per estrarre i file dei pacchetti per PAF, tomcat e geoserver
+
 ```bash
 sudo apt install unzip
 ```
+
 Sull'host **host-sviluppo** occorre:
 *	installare 7zip per estrarre i file dove sono stati archiviati i dati GIS esterni
+
 ```bash
 sudo apt install p7zip-full
 ```
@@ -41,6 +44,7 @@ sudo apt install p7zip-full
 ### <a id="installApache">Installazione Apache 2</a>
 
 Sull'host **host-pubblicazione** occorre installare il server web Apache 2 con le estensioni rewrite, proxy e proxy_http.
+
 ```bash
 sudo apt install apache2
 sudo a2enmod rewrite
@@ -49,14 +53,17 @@ sudo a2enmod proxy_http
 ```
 
 ### <a id="setupGeoserver">Predisposizione GeoServer</a>
+
 Sull'host **host-geoserver** occorre installare Java 11 e Tomcat come requisiti di GeoServer.
 
 #### <a id="installJdk11">Installazione Java 11</a>
+
 ```bash
 sudo apt install openjdk-11-jdk
 ```
 
 #### <a id="installTomcat">Download e installazione Tomcat</a>
+
 ```bash
 sudo useradd -m -U -d /opt/tomcat -s /bin/false tomcat
 wget http://mirror.nohup.it/apache/tomcat/tomcat-9/v9.0.37/bin/apache-tomcat-9.0.37.tar.gz -O apache-tomcat-9.0.37.tar.gz
@@ -67,6 +74,7 @@ sudo sh -c 'chmod +x /opt/tomcat/latest/bin/*.sh'
 ```
 
 #### <a id="configTomcat">Configurazione script avvio Tomcat 9</a>
+
 Aprire il file con lo script del servizio
 
 ```bash
@@ -74,6 +82,7 @@ sudo systemctl edit --full tomcat.service
 ```
 
 Definire il file con il seguente contenuto
+
 ```text
 [Unit]
 Description=Tomcat 9 servlet container
@@ -101,11 +110,13 @@ WantedBy=multi-user.target
 ```
 
 Ricaricare il demone dei servizi
+
 ```bash
 sudo systemctl daemon-reload
 ```
 
 Abilitare il servizio tomcat
+
 ```bash
 sudo systemctl enable --now tomcat
 ```
@@ -113,6 +124,7 @@ sudo systemctl enable --now tomcat
 #### <a id="deployGeoserver">Pubblicazione GeoServer</a>
 
 Download ed estrazione geoserver
+
 ```bash
 mkdir Downloads 
 cd Downloads/
@@ -121,11 +133,13 @@ unzip geoserver-2.17.1-war.zip
 ```
 
 Spostare il pacchetto geoserver dentro tomcat
+
 ```bash
 sudo mv geoserver.war /opt/tomcat/apache-tomcat-9.0.37/webapps
 ```
 
 Riavviare tomcat
+
 ```bash
 sudo systemctl restart tomcat
 ```
@@ -133,6 +147,7 @@ sudo systemctl restart tomcat
 ### <a id="installJdk21">Installazione Java 21 e Maven</a>
 
 Sugli host **host-backend** e **host-sviluppo**, è necessario installare Java 21 con Maven per poter compilare ed eseguire il componente di backend del progetto PAF.
+
 ```bash
 sudo apt install openjdk-21-jdk
 sudo apt install maven
@@ -141,6 +156,7 @@ sudo apt install maven
 ### <a id="installPgClient">Installazione client Postgres</a>
 
 Sull'host **host-sviluppo** installare il client postgress
+
 ```bash
 sudo apt install postgresql-client
 ```
@@ -148,6 +164,7 @@ sudo apt install postgresql-client
 ### <a id="installNode">Installazione NodeJs</a>
 
 Sull'host **host-sviluppo** installare NodeJs attraverso nvm
+
 ```bash
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
 source ~/.bashrc
@@ -160,23 +177,28 @@ Sull'host **host-sviluppo** viene scaricato ed estratto il pacchetto con i sorge
 
 ### <a id="definePafFolder">Identificazione della cartella per il progetto PAF</a>
 sostituire il percorso della directory di destinazione dei sorgenti del progetto PAF a `<cartella-sorgenti-paf-foliage>`
+
 ```bash
 export FOLIAGE_HOME=<cartella-sorgenti-paf-foliage>
 ```
 
 ### <a id="createPafFolder">Creazione della cartella ed acceso al progetto PAF</a>
+
 nel caso in cui la directory esista già assicurarsi che sia vuota
+
 ```bash
 mkdir -p $FOLIAGE_HOME
 ```
 
 ### <a id="downloadSource">Download file contenente il progetto PAF da GitHub</a>
+
 ```bash
 cd $FOLIAGE_HOME
 curl -LO https://github.com/LIFEFOLIAGE/LIFEFOLIAGE/archive/refs/heads/main.zip
 ```
 
 ### <a id="exctratSource">Estrazione dei file del progetto PAF</a>
+
 ```bash
 cd $FOLIAGE_HOME
 unzip main.zip
@@ -227,7 +249,6 @@ CREATE USER <nome-utenza-applicativa> PASSWORD '<password-utenza-applicativa>';
 -- creazione degli schemi
 CREATE SCHEMA foliage2 AUTHORIZATION <nome-utenza-applicativa>;
 CREATE SCHEMA foliage_extra AUTHORIZATION <nome-utenza-applicativa>;
-
 ```
 
 ### <a id="createDbObjs">Creazione delle tabelle e generazione della configurazione iniziale nel database PAF</a>
@@ -247,6 +268,7 @@ Le tabelle dello schema foliage_extra (che viene utilizzato per memorizzare i da
 * `foliage_extra_<regione>.dmp`: tabelle per l'ambiente della regione.
 
 A causa delle limitazioni sulle dimensioni dei file su GitHub, il dump con i dati GIS esterni è stato archiviato e scomposto in 6 file più piccoli, quindi prima di poter essere utilizzato va estratto con 7zip. Dall'host **host-sviluppo**
+
 ```bash
 cd $FOLIAGE_HOME/PAF/extra/dump-foliage_extra
 7z x foliage_extra_<regione>.7z.001
@@ -353,7 +375,7 @@ Sull'host **host-pubblicazione**, la configurazione del server web apache 2 può
 Sull'host **host-sviluppo**, prima di avviare la compilazione del frontend occorre impostare alcune parametrizzazioni che vengono descritte qui di seguito in due file:
 *	`PAF/fe/foliage-fe/src/environments/defs/pars.ts`
 	riportato di seguito e dove occorre fare le seguenti sostituzioni:
-	*	l'url per raggiungere il reverse proxy del backend sulserver web apache al posto di `<url-reverse-proxy-be>`
+	*	l'url per raggiungere il reverse proxy del backend sul server web apache al posto di `<url-reverse-proxy-be>`
 	*	il nome della regione in maiuscolo al posto di `<nome-regione-uppercase>`
 
 ```ts
@@ -372,6 +394,7 @@ export const apiOrigin = undefined;
 	*	il client id dell'identity server per oauth2 al posto di `<client-id>`
 	*	il client secret dell'identity server per oauth2 al posto di `<client-secret>`
 Per i valori di `<indirizzo-host-pubblicazione>`, `<porta-pubblicazione>` e `<path-pubblicazione-paf>` utilizzare gli stessi valori indicati nella [configurazione del server web](#configApache)
+
 ```ts
 export const iamConfig : Record<string, any>= {
 	issuer: '<url-oauth2-discovery>',
@@ -396,7 +419,6 @@ export const iamConfig : Record<string, any>= {
 
 > [!IMPORTANT]
 > Assicurarsi che il valore indicato per `redirectUri` (`<indirizzo-host-pubblicazione>:<porta-pubblicazione>/<path-pubblicazione-paf>`) sia aggiunto agli indirizzi di reindirizzamento accettati dall'Identity Manager Service)
-
 
 ```bash
 cd $FOLIAGE_HOME/PAF/fe/foliage-fe/
@@ -434,7 +456,6 @@ Sull'host **host-sviluppo**, prima di avviare la compilazione del componente di 
 *	il campo nel token jwt contenente l'indirizzo email dell'utente al posto di `<email-field>`, poiché non si tratta di un valore necessario, se il campo non è disponibile si può inserire una stringa vuota
 *	il campo nel token jwt contenente l'indirizzo pec dell'utente al posto di `<pec-field>`, poiché non si tratta di un valore necessario, se il campo non è disponibile si può inserire una stringa vuota
 *	il formato del campo mel token jwt contenente la data di nascita [queste specifiche](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/format/DateTimeFormatter.html#patterns) al posto di `<birthDate-dateFormat>`, poiché la data di nascita è un valore necessario, se il campo non è disponibile si può inserire una stringa vuota
-
 
 Per i parametri riguardanti il database le sostituzioni vanno eseguite con gli stessi valori scelti durante la [creazione del database](#configApache).
 Per la porta di ascolto del backend PAF la sostituzione va eseguita con lo stesso valore scelto durante la [configurazione di Apache 2](#createDb)
@@ -511,7 +532,6 @@ logging.level.org.springframework.web.servlet.mvc.method.annotation.RequestMappi
 logging.level.org.springframework.security.web.util.matcher.RegexRequestMatcher: INFO
 ```
 
-
 ## <a id="installPafBe">Compilazione del backend PAF</a>
 
 Per la compilazione del backend, che va effetuata nell'host **host-backend**, occorre copiare i file sorgenti del componente di backend dall'host **host-sviluppo** (dalla directory `$FOLIAGE_HOME/PAF/be/foliage`) e impostare la variabile d'ambiente JAVA_HOME. Quindi dalla cartella in cui sono stati copiati i file del progetto eseguire i seguenti comandi:
@@ -528,5 +548,3 @@ Nell'host **host-backend** dalla cartella in cui sono stati compilati i file del
 export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
 mvn spring-boot:run
 ```
-
-

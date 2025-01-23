@@ -5,7 +5,7 @@
 *	7zip e unzip
 *	Apache 2 (con moduli reweite, proxy e proxy_http)
 *	GeoServer 2.15 e Tomcat 9 su java 11
-*	Un Identity Manager Service compatibile con il protollo oauth2
+*	Un Identity Manager Service compatibile con il protocollo oauth2
 *   Java 21 e Maven per il backend del paccetto PAF
 *	PostgreSql v15 - Database
 *	PostgreSql - Client
@@ -20,7 +20,7 @@ In questa guida si fa riferimento ai seguenti host:
 *	**host-geoserver**: dove viene eseguito il componente backend dell'applicativo PAF
 *	**host-pubblicazione**: con il server web con cui viene pubblicato l'applicativo PAF
 
-Tali host non devono necessariamente esser diversi, ma è importante che i comandi forniti in questa guida vengano eseguiti dall'host a cui si fa riferimento nella sezione che li riporta.
+Tali host non devono necessariamente esser diversi, ma è importante che i comandi forniti in questa guida vengano eseguiti sull'host a cui si fa riferimento nella sezione che li riporta.
 
 
 ## Guida all'installazione dei principali requisiti

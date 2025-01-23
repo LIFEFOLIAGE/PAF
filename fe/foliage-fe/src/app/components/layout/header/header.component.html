@@ -1,0 +1,111 @@
+<div id="header" style="display: flex; flex-direction: column; flex-grow: 0;">
+	<div style="display: none;">
+		versione 20240409
+	</div>
+	<!--overflow: hidden;-->
+	<div style="display: inline-flex; height: calc(100% - 12px);">
+		<a [routerLink]="['/']" class="logo" aria-label="Home">
+			<img src="assets/images/logo-foliage.png" alt="" style="object-fit: cover; max-width: 100%; max-height: 100%;display: block;"/>
+		</a>
+
+		<div style="margin-left: auto; margin-top: 5px; margin-right: 5px; display: flex; flex-direction: column; align-items: end;">
+			@if(this.userLogin == undefined) {
+				<!-- <div>
+					<button class="btn btn-success" type="button" (click)="login()">
+						<svg class="icon" style="fill: white; height: 25px; width: 25px;">
+							<use xlink:href="assets/images/svg/wd-sprite.svg#wd-login-header"></use>
+						</svg>
+						Login
+					</button>
+				</div> -->
+			}
+			@else {
+				<div style="margin-left: auto; display: flex; flex-direction: row;">
+					<div>
+						<div class="dropdown" style="display: flex; flex-direction: column; align-items: end;">
+							<div style="min-width: 300px; text-align: end;"> <!--<<---<<--Risolve bug scrollbar quando l'elemento selezionato è molto più stretto di quelli nella lista-->
+								<button [title]="userLogin.username"
+									class="btn btn-success dropdown-toggle" type="button" id="dropdownMenuProfilo" data-bs-toggle="dropdown" aria-expanded="false">
+									<svg class="icon" style="fill: white; height: 25px; width: 25px;" aria-hidden="true">
+										<use xlink:href="assets/images/svg/wd-sprite.svg#wd-login-header"></use>
+									</svg>
+									{{userLogin.nome + ' ' + userLogin.cognome}}
+								</button>
+								<ul class="dropdown-menu dropdown-menu-end w-auto" aria-labelledby="dropdownMenuProfilo">
+									<li *ngFor="let opzione of opzioniProfilo">
+										<button class="dropdown-item" (click)="opzione.call()">
+											<svg class="icon" style="fill: black; height: 25px; width: 25px;" aria-hidden="true">
+												<use [attr.xlink:href]="opzione.icona"></use>
+											</svg>
+											{{opzione.nome}}
+										</button>
+									</li>
+								</ul>
+							</div>
+						</div>
+						<div class="dropdown" style="margin-left: auto; display: flex; flex-direction: column; align-items: end;">
+							<div style="min-width: 300px; text-align: end;"> <!--Risolve bug scrollbar quando l'elemento selezionato è molto più stretto di quelli nella lista-->
+								<button class="btn dropdown-toggle" type="button" id="dropdownMenuRuolo" data-bs-toggle="dropdown" aria-expanded="false">
+									{{(profiloSelezionato ? profiloSelezionato.descrizione : "Seleziona un profilo...")}}
+								</button>
+								<ul class="dropdown-menu dropdown-menu-end w-auto" aria-labelledby="dropdownMenuRuolo">
+									<li *ngFor="let profilo of listaProfili">
+										<button class="dropdown-item" (click)="selezionaProfilo(profilo)">
+											{{profilo.descrizione}}
+										</button>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+					<div style="position: relative; z-index: 10; margin-left: 10px; z-index: 10000;">
+						<button class="btn" title="Notifiche"
+							[class.btn-outline-secondary]="this.notifiche.length==0" 
+							[class.btn-outline-danger]="this.notifiche.length>0 && this.notificheNonLette==0"
+							[class.btn-danger]="this.notifiche.length>0 && this.notificheNonLette > 0"
+							(click)="this.onNotifiche($event)"
+							[disabled]="this.numNotifiche==0">
+							<i class="bi" [class.bi-bell-slash]="this.notificheNonLette==0" [class.bi-bell-fill]="this.notificheNonLette>0"></i>
+						</button>
+						<div *ngIf="this.showNotifiche" 
+							style="position: absolute; right: 0px; z-index: 10000; background-color: ghostwhite; width: 420px; display: block; border: 1px solid black; margin-top: 5px; border-radius: 10px;">
+							<div style="text-align: end; border-bottom: 1px solid black; padding: 5px 10px 5px 10px;background-color: skyblue; color: black; border-radius: 10px 10px 0px 0px;">
+								Lette({{this.notificheLette}}) - Non Lette({{this.notificheNonLette}})
+							</div>
+							<div style=" max-height: 600px; overflow-y: auto; margin-right: 5px;">
+								<div *ngFor="let notifica of this.notifiche" style="display: grid; grid-template-columns: 1fr 40px;">
+									<div style="grid-column: 1; display: flex; flex-direction: column; border: 1px solid lightgray; border-radius: 5px; margin: 5px; padding: 5px;" [style.font-weight]="(notifica.data_lettura==undefined ? 'bold':'unset')">
+										<label>{{this.showDate(notifica.data_notifica)}}</label>
+										{{notifica.testo}}
+										<button type="button" class="btn btn-outline-primary mt-2" (click)="this.visitaNotifica(notifica)">
+											Controlla <i class="bi bi-box-arrow-in-up-right"></i>
+										</button>
+									</div>
+									<div style="grid-column: 2;">
+										<i class="bi" [class.bi-envelope-open]="notifica.data_lettura!=undefined" [class.bi-envelope-fill]="notifica.data_lettura==undefined"></i>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			}
+		</div>
+	</div>
+	<img alt="" src="assets/images/striscia.png" style="height: 12px; width: 100%; border: none;">
+	<!-- <div style="display: grid; grid-template-columns: auto 1fr;">		
+		@if (this.breadcrumbService.breadcrumb != undefined) {
+			<app-breadcrumb style="grid-column: 1;"
+				[model]="this.breadcrumbService.breadcrumb"></app-breadcrumb>
+		}
+		@if (this.titleService.title != undefined) {
+			<h1 style="  grid-column: 2; text-align: center; font-size: 1.5rem;">{{this.titleService.title}}</h1>
+		}
+	</div> -->
+	@if (this.breadcrumbService.breadcrumb != undefined) {
+		<app-breadcrumb [model]="this.breadcrumbService.breadcrumb"></app-breadcrumb>
+	}
+	<!-- @if (this.titleService.title != undefined) {
+		<h1 style="text-align: center;" [class.xl]="this.titleService.isXl">{{this.titleService.title}}</h1>
+	} -->
+</div>

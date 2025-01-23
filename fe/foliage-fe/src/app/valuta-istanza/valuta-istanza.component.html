@@ -1,0 +1,174 @@
+<div style="margin: 0px 10px;">
+	<h1 style="text-align: center;">Valutazione istanza</h1>
+	
+	<div style="margin-bottom: 20px; width: 100%; display: flex; flex-direction: column;">
+		<h3>Documenti Consegnati ({{(this.datiFormConsegnati?.caricati ==undefined) ? 0 : this.datiFormConsegnati.caricati.length}})</h3>
+		@if ((this.datiFormConsegnati?.caricati ==undefined) ? 0 : this.datiFormConsegnati.caricati.length > 0) {
+			<app-formio-renderer
+				[isReadOnly]="this.isConsegnatiReadOnly||this.isReadOnly"
+				[form]="this.formConsegnati"
+				[formData]="this.datiFormConsegnatiIniziale"
+				(dataChanged)="this.onDataFormConsegnatiChanged($event)">
+			</app-formio-renderer>
+		}
+		@if (this.valutazione == undefined) {
+			<h3>Documenti Richiesti ({{(this.datiFormRichiesti?.richieste ==undefined) ? 0 : this.datiFormRichiesti.richieste.length}})</h3>
+			<!-- this.ambito === "cruscotto-pa" !this.isConsegnatiReadOnly -->
+			@if(
+				this.ambito === "cruscotto-pa"
+				|| ((this.datiFormRichiesti?.richieste ==undefined) ? 0 : this.datiFormRichiesti.richieste.length > 0)
+			) {
+				<app-formio-renderer
+					[isReadOnly]="this.isReadOnly"
+					[form]="this.formRichiesti"
+					[formData]="this.datiFormRichiestiIniziale"
+					(dataChanged)="this.onDataFormRichiestiChanged($event)">
+				</app-formio-renderer>
+			}
+		}
+	</div>
+	@if (this.valutazione == undefined) {
+		@if (isPubblicaAmministrazione()) {
+			<div style="margin-bottom: 20px; width: 100%; display: flex; flex-direction: column;">
+				<h3>Compilazione del Documento di Istruttoria</h3>
+				<div style="width: 100%; display: flex; flex-direction: column; padding: 0px 15px;">
+					<label class="col-form-label field-required" for="oggetto">
+						Oggetto:
+					</label>
+					<input type="text" class="form-control"
+						id="oggetto"
+						[ngModel]="this.datiIstr.oggetto"
+						(ngModelChange)="this.cambiaDatiIstruttoria('oggetto', $event)"/>
+					@if (this.errori['oggetto'] != undefined) {
+						<div class="formio-errors">
+							<label><small class="text-danger">{{this.errori['oggetto']}}</small></label>
+						</div>
+					}
+					
+					<div style="display: flex;">
+						<input type="checkbox" class="form-check" style="margin-right: 10px;" id="ulterioriDestinatariCk"
+								[ngModel]="this.showUlterioriDestinatari"
+								(ngModelChange)="this.changeUlterioriDestinatari($event)"
+							/>
+						<label class="col-form-label field-required" for="ulterioriDestinatariCk">
+							Ulteriori Destinatari:
+						</label>
+					</div>
+					<textarea class="form-control" rows="3"
+							id="ulterioriDestinatari"
+							[disabled]="!this.showUlterioriDestinatari"
+							[ngModel]="(this.showUlterioriDestinatari) ? this.datiIstr.ulterioriDestinatari : ''"
+							(ngModelChange)="this.cambiaDatiIstruttoria('ulterioriDestinatari', $event)"
+						>
+					</textarea>
+					@if (this.errori['ulterioriDestinatari'] != undefined) {
+						<div class="formio-errors">
+							<label><small class="text-danger">{{this.errori['ulterioriDestinatari']}}</small></label>
+						</div>
+					}
+		
+					<label class="col-form-label field-required" for="testo">
+						Testo:
+					</label>
+					<textarea class="form-control" rows="8" 
+							id="testo"
+							[ngModel]="this.datiIstr.testo"
+							(ngModelChange)="this.cambiaDatiIstruttoria('testo', $event)"
+						>
+					</textarea>
+					@if (this.errori['testo'] != undefined) {
+						<div class="formio-errors">
+							<label><small class="text-danger">{{this.errori['testo']}}</small></label>
+						</div>
+					}
+					<button type="button" class="btn btn-primary" style="margin-top: 15px; margin-left: auto;" [disabled]="!isSalvato" (click)="this.downloadBozzaPdf()">Anteprima Documento</button>
+				</div>
+			</div>
+		}
+	}
+	@else {
+		<div style="width: 100%; display: flex; flex-direction: column;">
+			<button type="button" class="btn btn-primary" style="margin-top: 15px; margin-left: auto;" (click)="this.downloadPdf()">Scarica Documento</button>
+		</div>
+	}
+	
+	
+	
+	
+	
+	@if (!this.isReadOnly) {
+		<div class="row justify-content-end m-0 mt-5">
+			<div class="col col-auto">
+				<button type="button"
+						class="btn btn-primary"
+						[disabled]="!isSalvaEnabled"
+						(click)="doSalva()">
+					Salva
+				</button>
+			</div>
+			@if (isPubblicaAmministrazione()) {
+				<div class="col col-auto">
+					<button type="button"
+							class="btn btn-primary"
+							[disabled]="!isValutazioneEnabled"
+							(click)="openEffettuaValutazione()">
+						Effettua valutazione
+					</button>
+				</div>
+			}
+		</div>
+	}
+	
+	@if (this.valutazione != undefined) {
+		<div style="margin: 15px;">
+			@if (this.valutazione.esito == true) {
+				<div style="color: green; text-align: center; width: 100%;">
+					<h1><i class="bi bi-check-circle-fill"></i> Approvata</h1>
+				</div>
+			}
+			@if (this.valutazione.esito == false) {
+				<div style="color: red; text-align: center; width: 100%;">
+					<h1><i class="bi bi-x-circle-fill"></i> Respinta</h1>
+				</div>
+			}
+			<!-- <label class="col-form-label">Note</label>
+			<textarea [ngModel]="this.valutazione.noteValutazione" class="form-control" rows="3" disabled>
+			</textarea> -->
+		</div>
+	}
+	
+	@if (this.openValutazioneDialog) {
+		<ng-container>
+			<div
+				style="position:fixed; left:0; top:0; width:100vw; height:100vh; background-color:#000; opacity:0.5;z-index: 11;">
+			</div>
+			<div style="position:fixed; left:50%; top:50%; transform:translate(-50%, -50%); border:solid 1px #000; background-color:#fff; z-index: 12;min-width: 480px; display: flex; flex-direction: column; padding: 15px;">
+				<!-- <label class="col-form-label">Note</label>
+				<textarea [(ngModel)]="this.noteValutazione" class="form-control" rows="3">
+				</textarea> -->
+				<h3><strong>Valuta l'istanza</strong></h3>
+				
+				<div style="display: flex; flex-direction: row; padding-top: 15px;">
+					<button type="button"
+									class="btn btn-success"
+									(click)="this.confermaEffettuaValutazione(true)">
+						Approva
+					</button>
+					<button type="button"
+									class="btn btn-danger"
+									style="margin-right: auto; margin-left: 10px;"
+									(click)="this.confermaEffettuaValutazione(false)">
+						Respingi
+					</button>
+					<button type="button"
+									class="btn btn-warning"
+									style="margin-left: auto;"
+									(click)="this.annullaValutazione()">
+						Annulla
+					</button>
+				</div>
+			</div>
+		</ng-container>
+	}
+	
+</div>

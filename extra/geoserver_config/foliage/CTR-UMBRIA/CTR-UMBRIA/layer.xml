@@ -1,0 +1,15 @@
+<layer>
+  <name>CTR-UMBRIA</name>
+  <id>LayerInfoImpl--4edd0e85:18bfbc2fe87:-7e79</id>
+  <type>WMS</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--570ae188:124761b8d78:-7fe2</id>
+  </defaultStyle>
+  <resource class="wmsLayer">
+    <id>WMSLayerInfoImpl--4edd0e85:18bfbc2fe87:-7e7a</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+</layer>

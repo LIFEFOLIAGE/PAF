@@ -1,0 +1,59 @@
+<featureType>
+  <id>FeatureTypeInfoImpl-4dd5f913:18c6c117e6a:-7d96</id>
+  <name>UMBRIA-aree_paesaggistiche_215</name>
+  <nativeName>aree_paesaggistiche_215</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl-7cd53224:17ff4993504:-7ffe</id>
+  </namespace>
+  <title>aree_paesaggistiche_215</title>
+  <keywords>
+    <string>features</string>
+    <string>aree_paesaggistiche_215</string>
+  </keywords>
+  <nativeCRS class="projected">PROJCS[&quot;Monte Mario / Italy zone 2&quot;, 
+  GEOGCS[&quot;Monte Mario&quot;, 
+    DATUM[&quot;Monte Mario&quot;, 
+      SPHEROID[&quot;International 1924&quot;, 6378388.0, 297.0, AUTHORITY[&quot;EPSG&quot;,&quot;7022&quot;]], 
+      TOWGS84[-104.1, -49.1, -9.9, 0.971, -2.917, 0.714, -11.68], 
+      AUTHORITY[&quot;EPSG&quot;,&quot;6265&quot;]], 
+    PRIMEM[&quot;Greenwich&quot;, 0.0, AUTHORITY[&quot;EPSG&quot;,&quot;8901&quot;]], 
+    UNIT[&quot;degree&quot;, 0.017453292519943295], 
+    AXIS[&quot;Geodetic longitude&quot;, EAST], 
+    AXIS[&quot;Geodetic latitude&quot;, NORTH], 
+    AUTHORITY[&quot;EPSG&quot;,&quot;4265&quot;]], 
+  PROJECTION[&quot;Transverse_Mercator&quot;, AUTHORITY[&quot;EPSG&quot;,&quot;9807&quot;]], 
+  PARAMETER[&quot;central_meridian&quot;, 15.0], 
+  PARAMETER[&quot;latitude_of_origin&quot;, 0.0], 
+  PARAMETER[&quot;scale_factor&quot;, 0.9996], 
+  PARAMETER[&quot;false_easting&quot;, 2520000.0], 
+  PARAMETER[&quot;false_northing&quot;, 0.0], 
+  UNIT[&quot;m&quot;, 1.0], 
+  AXIS[&quot;Easting&quot;, EAST], 
+  AXIS[&quot;Northing&quot;, NORTH], 
+  AUTHORITY[&quot;EPSG&quot;,&quot;3004&quot;]]</nativeCRS>
+  <srs>EPSG:3004</srs>
+  <nativeBoundingBox>
+    <minx>2245391.807624537</minx>
+    <maxx>2885274.1015330767</maxx>
+    <miny>3846600.5381958876</miny>
+    <maxy>5224106.003024751</maxy>
+    <crs class="projected">EPSG:3004</crs>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>11.380074929194835</minx>
+    <maxx>19.811020806780387</maxx>
+    <miny>34.69631156586505</miny>
+    <maxy>47.16870681158348</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <store class="dataStore">
+    <id>DataStoreInfoImpl-4dd5f913:18c6c117e6a:-7d97</id>
+  </store>
+  <maxFeatures>0</maxFeatures>
+  <numDecimals>0</numDecimals>
+  <overridingServiceSRS>false</overridingServiceSRS>
+  <skipNumberMatched>false</skipNumberMatched>
+  <circularArcPresent>false</circularArcPresent>
+</featureType>

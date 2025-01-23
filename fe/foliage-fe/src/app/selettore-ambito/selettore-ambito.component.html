@@ -1,0 +1,40 @@
+<!-- <div style="display: flex; flex-direction: row; flex-grow: 0;"> -->
+<div style="display: grid; grid-template-columns: 1fr 10px 1fr 10px 1fr;">
+	<div style="grid-column: 1;">
+		<label for="selTipoAmbito" class="col-form-label">Tipo di Ambito:</label>
+		<select id="selTipoAmbito"
+				title="Ambito territoriale"
+				[(ngModel)]="this.ambitoTerritoriale"
+				(change)="this.onChange()"
+				class="form-control"
+				[disabled]="this.isReadOnly">
+			<option value="{{''}}">Seleziona l'ambito territoriale...</option>
+			<option *ngFor="let ambito of this.elencoAmbitiTerritoriali" [value]="ambito.descAmbito">{{ambito.descAmbito}}</option>
+		</select>
+	</div>
+
+	<ng-container *ngIf="this.ambitoTerritoriale != '' && this.ambitoTerritoriale != 'Regione'">
+		<div style="grid-column: 3;">
+			<label for="selProvincia" class="col-form-label">Provincia:</label>
+			<select id="selProvincia"
+					class="form-control"
+					title="Provincia"
+					[(ngModel)]="this.provincia"
+					(change)="this.onChange()" [disabled]="this.isReadOnly">
+				<option [value]="-1">Seleziona una provincia...</option>
+				<option *ngFor="let provincia of this.elencoProvincie" [value]="provincia.id_prov">{{provincia.desc_prov}}</option>
+			</select>
+		</div>
+		<div style="grid-column: 5;" *ngIf="this.ambitoTerritoriale == 'Comune'">
+			<label for="selComune" class="col-form-label">Comune:</label>
+			<select id="selComune"
+					class="form-control"
+					title="Comune"
+					[(ngModel)]="this.comune"
+					(change)="this.onChange()" [disabled]="this.isReadOnly">
+				<option [value]="-1">Seleziona un comune...</option>
+				<option *ngFor="let comune of this.elencoComuni" [value]="comune.id_comu">{{comune.desc_comu}}</option>
+			</select>
+		</div>
+	</ng-container>
+</div>

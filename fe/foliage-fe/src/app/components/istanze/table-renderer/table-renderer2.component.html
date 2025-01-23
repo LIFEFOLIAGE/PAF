@@ -1,0 +1,31 @@
+<app-table [context]="this.context"
+		[triggers]="this.confProperties?.triggers"
+		[constraints]="this.confProperties?.constraints"
+		[totals]="this.confProperties?.totals"
+		[dictionariesData]="this.dictionariesData"
+		[resources]="this.resources"
+		[data]="this.dati"
+		[hideHeader]="false"
+		[pagination]="{pageSizes: [0, 5, 10, 15], defaultPageSize: 0}"
+		[filter]="true"
+		[selectedRow]="selectedRow"
+		[highlightRow]="highlightRow"
+		[rowHandler]="{selection: true, highlight: true}"
+		[editForm]="this.confProperties?.schedaInfo"
+		[isReadOnly]="this.isReadOnly"
+		[menuOptions]="this.confProperties?.menuOptions"
+		(selection)="this.onSelection($event)"
+		(highlight)="this.onHighlight($event)"
+		(dataChanged)="this.onDataChanged($event)"
+		(changeEdit)="this.changeEdit.emit($event)"
+		(componentInit)="this.componentInit.emit($event)"
+	>
+	<columns *ngIf="this.colProps!=undefined">
+		<column *ngFor="let c of colProps; let idxCol = index; trackBy: this.trackCol"
+			[headerText]="c['headerText']"
+			[cellValue]="c['cellValue']"
+			[dataField]="c['dataField']"
+			[dataFormat]="c['dataFormat']"	
+		></column>
+	</columns>
+</app-table>

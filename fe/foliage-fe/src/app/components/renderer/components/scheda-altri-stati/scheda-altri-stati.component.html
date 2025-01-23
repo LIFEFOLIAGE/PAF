@@ -1,0 +1,101 @@
+<div ref="component" >
+	<div>
+		<div>	
+			<label for="alternative" class="col-form-label field-required">Tipologia:</label>
+			<div id="alternative">
+				@for(elem of elencoAlternative; let index = $index; track index) {
+					<div class="form-group has-feedback formio-component formio-component-checkbox formio-component-isAreaTradizionale formio-modified">
+						<div class="form-check checkbox">
+							<label [for]="'alt'+index" class="form-check-label">
+								<input [id]="'alt'+index"
+									class="form-check-input" type="checkbox"
+									[checked]="this.datiEffettivi[elem.nome]"
+									[disabled]="isReadOnly"
+									(click)="this.changeAlternativa(elem.nome)">
+								<span>{{elem.label}}</span>
+							</label>
+						</div>
+					</div>
+				}
+			</div>
+			@if (this.errori['alternative'] != undefined) {
+				<div class="formio-errors">
+					<label><small class="text-danger">{{this.errori['alternative']}}</small></label>
+				</div>
+			}
+		</div>
+
+
+
+		<div class="form-group has-feedback mt-3">
+			<label class="col-form-label  field-required"ref="label">
+				Nome:
+			</label>
+			<div>
+				<input lang="it" class="form-control" type="text"
+						[disabled]="isReadOnly"
+						[ngModel]="this.datiEffettivi.nomeArea"
+						(ngModelChange)="this.changeProprieta('nomeArea', $event)">
+			</div>
+			@if (this.errori['nomeArea'] != undefined) {
+				<div class="formio-errors">
+					<label><small class="text-danger">{{this.errori['nomeArea']}}</small></label>
+				</div>
+			}
+		</div>
+		<div *ngIf="this.datiEffettivi.isAreaTradizionale==true || this.datiEffettivi.isAreaDimostrativa==true"
+			class="form-group has-feedback formio-component mt-3">
+			<label class="col-form-label  field-required">
+				Superficie:
+				<span class="sr-only">, numeric only,</span>
+			</label>
+			<div>
+				<input class="form-control" type="number"
+					[ngModel]="this.datiEffettivi.superficieArea"
+					[disabled]="isReadOnly"
+					(ngModelChange)="this.changeProprieta('superficieArea', $event)"/>
+			</div>
+			@if (this.errori['superficieArea'] != undefined) {
+				<div class="formio-errors">
+					<label><small class="text-danger">{{this.errori['superficieArea']}}</small></label>
+				</div>
+			}
+		</div>
+
+		<div *ngIf="this.datiEffettivi.isAreaTradizionale==true || this.datiEffettivi.isAreaDimostrativa==true"
+			 class="form-group has-feedback formio-component">
+			<label class="col-form-label  field-required">
+				Unità Omogenea Associata:
+			</label>
+			<div>
+				<select placeholder="unità omogenea associata"class="form-control"
+					[ngModel]="this.datiEffettivi.progUo"
+					[disabled]="isReadOnly"
+					(ngModelChange)="this.changeProprieta('progUo', $event)">
+					<option *ngFor="let unita of unitaOmogenee" [ngValue]="unita.prog">
+						{{unita.nomeUO}}
+					</option>
+				</select>
+			</div>
+		</div>
+
+		<div *ngIf="this.datiEffettivi.isAreaTradizionale==true"
+			class="form-group formio-component">
+			<label class="col-form-label  field-required" ref="label">
+				Percentuale rappresentatività area di saggio:
+			</label>
+			<div>
+				<input class="form-control" type="number"
+					[disabled]="isReadOnly"
+					[ngModel]="this.datiEffettivi.percentualeRappresentativita"
+					(ngModelChange)="this.changeProprieta('percentualeRappresentativita', $event)">
+			</div>
+			@if (this.errori['percentualeRappresentativita'] != undefined) {
+				<div class="formio-errors">
+					<label><small class="text-danger">{{this.errori['percentualeRappresentativita']}}</small></label>
+				</div>
+			}
+		</div>
+	</div>
+	<!-- {{this.errString}} -->
+</div>

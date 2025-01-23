@@ -1,0 +1,10 @@
+<!-- <div style="width: 100%; display: block;">
+	<h1 style="text-align: center;">Pannello Amministratore</h1>
+</div> -->
+
+<div>
+	<button *ngFor="let coll of this.collegamenti" class="btn btn-primary" style="margin: 20px;"
+			(click)="this.openCollegamento(coll)">
+		{{coll.nome}}
+	</button>
+</div>

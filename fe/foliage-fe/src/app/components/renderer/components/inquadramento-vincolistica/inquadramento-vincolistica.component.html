@@ -1,0 +1,171 @@
+
+
+@if(isReady) {
+	@if(datiSovrapposizioni.length == 0) {
+		<div class="alert alert-success my-4" role="alert">
+			<h4 class="alert-heading m-0">L'intervento non ricade in zone soggette a vincoli</h4>
+		</div>
+		<div style="display: flex; flex-direction: row; justify-content: flex-end; width: 100%;">
+			<div>
+				<div style="display: flex; flex-direction: row;">
+					<input id="inputVisione" type="checkbox" class="form-check" style="margin-right: 20px;"
+						[ngModel]="this.currentData['hasVisioneVincoli']"
+						(ngModelChange)="this.setHasVisioneVincoli($event)"
+						[disabled]="this.isReadOnly"
+					/>
+					<label for="inputVisione" class="col-form-label field-required">Dichiaro di aver preso visione</label>
+				</div>
+				<div *ngIf="this.errori['wizard']!=undefined" style="display: unset" class="formio-errors invalid-feedback" ref="messageContainer">
+					<label ref="html" class=""><small class="text-danger">{{this.errori['wizard']}}</small></label>
+				</div>
+			</div>
+		</div>
+	}
+	@else {
+		<h3>Inquadramento vincolistica</h3>
+
+		<app-table [data]="this.datiSovrapposizioni"
+				[hideHeader]="false"
+				[filter]="false"
+				[pagination]="{pageSizes: [], defaultPageSize: 10}"
+				[rowHandler]="{selection: false, highlight: false}">
+			<columns>
+				<column headerText="Gruppo" dataField="gruppo" [sortEnabled]="false"></column>
+				<column headerText="Nome vincolo" dataField="nomeVincolo" [sortEnabled]="false"></column>
+				<column headerText="Codice" dataField="codice" [sortEnabled]="false"></column>
+				<column headerText="Descrizione" dataField="descrizione" [sortEnabled]="false"></column>
+				<column headerText="Superficie" dataField="superficie" [sortEnabled]="false" [dataFormat]="this.DataFormat.Decimal"></column>
+			</columns>
+		</app-table>
+
+		@if (avvisiArray.length > 0) {
+			<div class="alert alert-warning my-4" role="alert">
+				<h4 class="alert-heading">Avvisi</h4>
+				<ng-container *ngFor="let avviso of avvisiArray; index as i; last as isLast">
+					<p style="white-space: pre-line;" [class.mb-0]="isLast">{{avviso}}</p>
+					<hr *ngIf="!isLast">
+				</ng-container>
+			</div>
+		}
+
+		@if(tipoIstanza != undefined && !['IN_DEROGA', 'ATTUAZIONE_PIANI'].includes(this.tipoIstanza)) {
+			<div class="container-wizard g-3 mt-5 pb-3"
+					style="overflow: scroll; overflow-x: hidden; overflow-y: auto">
+				<ng-container *ngFor="let risposta of this.currentData['scelteUtente']; let idxRisposta=index">
+					<div class="row mt-5">
+						<div class="col-10 align-self-center"
+							[class.col-10]="true"
+							style="white-space: pre-line;">
+							{{this.elementiWizard[idxRisposta].desc}}
+						</div>
+						
+						<div class="btn-group col-2 text-center align-self-center" role="group">
+							<input type="radio"
+											class="btn-check"
+											name="btnradio{{idxRisposta}}"
+											id="btnradioSi{{idxRisposta}}"
+											autocomplete="off"
+											[checked]="risposta == 'si'"
+											[attr.enabled]="!this.isReadOnly">
+							<label class="btn btn-outline-success"
+											for="btnradioSi{{idxRisposta}}"
+											[class.disabled]="this.isReadOnly"
+											(click)="this.registraRisposta('si', idxRisposta)"
+							>Sì</label>
+		
+							<input type="radio"
+											class="btn-check"
+											name="btnradio{{idxRisposta}}"
+											id="btnradioNo{{idxRisposta}}"
+											autocomplete="off"
+											[checked]="risposta == 'no'"
+											[attr.enabled]="!this.isReadOnly">
+							<label class="btn btn-outline-danger"
+											for="btnradioNo{{idxRisposta}}"
+											[class.disabled]="this.isReadOnly"
+											(click)="this.registraRisposta('no', idxRisposta)"
+							>No</label>
+						</div>
+					</div>
+				</ng-container>
+				<div class="row mt-5">
+					<div *ngIf="this.errori['wizard']!=undefined" style="display: unset" class="formio-errors invalid-feedback" ref="messageContainer">
+						<label ref="html" class=""><small class="text-danger">{{this.errori['wizard']}}</small></label>
+					</div>
+				</div>
+				<div class="row" *ngIf="this.nextElementoWizard != undefined && !this.isReadOnly">
+					<ng-container *ngIf="this.nextElementoWizard.scelte != undefined">
+						<div class="col-10 align-self-center"
+							[class.col-10]="true"
+							style="white-space: pre-line;">
+							{{this.nextElementoWizard.desc}}
+						</div>
+						
+						<div class="btn-group col-2 text-center align-self-center" role="group">
+							<input type="radio"
+											class="btn-check"
+											name="btnradioNext1"
+											id="btnradioSiNext"
+											[checked]="false"
+											autocomplete="off">
+							<label class="btn btn-outline-success"
+											for="btnradioSiNext"
+											[class.disabled]="this.isReadOnly"
+											(click)="this.registraUltimaRisposta('si')"
+							>Sì</label>
+		
+							<input type="radio"
+											class="btn-check"
+											name="btnradioNext2"
+											id="btnradioNoNext"
+											[checked]="false"
+											autocomplete="off">
+							<label class="btn btn-outline-danger"
+											for="btnradioNoNext"
+											[class.disabled]="this.isReadOnly"
+											(click)="this.registraUltimaRisposta('no')"
+							>No</label>
+						</div>
+					</ng-container>
+					<div *ngIf="this.nextElementoWizard.link"
+								class="col col-12 mt-4 text-center align-self-center">
+						<container-element [ngSwitch]="this.nextElementoWizard.link">
+							<div *ngSwitchCase="'upload-vinca'">
+								<app-formio-renderer
+									[isReadOnly]="this.isReadOnly"
+									[form]="this.uploadVincaForm"
+									[formData]="this.currentData"
+									(dataChanged)="this.onDataFormChanged($event)">
+								</app-formio-renderer>
+							</div>
+							<button *ngSwitchCase="'link-deroga'"
+											type="button"
+											class="btn btn-success mb-5"
+											[class.disabled]="this.isReadOnly"
+											(click)="trasformaInIstanzaInDeroga()">
+								{{this.nextElementoWizard.desc}}
+							</button>
+						</container-element>
+					</div>
+				</div>
+			</div>
+		}
+		@else {
+			<div style="display: flex; flex-direction: row; justify-content: flex-end; width: 100%;">
+				<div>
+					<div style="display: flex; flex-direction: row;">
+						<input id="inputVisione" type="checkbox" class="form-check" style="margin-right: 20px;"
+							[ngModel]="this.currentData['hasVisioneVincoli']"
+							(ngModelChange)="this.setHasVisioneVincoli($event)"
+							[disabled]="this.isReadOnly"
+						/>
+						<label for="inputVisione" class="col-form-label field-required">Dichiaro di aver preso visione</label>
+					</div>
+					<div *ngIf="this.errori['wizard']!=undefined" style="display: unset" class="formio-errors invalid-feedback" ref="messageContainer">
+						<label ref="html" class=""><small class="text-danger">{{this.errori['wizard']}}</small></label>
+					</div>
+				</div>
+			</div>
+		}
+	}
+}

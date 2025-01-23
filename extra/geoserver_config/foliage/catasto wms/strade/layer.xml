@@ -1,0 +1,15 @@
+<layer>
+  <name>strade</name>
+  <id>LayerInfoImpl--485eb94a:18b006ab73e:-7ff8</id>
+  <type>WMS</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--570ae188:124761b8d78:-7fe2</id>
+  </defaultStyle>
+  <resource class="wmsLayer">
+    <id>WMSLayerInfoImpl--485eb94a:18b006ab73e:-7ff9</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+</layer>

@@ -1,0 +1,225 @@
+/* You can add global styles to this file, and also import other style files */
+/* @import '~@angular/material/prebuilt-themes/indigo-pink.css'; */
+
+/*
+@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
+@import '~@angular/material/prebuilt-themes/indigo-pink.css';
+@import '~@angular/material/prebuilt-themes/pink-bluegrey.css';
+@import '~@angular/material/prebuilt-themes/purple-green.css';
+*/
+
+.ol-layerswitcher .panel-container .li-content {
+    margin-right: 20px;
+}
+
+.ol-layerswitcher .ol-layerswitcher-buttons .collapse-layers {
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.ol-layerswitcher .ol-layerswitcher-buttons .expend-layers {
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+/*.ol-layerswitcher .panel li label {*/
+/*    height: 2em !important;*/
+/*}*/
+
+.expend-layers {
+    transform: rotate(-90deg);
+    background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='%2369c' d='M8 13.1l-8-8 2.1-2.2 5.9 5.9 5.9-5.9 2.1 2.2z'/></svg>") !important;
+}
+
+.collapse-layers {
+    background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='%2369c' d='M8 13.1l-8-8 2.1-2.2 5.9 5.9 5.9-5.9 2.1 2.2z'/></svg>") !important;
+}
+
+.ol-layerswitcher .collapse-layers:before, .ol-layerswitcher .expend-layers:before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    margin-top: -2px;
+    height: 4px;
+    width: 100%;
+    background: unset !important;
+}
+
+.ol-layerswitcher .expend-layers:after {
+    background: unset !important;
+}
+
+.ol-layerswitcher .layerup:after, .ol-layerswitcher .layerup:before {
+    left: 2px !important;
+}
+
+.ol-layerswitcher .panel li label {
+    max-width: 24em !important;
+}
+
+.ol-overlay-container {
+    height: 75%;
+    width: 75%;
+    position: static;
+}
+
+label[title="Mappa base"] + .layerswitcher-opacity,
+label[title="Satellite"] + .layerswitcher-opacity,
+label[title="Open Street Map"] + .layerswitcher-opacity {
+    display: none;
+}
+
+.layerswitcher-progress > div {
+    background-color: darkgray !important;
+}
+
+table div.table-error-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 75%;
+    bottom: 0;
+    box-shadow: unset;
+}
+
+table .table-error-content {
+    font-size: larger;
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.gray-b-grad {
+    background: rgb(173, 173, 173);
+    background: -moz-linear-gradient(90deg, rgba(173, 173, 173, 0.8) 0%, rgba(201, 201, 201, 0.8) 45%, rgba(255, 255, 255, 0) 100%);
+    background: -webkit-linear-gradient(90deg, rgba(173, 173, 173, 0.8) 0%, rgba(201, 201, 201, 0.8) 45%, rgba(255, 255, 255, 0) 100%);
+    background: linear-gradient(90deg, rgba(173, 173, 173, 0.8) 0%, rgba(201, 201, 201, 0.8) 45%, rgba(255, 255, 255, 0) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#adadad", endColorstr="#ffffff", GradientType=1);
+}
+
+.form-switch.green .form-check-input:focus {
+    border-color: rgba(0, 0, 0, 0.25);
+    outline: 0;
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+}
+
+.form-switch.green .form-check-input:checked {
+    background-color: #30D158;
+    border-color: #30D158;
+    border: none;
+}
+
+.form-richiesta-bottom > *:nth-last-child(2) {
+	margin-bottom: 20px !important;
+}
+
+.ol-area-constraint {
+	position: absolute;
+	bottom: 8px;
+	left: 220px;
+    color: black;
+    opacity: 0.6;
+    background: white;
+    padding: 5px;
+	display: grid;
+	grid-template-columns: max-content max-content;
+	column-gap: 30px;
+	row-gap: 2px;
+	border-radius: 5px;
+}
+
+
+/*Modifiche classi bootstrap per accessibilità*/
+
+/*
+:root {
+    --bs-link-color: #256FB0;
+    --bs-link-color-rgb: 37,111,176;
+    --bs-card-color: #656565;
+    --bs-card-color-rgb: 101,101,101;
+    --bs-body-color: #656565;
+    --bs-body-color-rgb: 101,101,101;
+    --x: #2C8419;
+
+
+}
+
+.btn-success {
+    background-image: linear-gradient(#2C8419,#3cb521 50%,#37a71e);
+    filter: none;
+    border: 1px solid #30911a;
+  }
+*/
+
+
+.dropdown-toggle:focus-visible {
+    border: 1px solid black;
+}
+
+
+.dropdown-toggle:focus {
+    background-color: lightgray;
+}
+
+.btn-success:focus {
+    background-color: darkgreen;
+}
+.btn-danger:focus {
+    background-color: darkred;
+}
+
+.form-control {
+    appearance: auto;
+}
+
+.card-header {
+    cursor: default;
+}
+
+.pulsante:focus-visible {
+    border: 1px solid black;
+}
+
+.pulsante:active {
+    /* background-color: lightgray; */
+    border: 2px solid black;
+}
+
+.pulsante:focus {
+    /* background-color: lightgray; */
+    border: 1px solid darkgray;
+}
+
+
+.pulsante:hover {
+    /* background-color: lightgray; */
+    border: 1px solid lightgray;
+}
+
+/* button {
+    min-height: 44px;
+    min-width: 44px;
+} */
+
+h1 {
+    font-size: 2em;
+}
+h2 {
+    font-size: 1.75em;
+}
+h3 {
+    font-size: 1.5em;
+}
+
+@media(max-width: 767px) {
+	.xl {
+		display: none;
+	}
+}
+
+@media(min-width: 768px) {
+	.xs {
+		display: none;
+	}
+}

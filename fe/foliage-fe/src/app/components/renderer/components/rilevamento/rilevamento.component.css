@@ -1,0 +1,27 @@
+.foto-button {
+	text-shadow: -1px -1px 0 rgba(0,0,0,.1);
+	padding: 0.75rem 0.375rem;
+	background-color: lightgray;
+	border-radius: 20px;
+	box-shadow: 0 8px #bbb; 
+	background-color: white;
+}
+.foto-button:active {
+    box-shadow: 0 3px #999;
+    transform: translateY(5px);
+}
+.foto-button:hover {
+    background-color: lightblue;
+    cursor: pointer;
+}
+.foto-button:disabled {
+	color: black;
+	background-color: lightskyblue;
+    box-shadow: 0 3px #999;
+    transform: translateY(5px);
+}
+.dropdown-item:active {
+    color: var(--bs-dropdown-link-active-color);
+    text-decoration: none;
+    background-color: gray;
+}

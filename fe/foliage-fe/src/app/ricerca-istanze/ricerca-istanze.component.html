@@ -1,0 +1,130 @@
+<div class="px-1">
+	<div *ngIf="this.ambito == 'pubblico'"
+			 style="margin-bottom: 20px; height: 40px;">
+		<button type="button" class="btn btn-primary" (click)="this.nuovaIstanza()">Nuova Istanza</button>
+	</div>
+	<div style="display: grid; grid-template-columns: 1fr 10px 1fr 10px 1fr 10px 1fr; margin-bottom: 20px;">
+		<div style="display: flex; flex-direction: column; grid-column-start: 1; grid-column-end: 4;">
+			<label for="selTipoIstanza" class="col-form-label field-required">Tipo di Istanza:</label>
+			<select id="selTipoIstanza"
+					class="form-control" style="grid-column: 1;" title="Stato" [(ngModel)]="this.tipoIstanza"
+					(ngModelChange)="this.onChangeTipoIstanza($event)"
+				>
+				<option [ngValue]="undefined" selected>Seleziona il tipo di istanza...</option>
+				<option *ngFor="let tipo of this.tipiIstanza" [ngValue]="tipo">{{tipo.nome}}</option>
+			</select>
+		</div>
+
+		<div style="grid-column: 5;">
+			<label for="inpNomeIstanza" class="col-form-label field-required">Nome o codice istanza:</label>
+			<input id="inpNomeIstanza"
+				class="form-control" type="search" title="Filtro" [(ngModel)]="this.searchText"
+				placeholder="Nome o codice istanza"/>
+		</div>
+
+		<div *ngIf="this.currProfilo?.tipo != 'PROP'" style="grid-column: 7;">
+			<label for="inpCfTitolare" class="col-form-label field-required">Codice Fiscale Titolare:</label>
+			<input id="inpCfTitolare"
+				class="form-control" type="search" title="Filtro" [(ngModel)]="this.cfTitolare"
+				placeholder="Codice Fiscale Titolare"/>
+		</div>
+	</div>
+	<div style="display: flex; margin-bottom: 20px; flex-direction: column;">
+		<!-- <app-selettore-ambito style="width: 100%;" [showRegione]="true" (changeAmbito)="this.onChangeAmbito($event)"></app-selettore-ambito> -->
+		<label for="divEnteGestore" class="col-form-label field-required">Ente Gestore:</label>
+		<div id="divEnteGestore"
+			style="border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color)!important; border-radius: 0.375rem; padding: 1rem;">
+			<app-selettore-ambito style="width: 100%;" [ambitiTerritoriali]="this.ambitiTerr"
+														(changeAmbito)="this.onChangeAmbito($event)"></app-selettore-ambito>
+		</div>
+	</div>
+	<div style="display: grid; grid-template-columns: 1fr 10px 1fr 10px 1fr 10px 1fr; margin-bottom: 20px;">
+		<div style="grid-column: 1;">
+			<label for="selStatoIstanza" class="col-form-label field-required">Stato Istanza:</label>
+			<select id="selStatoIstanza"
+					class="form-control" style="grid-column: 1;" title="Stato"
+					[(ngModel)]="this.statoIstanza"
+					[disabled]="this.selectedUserName != undefined"
+				>
+				<option [ngValue]="undefined" selected>Seleziona lo stato...</option>
+				<option *ngFor="let stato of this.elencoStatiIstanza" [ngValue]="stato.id_stato">{{stato.desc_stato}}</option>
+			</select>
+		</div>
+		<div *ngIf="this.statoIstanza == 4" style="grid-column: 3;">
+			<label for="selStatoLavori" class="col-form-label field-required">Stato Avanzamento Lavori:</label>
+			<select id="selStatoLavori"
+				class="form-control" title="Stato avanzamento lavori" [(ngModel)]="this.statoAvanzamento">
+				<option [ngValue]="undefined" selected>Seleziona lo stato di avanzamento lavori...</option>
+				<option *ngFor="let stato of this.elencoStatoLavori" [ngValue]="stato.idStato">{{stato.descStato}}</option>
+			</select>
+		</div>
+
+		<div *ngIf="['DIRI', 'AMMI', 'RESP'].includes(this.currProfilo?.tipo)" style="grid-column: 5;">
+			<label for="inpUserIstruttore" class="col-form-label field-required">Username Istruttore:</label>
+			<input id="inpUserIstruttore"
+				class="form-control" type="search" title="Username Istruttore" placeholder="Username Istruttore"
+				[(ngModel)]="this.userIstruttore"
+				[disabled]="this.selectedUserName != undefined"
+				(ngModelChange)="this.userIstruttoreChanged()"/>
+		</div>
+
+		<div *ngIf="['DIRI', 'AMMI', 'RESP'].includes(this.currProfilo?.tipo)" style="grid-column: 7;">
+			<label for="inpCfIstruttore" class="col-form-label field-required">Codice Fiscale Istruttore:</label>
+			<input id="inpCfIstruttore"
+				class="form-control" type="search"
+				title="Codice Fiscale Istruttore" placeholder="Codice Fiscale Istruttore"
+				[disabled]="this.userIstruttore != ''"
+				[(ngModel)]="this.cfIstruttore"
+			/>
+		</div>
+	</div>
+	<div style="display: flex; height: 40px; margin-bottom: 20px;">
+		<button type="button" style="margin-left: auto;" class="btn btn-outline-success" (click)="this.esecuzioneRicerca()">
+			Cerca
+		</button>
+	</div>
+
+	<ng-template #showButtonCellTemplate let-resources="resources" let-col="col" let-row="row">
+		<div style="white-space: nowrap;">
+			<button type="button" class="pulsante btn" style="padding: 6px 6px 6px 6px;" title="Gestione Istanza"
+					(click)="this.openGestioneIstanza(row.data.codIstanza)">
+				<i class="bi bi-gear"></i>
+			</button>
+			<button *ngIf="this.ambito == 'pubblico' && row.data.idUtenteGestore == this.userData.idUten && row.data.descStato == 'In Compilazione'"
+					type="button" class="pulsante btn" style="padding: 6px 6px 6px 6px;"  title="Compila Istanza"
+					(click)="this.openIstanza(row.data.codIstanza)">
+				<i class="bi bi-pencil-square"></i>
+			</button>
+			<button *ngIf="(this.ambito == 'pubblico' && row.data.idUtenteGestore == this.userData.idUten && row.data.descStato == 'In Compilazione')"
+					type="button" class="pulsante btn" style="padding: 6px 6px 6px 6px;" title="Cancella Istanza"
+					(click)="this.dropIstanza(row.data.codIstanza)">
+				<i class="bi bi-trash" style="color: red;"></i>
+			</button>
+		</div>
+		<!-- <button type="button" class="pulsante btn btn-primary" (click)="this.openIstanza(data.data.codIstanza)">
+		  Dettagli
+		</button>   -->
+	</ng-template>
+
+	<app-table [data]="this.data"
+						 [hideHeader]="false"
+						 [pagination]="{pageSizes: [0, 5, 10, 15, 25, 50], defaultPageSize: 50}"
+						 [filter]="false"
+						 [rowHandler]="{selection: false, highlight: false}"
+	>
+		<columns>
+			<column headerText="Codice Fiscale" dataField="codFiscaleTitolare" [sortEnabled]="true"></column>
+			<column headerText="Cognome" dataField="cognomeTitolare" [sortEnabled]="true"></column>
+			<column headerText="Nome Titolare" dataField="nomeTitolare" [sortEnabled]="true"></column>
+			<column headerText="Codice Istanza" dataField="codIstanza" [sortEnabled]="true"></column>
+			<column headerText="Tipo Istanza" dataField="codTipoIstanza" [sortEnabled]="true"></column>
+			<column headerText="Nome Istanza" dataField="nomeIstanza" [sortEnabled]="true"></column>
+			<column headerText="Stato" dataField="descStato" [sortEnabled]="true"></column>
+			<column headerText="Data Istanza" dataField="dataIstanza" [sortEnabled]="true" [dataFormat]="DataFormat.ShortDate"></column>
+			<column headerText="Codice Fiscale Gestore" dataField="codFiscaleGestore" [sortEnabled]="true"></column>
+			<column headerText="Tipo Ente" dataField="tipoEnte" [sortEnabled]="true"></column>
+			<column headerText="Nome Ente" dataField="nomeEnte" [sortEnabled]="true" colHeadSpan="1"></column>
+			<column [cellTemplate]="showButtonCellTemplate" colHeadSpan="1"></column>
+		</columns>
+	</app-table>
+</div>

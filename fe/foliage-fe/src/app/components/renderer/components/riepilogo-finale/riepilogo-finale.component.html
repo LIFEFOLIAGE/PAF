@@ -1,0 +1,224 @@
+<div class="card border">
+	<div class="card-header bg-default">
+		<span class="mb-0 card-title">Riepilogo</span>
+	</div>
+
+	<div class="card-body">
+		<div class="row">
+			<div class="col-md-4">
+				<div ref="component" class="form-group">
+					<label id="l-superficieTotale" for="superficieTotale"
+								 class="col-form-label" ref="label">
+						Superficie totale
+					</label>
+					<input-ettari
+							idInput="superficieTotale"
+							cssInput="form-control"
+							[valoreMetriQ]="this.datiEffettivi.superficieTotale ?? 0"
+							[disabled]="true">
+					</input-ettari>
+				</div>
+			</div>
+
+			<div class="col-md-4">
+				<div ref="component" class="form-group">
+					<label id="l-superficieUtile" for="superficieUtile"
+								 class="col-form-label" ref="label">
+						Superficie utile
+					</label>
+					<input-ettari
+							idInput="superficieUtile"
+							cssInput="form-control"
+							[valoreMetriQ]="this.datiEffettivi.superficieUtile ?? 0"
+							[disabled]="true">
+					</input-ettari>
+				</div>
+			</div>
+
+			<div class="col-md-4">
+				<div ref="component" class="form-group">
+					<label id="l-superficieImproduttiva" for="superficieImproduttiva"
+								 class="col-form-label" ref="label">
+						Superficie improduttiva
+					</label>
+					<input-ettari
+							idInput="superficieImproduttiva"
+							cssInput="form-control"
+							[valoreMetriQ]="this.datiEffettivi.superficieImproduttiva ?? 0"
+							[disabled]="true">
+					</input-ettari>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-6">
+				<div ref="component" class="form-group">
+					<label id="l-superficieGeometrica" for="superficieGeometrica"
+								 class="col-form-label" ref="label">
+						Superficie geometrica di intervento
+					</label>
+					<input-ettari
+							idInput="superficieGeometrica"
+							cssInput="form-control"
+							[valoreMetriQ]="this.datiEffettivi.superficieGeometrica ?? 0"
+							[disabled]="true">
+					</input-ettari>
+				</div>
+			</div>
+			
+			<div class="col-sm-6">
+				<div ref="component" class="form-group">
+					<label id="l-superficieGeometrica" for="superficieGeometrica"
+						class="col-form-label" ref="label">
+						Scostamento con valore superficie di intervento dichiarata
+					</label>
+					
+					<div class="input-group">
+						<input type="text" class="form-control"
+								idInput="superficieGeometrica"
+								cssInput="form-control"
+								[value]="this.scostamento"
+								[disabled]="true"
+							/>
+						<span class="input-group-text">%</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div *ngIf="isAttuazionePiani" class="card border mt-5">
+	<div class="card-header bg-default">
+		<span class="mb-0 card-title">Attuazione piani</span>
+	</div>
+
+	<div class="row card-body">
+		<div class="col col-12">
+			<div ref="component" class="form-group">
+				<label id="l-nome_pgf" for="nome_pgf"
+							 class="col-form-label field-required" ref="label">
+					Nome del piano di gestione forestale
+					<span class="sr-only">, text,</span>
+				</label>
+				<div ref="element">
+					<div class="input-group">
+						<input [(ngModel)]="this.datiEffettivi.nome_pgf"
+									 [disabled]="isReadOnly"
+									 (ngModelChange)="this.onChangeProperty('nome_pgf', $event)"
+									 aria-required="false"
+									 aria-labelledby="l-nome_pgf" id="nome_pgf"
+									 value="" inputmode="decimal" placeholder="nome del piano di gestione forestale" lang="it"
+									 class="form-control" type="text" ref="input"
+									 aria-invalid="false">
+					</div>
+				</div>
+				<div class="formio-errors invalid-feedback" ref="messageContainer" style="display: inline;"
+						 [style.visibility.hydden]="this.errori['nome_pgf']==undefined">
+					<div class="form-text error">{{this.errori["nome_pgf"]}}</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="col col-12">
+			<div ref="component" class="form-group">
+				<label id="l-nome_comp" for="nome_comp"
+							 class="col-form-label field-required" ref="label">
+					Nome della compresa forestale
+					<span class="sr-only">, text,</span>
+				</label>
+				<div ref="element">
+					<div class="input-group">
+						<input [(ngModel)]="this.datiEffettivi.nome_comp"
+									 [disabled]="isReadOnly"
+									 (ngModelChange)="this.onChangeProperty('nome_comp', $event)"
+									 aria-required="false"
+									 aria-labelledby="l-nome_comp" id="nome_comp"
+									 value="" inputmode="decimal" placeholder="nome della compresa forestale" lang="it"
+									 class="form-control" type="text" ref="input"
+									 aria-invalid="false">
+					</div>
+				</div>
+				<div class="formio-errors invalid-feedback" ref="messageContainer" style="display: inline;"
+						 [style.visibility.hydden]="this.errori['nome_comp']==undefined">
+					<div class="form-text error">{{this.errori["nome_comp"]}}</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="col col-12">
+			<div ref="component" class="form-group">
+				<label id="l-oggetto" for="oggetto"
+							 class="col-form-label field-required" ref="label">
+					Oggetto
+					<span class="sr-only">, text,</span>
+				</label>
+				<div ref="element">
+					<div class="input-group">
+						<input [(ngModel)]="this.datiEffettivi.oggetto"
+									 [disabled]="isReadOnly"
+									 (ngModelChange)="this.onChangeProperty('oggetto', $event)"
+									 aria-required="false"
+									 aria-labelledby="l-oggetto" id="oggetto"
+									 value="" inputmode="decimal" placeholder="oggetto" lang="it"
+									 class="form-control" type="text" ref="input"
+									 aria-invalid="false">
+					</div>
+				</div>
+				<div class="formio-errors invalid-feedback" ref="messageContainer" style="display: inline;"
+						 [style.visibility.hydden]="this.errori['oggetto']==undefined">
+					<div class="form-text error">{{this.errori["oggetto"]}}</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="card border my-5">
+	<div class="card-header bg-default">
+		<span class="mb-0 card-title">Supporto finanziario</span>
+	</div>
+	<div class="row card-body">
+		<div class="col col-12">
+			<div class="form-group">
+				<label id="l-tipo-supp" for="tipo-supp"
+							 class="col-form-label field-required" ref="label">
+					Tipo di finanziamento
+				</label>
+				<div class="input-group">
+					<select id="tipo-supp" class="form-control"
+									[ngModel]="this.datiEffettivi['supportoFinanziario']"
+									(ngModelChange)="this.onChangeSupportoFinanziarioById($event)"
+									[disabled]="isReadOnly">
+						<option *ngFor="let supporto of this.supportiFinanziari"
+										[ngValue]="supporto.key">
+							{{supporto.label}}
+						</option>
+					</select>
+				</div>
+				<div class="formio-errors invalid-feedback" ref="messageContainer" style="display: inline;"
+						 [style.visibility.hydden]="this.errori['supportoFinanziario']==undefined">
+					<div class="form-text error">{{this.errori["supportoFinanziario"]}}</div>
+				</div>
+			</div>
+		</div>
+
+		<div *ngIf="showDenominazioneFondo" class="col col-12">
+			<div class="form-group">
+				<label id="l-den-fond" for="den-fond"
+							 class="col-form-label field-required" ref="label">
+					Denominazione del fondo
+				</label>
+				<textarea id="den-fond" class="form-control"
+									[ngModel]="this.datiEffettivi['denominazioneFondo']"
+									(ngModelChange)="this.onChangeDenominazioneFondo($event)"
+									[disabled]="isReadOnly">
+				</textarea>
+				<div class="formio-errors invalid-feedback" ref="messageContainer" style="display: inline;"
+						 [style.visibility.hydden]="this.errori['denominazioneFondo']==undefined">
+					<div class="form-text error">{{this.errori["denominazioneFondo"]}}</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

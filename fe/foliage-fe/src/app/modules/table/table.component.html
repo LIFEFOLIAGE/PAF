@@ -1,0 +1,290 @@
+@if(this.menuOptions) {
+	<div #contextmenu [style]="this.contextmenuStyle">
+		<ng-container>
+			<ul class="dropdown-menu dropdown-menu-end w-auto" style="display: flex; flex-direction: column;">
+				@for(opzione of this.menuOptions.general; track $index) {
+					@if(!this.isReadOnly || this.isReadOnlyAction(opzione.action)) {
+						<li>
+							<button class="dropdown-item" (click)="this.menuAction(opzione.action)">
+								{{opzione.label}}
+							</button>
+						</li>
+					}
+				}
+				<!-- <ng-container *ngFor="let opzione of this.menuOptions.general">
+					<li *ngIf="!this.isReadOnly || this.isReadOnlyAction(opzione.action)">
+						<button class="dropdown-item" (click)="this.menuAction(opzione.action)">
+							{{opzione.label}}
+						</button>
+					</li>
+				</ng-container> -->
+				@for(opzione of this.menuOptions.element; track $index) {
+					@if(!this.isReadOnly || this.isReadOnlyAction(opzione.action)) {
+						<li>
+							<button class="dropdown-item" (click)="this.rowMenuAction(opzione.action)" [disabled]="this.selectedRowData==undefined">
+								{{opzione.label}}
+							</button>
+						</li>
+					}
+				}
+				<!-- <ng-container *ngFor="let opzione of this.menuOptions.element">
+					<li *ngIf="!this.isReadOnly || this.isReadOnlyAction(opzione.action)">
+						<button class="dropdown-item" (click)="this.rowMenuAction(opzione.action)" [disabled]="this.selectedRowData==undefined">
+							{{opzione.label}}
+						</button>
+					</li>
+				</ng-container> -->
+			</ul>
+		</ng-container>
+	</div>
+}
+@if(this.columns.columnsList && this.columns.columnsList.length > 0) {		
+	<ng-template #defaultHeaderTemplate let-show="show" let-col="col">
+		{{col.headerText??""}}
+	</ng-template>
+	<ng-template #defaultCellTemplate let-show="show" let-col="col" let-row="row">
+		{{
+			(col.dataField) ? ((col.dataFormat) ? col.dataFormat(row[col.dataField]) : row[col.dataField]) : row
+		}}
+	</ng-template>
+
+	<div style="display: flex; flex-direction: column; width: 100%;">
+		@if(this.filter || this.pagination) {
+			<div style="display: flex; font-size: smaller; width: 100%; margin-bottom: 5px;">
+				@if(this.pagination && this.pagination.pageSizes.length > 1) {
+					<label for="selElementiPerPagina" style="white-space: nowrap;">Elementi per pagina:</label>
+					<select
+						id="selElementiPerPagina"
+						[(ngModel)]="this.pageSize"
+						title="Elementi per pagina"
+						class="page-length-selector">
+						@for(pl of this.pagination.pageSizes; track pl) {
+							<option [ngValue]="pl">
+								{{(pl == 0) ? "Tutti" : pl.toString()}}
+							</option>
+						}
+					</select>
+				}
+				<label style="margin-left: 5px; white-space: nowrap" role="alert">{{ this.sortedData.length + " Risultati" }}</label>
+				<div style="min-width: 5px;"></div>
+				@if(this.filter) {
+					<label for="inpFiltro" style="margin-left: auto">Filtro:</label>
+					<input type="search" id="inpFiltro"
+						[disabled]="!textFilterEnabled"
+						[(ngModel)]="this.searchText"
+						style="min-width: 0px;"
+						class="filter-text"
+						title="Filtro"/>
+				}
+			</div>
+		}
+		<table class='table table-striped' style="font-size: smaller; width: 100%;" border="1px #dee2e6 solid">
+			@if(!this.hideHeader) {
+				<thead>
+					<tr>
+						@for(col of this.columns.columnsList; let idxCol = $index; track idxCol) {
+							@if(col.colHeadSpan != '0') {
+								@if(this.sortEnabled || col.sortEnabled) {
+									<th tabindex=0
+										[attr.colspan]="col.colHeadSpan??1"
+										[style.border-left]="(idxCol == 0) ? 'unset' : '1px #dee2e6 solid'"
+										[class]="(this.sortConf.sortField == idxCol) ? this.sortConf.getIcon() : 'sort-header'"
+										[style.text-align]="[DataFormat.Decimal, DataFormat.Integer, DataFormat.Ettari].includes(col.dataFormat??DataFormat.Default) ? 'right' : 'unset'"
+										(click)="this.changeSort(idxCol)"
+										(keydown)="this.keyOnSort($event, idxCol)"
+										>
+										<ng-container [ngTemplateOutlet]="col.headerTemplate || defaultHeaderTemplate"
+											[ngTemplateOutletContext] ="{col:col, resources: this.resources}">
+										</ng-container>
+									</th>
+									<!-- <th
+										class="sort-column"
+										[style.text-align]="[DataFormat.Decimal, DataFormat.Integer, DataFormat.Ettari].includes(col.dataFormat??DataFormat.Default) ? 'right' : 'unset'"
+										(click)="this.changeSort(idxCol)">
+										<img class="sort-button"
+											[src]="(this.sortConf.sortField == idxCol) ? this.sortConf.getIcon2() : '/assets/images/chevron-bar-expand.svg'"/>
+										<ng-container [ngTemplateOutlet]="col.headerTemplate || defaultHeaderTemplate"
+											[ngTemplateOutletContext] ="{col:col, resources: this.resources}">
+										</ng-container>
+									</th> -->
+								}
+								@else {
+									<th
+										[attr.colspan]="col.colHeadSpan??1"
+										[style.border-left]="(idxCol == 0) ? 'unset' : '1px #dee2e6 solid'"
+										[style.text-align]="[DataFormat.Decimal, DataFormat.Integer, DataFormat.Ettari].includes(col.dataFormat??DataFormat.Default) ? 'right' : 'unset'">
+										<ng-container [ngTemplateOutlet]="col.headerTemplate || defaultHeaderTemplate"
+											[ngTemplateOutletContext] ="{col:col, resources: this.resources}">
+										</ng-container>
+									</th>
+								}
+							}
+						}
+					</tr>
+				</thead>
+			}
+		
+			<tbody (contextmenu)="this.displayContextMenu($event); false">
+				@if(this.pagedData.length == 0) {
+					<tr>
+						<td style="text-align: center;"
+							[attr.colspan]="this.columns.columnsList.length">Nessun dato presente</td>
+					</tr>
+				}
+				@else {
+					@for(row of this.pagedData; let idxRowCol=$index; track idxRowCol) {
+						<tr app-row
+								[columns]="this.columns.columnsList"
+								[data]="row"
+								[index]="row.idx"
+								[rowSelection]="this.onClickRow"
+								[rowEnter]="this.onEnterRow"
+								[rowLeave]="this.onLeaveRow"
+								[resources]="this.resources"
+								class="table-row position-relative"
+								[class.table-row-selected]="row==this.selectedRowData"
+								[class.table-row-highlighed]="row==this.highlightedRowData && row!=this.selectedRowData"
+								[show]="row===this.selectedRowData"
+								[rowErrors]="errorsDict[row.idx]"
+							>
+						</tr>
+					}
+					<!-- <tr app-row *ngFor="let row of this.pagedData"
+							[columns]="this.columns.columnsList"
+							[data]="row"
+							[index]="row.idx"
+							[rowSelection]="this.onClickRow"
+							[rowEnter]="this.onEnterRow"
+							[rowLeave]="this.onLeaveRow"
+							[resources]="this.resources"
+							class="table-row position-relative"
+							[class.table-row-selected]="row==this.selectedRowData"
+							[class.table-row-highlighed]="row==this.highlightedRowData && row!=this.selectedRowData"
+							[show]="row===this.selectedRowData"
+							[rowErrors]="errorsDict[row.idx]"
+						>
+					</tr> -->
+				}
+			</tbody>
+		
+			@if(Object.keys(this.errorsDict).length != 0) {
+				<tfoot>
+					<tr>
+						<td [attr.colspan]="this.columns.columnsList.length">
+							<div class=" row alert alert-danger align-items-center p-2 m-1" role="alert">
+								@if(this.filter) {
+									<div class="col col-auto text-center align-self-center">
+										<div class="form-control-lg form-check form-switch green">
+											<input class="form-check-input"
+												type="checkbox"
+												id="switchErrors"
+												[checked]="errorFilterEnabled"
+												(click)="filterDataForErrors($event)">
+											<label class="form-check-label"
+												style="font-size: medium"
+												for="switchErrors"
+											>Visualizza solo errori</label>
+										</div>
+									</div>
+								}
+								<div class="col"
+									[class.text-center]="!this.filter">
+									<div>
+										{{Object.keys(this.errorsDict).length}} {{Object.keys(this.errorsDict).length == 1 ? 'elemento presenta errori' : 'elementi presentano errori'}}
+									</div>
+									<small>Passa il mouse sull'icona per visualizzarne la descrizione</small>
+								</div>
+							</div>
+						</td>
+					</tr>
+				</tfoot>
+			}
+		</table>
+		@if (this.pagination && this.pages > 1) {
+			<div class="page-button-bar" style="width: 100%;">
+				@if(this.currPage > this.pageButtons) {
+					<app-page-button (click)="this.gotoPage(0)" text="{{1}}"/>
+					@if(this.currPage > this.pageButtons + 1) {
+						<div>...</div>
+					}
+				}
+				@for(prePage of this.preRange; track prePage) {
+					<app-page-button
+						(click)="this.gotoPage(prePage, $event, $index)" text="{{prePage+1}}"/>
+				}
+				<!-- <app-page-button *ngFor="let page of this.getRange(this.max(0, this.currPage - this.pageButtons), this.currPage)"
+					(click)="gotoPage(page)" text="{{page+1}}"/> -->
+
+				<app-page-button text="{{this.currPage + 1}}" [disabled]="true"/>
+
+				<!-- <app-page-button *ngFor="let page of this.getRange(this.currPage + 1, this.min(this.currPage + this.pageButtons + 1, this.pages))"
+					(click)="gotoPage(page)" text="{{page+1}}"/>-->
+				@for(postPage of this.getRange(this.currPage + 1, this.min(this.currPage + this.pageButtons + 1, this.pages)); track postPage) {
+					<app-page-button
+						(click)="this.gotoPage(postPage, $event)" text="{{postPage+1}}"/>
+				}
+				
+				@if(this.currPage + this.pageButtons < this.pages - 1) {
+					@if (this.currPage + this.pageButtons < this.pages - 2) {
+						<div>...</div>
+					}
+					<app-page-button (click)="gotoPage(this.pages - 1)" text="{{this.pages}}"/>
+				}
+			</div>
+		}
+		@if (this.totals) {
+			<div style="border-top: 1px black solid; margin-top: 50px; padding: 10px;">
+				<h4><b>Riepilogo</b></h4>
+			</div>
+			<div style="border-top: 1px black solid; padding-top: 5px; display: grid; grid-template-columns: 1fr max-content 200px; column-gap: 10px; row-gap: 10px;">
+				@for(tot of this.totals; track idx; let idx=$index) {
+					<div style="grid-column: 2;display: flex; flex-direction: column; justify-content: flex-end;">
+						<label [htmlFor]="'inpTotals' + idx">
+							<b>{{tot.label}}</b>
+						</label>
+					</div>
+					<input type="text" [attr.id]="'inpTotals' + idx" disabled [value]="this.evalTotal(tot)" style="grid-column: 3;" [style.text-align]="tot.alignment??'left'" class="form-control">
+				}
+			</div>
+		}
+	</div>
+}
+@else {
+	<div style="text-align: center;" (contextmenu)="this.displayContextMenu($event); false">
+		Nessun dato presente
+	</div>
+
+}
+
+
+@if (this.isEditing) {
+	<div style=" position:fixed; left:0; top:0; width:100vw; height:100vh; background-color:#000; opacity:0.5;z-index: 11;">
+	</div>
+	<div style=" position:fixed; left:50%; top:50%; transform:translate(-50%, -50%);
+			border:solid 1px #000; background-color:#fff; z-index: 12;min-width: 480px;">
+		<div style="width: 100%; background: lightgrey; display: flex;">
+			<div style="height: 100%; display: flex; flex-direction: column; justify-content: center; margin: 5px;">
+				<label>
+					{{((this.selectedRowData) ? (this.isReadOnlyEdit || this.isReadOnly ? "Visualizza" : "Modifica") : "Nuovo" )+ " elemento"}}
+				</label>
+			</div>
+			<button style="margin-left: auto; padding: 0px; margin-right: 5px;" class="btn" (click)="this.closeDialog()">
+				<i class="bi bi-x-square-fill" style="color: red; font-size: x-large;"></i>
+			</button>
+		</div>
+		<div style="max-height: calc(100vh - 150px); max-width: calc(100vw - 150px); overflow: auto;">
+			<app-editor-scheda
+				[contesto]="this.context"
+				[resources]="this.resources"
+				[scheda]="this.editForm"
+				[isReadOnly]="this.isReadOnlyEdit || this.isReadOnly"
+				[dictionariesData]="this.dictionariesData"
+				[isNewData]="this.selectedRowData == undefined"
+				[dati]="this.newRecord"
+				[dataConfirmed]="this.onEditDataConfirmedBuond"
+			>
+			</app-editor-scheda>
+		</div>
+	</div>
+}
+

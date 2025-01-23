@@ -1,0 +1,17 @@
+<a class='card text-decoration-none h-100'
+   [routerLink]="[scheda?.link]"
+>
+<!-- [href]="scheda?.link" -->
+  <div class="card-header" style="display: flex; flex-direction: row; height: calc(3em + 16px); word-break: break-word; overflow: hidden;">
+    <i [class]="scheda?.iconaCssClass" class="me-3"
+       [style.color]="scheda?.colore"></i>
+    <h2 style="font-size: 1.35rem;">
+    {{scheda?.titolo}}
+    </h2>
+  </div>
+
+  <div class="card-body">
+    <p class="card-text">{{scheda?.descrizione}}</p>
+  </div>
+</a>
+

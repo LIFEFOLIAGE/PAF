@@ -1,0 +1,26 @@
+@if (this.isReady) {
+	<div class="container">
+		<h1 style="text-align: center;">Firma Istanza {{this.codIstanza}}</h1>
+		<button class="btn btn-primary" (click)="this.downloadPdf()"> Scarica Documento Pdf dell'istanza da Firmare</button>
+		
+		<div style="padding: 15px;">
+			<label class="col-form-label field-required">
+				Documento Pdf dell'istanza Firmato da Inviare:
+			</label>
+			<div style="display: flex; flex-direction: row; justify-content: space-between; width: 100%;">
+				<app-file-allegato
+						
+						style="flex-grow: 1;"
+						[(file)]="this.allegato"
+						[isReadOnly]="false"
+					>
+				</app-file-allegato>
+				@if (this.allegato) {
+					<div style="display: flex; flex-direction: column; justify-content: center; margin-left: 20px;">
+						<button class="btn btn-success" (click)="this.invioPdfFirmato()">Invia</button>
+					</div>
+				}
+			</div>
+		</div>
+	</div>
+}

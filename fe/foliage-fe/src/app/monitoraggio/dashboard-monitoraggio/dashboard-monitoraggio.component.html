@@ -1,0 +1,35 @@
+<div style="padding-left: 15px; padding-right: 15px;">
+	<!-- <div class="mt-3">
+		<h1 style="text-align: center;">
+			Cruscotto Monitoraggio Satellitare
+		</h1>
+	</div> -->
+	<div class="mt-3 container" style="display: flex; flex-direction: row; justify-content: space-between;">
+		<button type="button" class="btn btn-primary" (click)="this.nuovaRichiesta()">Nuova Richiesta</button>
+		<button type="button" class="btn btn-primary" (click)="this.refresh()">Aggiorna</button>
+	</div>
+	<div class="mt-3">
+		<app-table [data]="this.elenco"
+			[hideHeader]="false"
+			[pagination]="{pageSizes: [0, 5, 10, 15], defaultPageSize: 0}"
+			[rowHandler]="{selection: false, highlight: false}">
+			
+			<columns>
+				<column headerText="Data di Esecuzione Richiesta" dataField="data_di_esecuzione_richiesta" [dataFormat]="DataFormat.LongDate" [sortEnabled]="true"></column>
+				<column headerText="Utente Sotttomissione" dataField="utente_sottomissione" [sortEnabled]="true"></column>
+				<column headerText="Data Sottomissione" dataField="data_inserimento" [dataFormat]="DataFormat.LongDate" [sortEnabled]="true"></column>
+				<column headerText="Data Avvio" dataField="data_avvio" [dataFormat]="DataFormat.LongDate" [sortEnabled]="true"></column>
+				<column headerText="Data Fine" dataField="data_termine" [dataFormat]="DataFormat.LongDate" [sortEnabled]="true"></column>
+				<column headerText="Tentativi Falliti" dataField="cnt_err" [dataFormat]="DataFormat.Integer" [sortEnabled]="true" colHeadSpan="1"></column>
+				<column [cellTemplate]="buttonCellTemplate" colHeadSpan="1"></column>
+			</columns>
+		</app-table>
+		<ng-template #buttonCellTemplate let-resources="resources" let-col="col" let-data="row.data">
+			<div style="width: 100%; display: flex; flex-direction: row; justify-content: flex-end;">
+				<button type="button" class="btn pulsante" style="padding: 5px; color: blue;" (click)="this.openRichiesta(data.id_batch_ondemand)" title="Visualizza dettagli">
+					<i class="bi bi-search"></i>
+				</button>
+			</div>
+		</ng-template>
+	</div>
+</div>

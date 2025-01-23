@@ -1,0 +1,60 @@
+{
+	"ctr_lazio": {
+		"tipo": "wms",
+		"url": "https://geoportale.regione.lazio.it/geoserver/ows",
+		"version": "1.3.0",
+		"srs": "EPSG:3857",
+		"outputFormat": "image/png",
+		"layers": "geonode:web_050303_sc_dis_a,geonode:web_060106_cl_agr_a,geonode:web_040101_ab_cda_l,geonode:web_040104_af_acq_p,geonode:web_040103_invaso_a,geonode:web_040102_sp_acq_a,geonode:web_020503_op_reg_l,geonode:wms_diga_a,geonode:web_020301_ponte_a,geonode:web_010105_ar_vms_a,geonode:web_010105_ar_vms_l,geonode:web_010103_ac_cic_a,geonode:web_010202_el_fer_l,geonode:web_020201_mn_ind_p,geonode:web_020210_mu_div_a,geonode:web_020212_mn_arr_p,geonode:web_020202_mn_mau_a,geonode:web_020205_man_tr_l,geonode:web_020214_mn_int_p,geonode:web_020202_mn_mau_p,geonode:web_020201_mn_ind_p,geonode:web_070301_tr_ele_l,geonode:wms_edi_min_a,geonode:web_020104_ele_cp_a,geonode:web_040102_sp_acq_l"
+	},
+	"ctr_umbria": {
+		"tipo": "wms",
+		"url": "http://geo.umbriaterritorio.it/arcgis/services/public/CTR_5K/MapServer/WMSServer",
+		"version": "1.3.0",
+		"srs": "EPSG: 4326",
+		"outputFormat": "image/png",
+		"layers": "0"
+	},
+	"catasto": {
+		"tipo": "wms",
+		"url": "https://wms.cartografia.agenziaentrate.gov.it/inspire/wms/ows01.php",
+		"version": "1.1.0",
+		"crs": "EPSG: 4258",
+		"outputFormat": "image/png",
+		"layers": "CP.CadastralZoning,strade,acque,CP.CadastralParcel,vestizioni"
+	},
+	"Ortofoto_2012_33":{
+		"tipo": "wms",
+		"url": "http://wms.pcn.minambiente.it/ogc?map=/ms_ogc/WMS_v1.3/raster/ortofoto_colore_12.map",
+		"version": "1.2.0",
+		"crs": "EPSG: 32633",
+		"outputFormat": "image/png",
+		"layers": "OI.ORTOIMMAGINI.2012.33"
+	},
+	"Ortofoto_2012_32":{
+		"tipo": "wms",
+		"url": "http://wms.pcn.minambiente.it/ogc?map=/ms_ogc/WMS_v1.3/raster/ortofoto_colore_12.map",
+		"version": "1.2.0",
+		"crs": "EPSG: 32632",
+		"outputFormat": "image/png",
+		"layers": "OI.ORTOIMMAGINI.2012.32"
+	},
+	"costa_laghi":{
+		"tipo": "wmf",
+		"url": "https://geoportale.regione.lazio.it/geoserver/geonode/costa_laghi",
+		"version": "1.1.0",
+		"srs": "EPSG: 4326"
+	},
+	"usi_civici":{
+		"tipo": "wmf",
+		"url": "https://geoportale.regione.lazio.it/geoserver/geonode/usi_civici/wfs",
+		"version": "1.1.0",
+		"srs": "EPSG: 3857"
+	},
+	"boschi":{
+		"tipo": "wmf",
+		"url": "https://geoportale.regione.lazio.it/geoserver/geonode/boschi/wfs",
+		"version": "1.1.0",
+		"srs": "EPSG: 4326"
+	}
+}

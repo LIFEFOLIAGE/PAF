@@ -1,0 +1,190 @@
+<div *ngIf="this.currProfilo != undefined" style="padding: 10px; display: flex; flex-direction: column;">
+	<div style="display: flex;">
+		<button type="button" bTooltip 
+			style="margin-left: auto;" class="btn btn-primary" title="Non sai che istanza devi presentare? Clicca qui"
+			(click)="openWizard()">
+			Assistente per la scelta istanze
+		</button>
+	</div>
+	<div style="margin-top: 20px; width: 100%; text-align: center;">
+		<label class="col-form-label field-required" for="tabTipoIstanza"><strong>Tipo di istanza:</strong></label>
+	</div>
+	<table id="tabTipoIstanza" style="margin-top: 20px; border: none;">
+		<tbody>
+		@for (tipo of this.tipiIstanza; track index; let index = $index) {
+			@if(this.canSee(tipo.seniorOnly, tipo.abil)) {
+				<tr>
+					<td style="width: 100px; text-align: center;">
+						<input type="radio" style="width: 20px; height: 20px;"
+							value="1"
+							[id]="'domandaTipo' + index"
+							[checked]="this.selTipoIstanza==tipo"
+							(click)="this.setTipoInstanza(tipo)"
+							name="ProfitCode">
+					</td>
+					<td style="padding: 10px;"><label [for]="'domandaTipo' + index">{{tipo.nome}}</label></td>
+					<td style="padding: 10px;">{{tipo.descrizione}}</td>
+				</tr>
+			}
+		}
+		<!-- <ng-container *ngFor="let tipo of this.tipiIstanza">
+		
+			<tr *ngIf="this.canSee(tipo.seniorOnly, tipo.abil)">
+				<td style="width: 100px; text-align: center;" (click)="this.setTipoInstanza(tipo)">
+					<input type="radio" style="width: 20px; height: 20px;"
+								 value="1"
+								 id="point1"
+								 [checked]="this.selTipoIstanza==tipo"
+								 name="ProfitCode">
+				</td>
+				<td style="padding: 10px;"><label>{{tipo.nome}}</label></td>
+				<td style="padding: 10px;">{{tipo.descrizione}}</td>
+			</tr>
+		</ng-container> -->
+		</tbody>
+	</table>
+	<div style="margin-top: 20px; width: 100%; text-align: center; display: flex; flex-direction: column;"
+			 [style.visibility]="this.getMenuSpecificoVisibility()">
+		<label class="col-form-label field-required" for="selectTipoSpecifico">
+			<strong>
+				Tipo di istanza specifico:
+			</strong>
+		</label>
+		<select id="selectTipoSpecifico" title="Tipo di istanza specifico" [(ngModel)]="this.selTipoSpecifico" class="form-control">
+			<option *ngFor="let tipo of this.tipiSpecifici" [ngValue]="tipo">{{tipo.nome}}</option>
+		</select>
+	</div>
+	<div style="margin-top: 20px;">
+		<table style="width: 100%;" [style.visibility]="this.getCheckSottoSogliaVisibility()">
+			<tbody>
+			<tr>
+				<td style="width: 100px; text-align: center;">
+					<input type="checkbox" style="width: 20px; height: 20px;"
+								 [checked]="this.isInGestione"
+								 (change)="this.isInGestione = ! this.isInGestione"/>
+				</td>
+				<td style="border: 1px black solid; min-height: 4em; padding: 10px;">
+					L'area in gestione &egrave; relativa a propriet&agrave; privata di dimensioni medio piccole
+				</td>
+			</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<div [style.visibility]="this.getAmbitoVisibility()"
+			 style="display: flex; margin-top: 20px; flex-direction: column;">
+		<label class="col-form-label field-required">Ente Gestore</label>
+		<div
+			style="border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color)!important; border-radius: 0.375rem; padding: 1rem;">
+			<app-selettore-ambito style="width: 100%;" [ambitiTerritoriali]="this.ambitiTerr"
+														(changeAmbito)="this.onChangeAmbito($event)"></app-selettore-ambito>
+		</div>
+	</div>
+	<div style="margin-top: 20px; width: 100%; text-align: center; display: flex; flex-direction: column;">
+		<label for="inputNome" class="col-form-label field-required">
+			<strong>
+				Nome dell'istanza:
+			</strong>
+		</label>
+		<input id="inputNome" type="text" [(ngModel)]="this.nome" class="form-control"/>
+	</div>
+	<div style="margin-top: 20px; width: 100%; text-align: center; display: flex; flex-direction: column;">
+		<label for="textNote" class="col-form-label field-required">
+			<strong>
+				Descrizione dell'istanza:
+			</strong>
+		</label>
+		<textarea id="textNote" [(ngModel)]="this.note" class="form-control"></textarea>
+		<!-- <input type="text" [(ngModel)]="this.note" class="form-control"/> -->
+	</div>
+	<div *ngIf="this.currProfilo.tipo == 'PROF'" style="margin-top: 20px; width: 100%;">
+		<label for="selectIsTitolare" class="col-form-label field-required">
+			Sei il titolare dell'istanza?
+		</label>
+		<div>
+			<select id="selectIsTitolare" [(ngModel)]="this.isTitolare" class="form-control">
+				<option value="si">Si</option>
+				<option value="no">No</option>
+			</select>
+		</div>
+		<div [style.display]="(this.isTitolare == 'si' ? 'none' : 'block')" style="margin-top: 20px; width: 100%;">
+			<!--				(formInit)="this.onFormTitolareInit($event)"-->
+
+			<app-formio-renderer
+				(componentInit)="this.onComponentInit($event)"
+				[form]="this.formTitolare"
+				[formData]="{}"
+				(dataChanged)="this.onDataTitolareChanged($event)">
+			</app-formio-renderer>
+		</div>
+	</div>
+	<div style="margin-top: 20px; display: flex;">
+		<button type="button" class="btn btn-danger" style="margin-left: auto;" (click)="this.annulla()">Annulla</button>
+		<button type="button" class="btn btn-primary" style="margin-left: 10px;" (click)="this.crea()">Crea</button>
+	</div>
+</div>
+
+<ng-container *ngIf="this.openWizardDialog">
+	<div
+		style=" position:fixed; left:0; top:0; width:100vw; height:100vh; background-color:#000; opacity:0.5;z-index: 11;">
+	</div>
+	<div
+		style=" position:fixed; left:50%; top:50%; transform:translate(-50%, -50%); border:solid 1px #000; background-color:#fff; z-index: 12;min-width: 860px; max-height: 80%;display: flex; flex-direction: column; padding: 15px;">
+		<h4>Selezione assistita del tpo di istanza</h4>
+
+		<div class="container-wizard row g-3 mt-5 pb-3" style="overflow: scroll; overflow-x: hidden; overflow-y: auto">
+			<ng-container *ngFor="let domanda of arrayCurrentDomandeWizard; let idxDomanda=index">
+
+				<div class="col col-10 align-self-center"
+						 [class.col-10]="domanda.scelte"
+						 [class.col-12]="domanda.codTipoIstanza"
+						 [class.text-center]="domanda.codTipoIstanza"
+						 [class.mt-5]="domanda.codTipoIstanza"
+						 [style.font-weight]="domanda.codTipoIstanza ? 'bold' : ''"
+				>{{domanda.testoDomanda}}</div>
+
+				<div *ngIf="domanda.scelte" class="col col-2 text-center align-self-center">
+					<div class="btn-group" role="group">
+						<input type="radio" class="btn-check" name="btnradio{{idxDomanda}}" id="btnradioSi{{idxDomanda}}"
+									 autocomplete="off">
+						<label class="btn btn-outline-success" for="btnradioSi{{idxDomanda}}"
+									 (click)="wizardDidSelect(domanda.scelte[0], idxDomanda)">Sì</label>
+
+						<input type="radio" class="btn-check" name="btnradio{{idxDomanda}}" id="btnradioNo{{idxDomanda}}"
+									 autocomplete="off">
+						<label class="btn btn-outline-danger" for="btnradioNo{{idxDomanda}}"
+									 (click)="wizardDidSelect(domanda.scelte[1], idxDomanda)">No</label>
+					</div>
+				</div>
+
+				<div *ngIf="domanda.codTipoIstanza"
+						 class="col col-12 mt-0 text-center align-self-center">
+					<small *ngIf="canSelWizard">
+						Clicca conferma per selezionare il tipo di istanza oppure puoi cambiare le risposte
+					</small>
+					<small *ngIf="!canSelWizard" style="color: red;">
+						Il tuo profilo utente non è abilitato a creare questo tipo di istanza, è necessaria l'abilitazione al profilo di PROFESSIONISTA FORESTALE adeguato
+					</small>
+				</div>
+			</ng-container>
+
+		</div>
+
+		<div style="display: flex; flex-direction: row; padding-top: 15px;">
+			<div class="ms-auto"></div>
+			<button *ngIf="canSelWizard"
+							type="button"
+							class="btn btn-success"
+							(click)="this.confermaWizard()">
+				Conferma
+			</button>
+			<button type="button"
+							class="btn btn-warning"
+							[class.ms-auto]="selectedWizardCodTipoIstanza == undefined"
+							style="margin-left: 10px;"
+							(click)="this.annullaWizard()">
+				Annulla
+			</button>
+		</div>
+	</div>
+</ng-container>

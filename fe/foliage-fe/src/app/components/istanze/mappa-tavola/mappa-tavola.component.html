@@ -1,0 +1,61 @@
+@if(loadOk) {
+	<div class="accordion-header">
+		<button *ngIf="!isOpen" type="button" (click)="toggle()" class="btn btn-primary">Mostra Strumento Download</button>
+		<button *ngIf="isOpen" type="button" (click)="toggle()" class="btn btn-outline-primary">Nascondi Strumento Download</button>
+	</div>
+	<div class="accordion-content" [ngClass]="{'open': isOpen}">
+		<div style="display: flex; flex-direction: row; margin-bottom: 20px;">
+			<div style="display: flex; flex-direction: column; margin-right: 15px;">
+				<label for="selDimensione" class="col-form-label">Dimensione:</label>
+				<select id="selDimensione"
+						class="form-control" style="grid-column: 1;" [(ngModel)]="this.dimensione"
+						(ngModelChange)="this.onDimensioneChange($event)">
+					<option *ngFor="let dim of this.arrDimensioni; index as idx" [ngValue]="idx">{{dim.nome}}</option>
+				</select>
+			</div>
+			<div style="display: flex; flex-direction: column; margin-right: 15px;">
+				<label for="selRisoluzione" class="col-form-label">Risoluzione:</label>
+				<select id="selRisoluzione"
+						class="form-control" style="grid-column: 1;" [(ngModel)]="this.risoluzione"
+						(ngModelChange)="this.onRisoluzioneChange($event)">
+					<option *ngFor="let ris of this.arrRisoluzioni; index as idx" [ngValue]="idx">{{ris}}dpi</option>
+				</select>
+			</div>
+			<div style="display: flex; flex-direction: column; margin-right: 15px;">
+				<label for="selScala" class="col-form-label">Scala:</label>
+				<select id="selScala"
+						class="form-control" style="grid-column: 1;" [(ngModel)]="this.scala"
+						(ngModelChange)="this.onScalaChange($event)">
+					<option *ngFor="let scal of this.arrScale; index as idx" [ngValue]="idx">1:{{scal}}</option>
+				</select>
+			</div>
+			<div style="display: flex; flex-direction: column; margin-right: 15px;">
+				<label for="selOrient" class="col-form-label">Orientamento:</label>
+				<select id="selOrient" class="form-control" style="grid-column: 1;" [(ngModel)]="this.orientamento"
+						(ngModelChange)="this.onOrientamentoChange($event)">
+					<option *ngFor="let ori of this.arrOrientamento; index as idx" [ngValue]="idx">{{(ori=='H' ? 'Orizzontale' : 'Verticale')}}</option>
+				</select>
+			</div>
+			<button class="btn btn-primary" style="margin-top: auto;"
+					(click)="this.downloadTavola()" [disabled]="this.disableDownload"
+				>
+				Scarica Tavola
+			</button>
+		</div>
+		<!-- <div style="border: 1px black solid; width: calc(50vh * 1.48); height: 50vh"> -->
+		<div style="border: 1px black solid;"
+				[style.width]="this.width"
+				[style.height]="this.heigth"
+			>
+			<div style="width: 100%; height: 100%; max-width: 100%; max-height: 100%; display: block; position: relative; overflow: hidden;">
+				<div olTavMap style="height: 100%; width: 100%; display: block; position: absolute; overflow: hidden;" tabindex="-1">
+				</div>
+			</div>
+		</div>
+	</div>
+}
+@else {
+	<div>
+		Strumento di download della tavola non dispobile
+	</div>
+}

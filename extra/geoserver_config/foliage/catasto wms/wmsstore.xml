@@ -1,0 +1,18 @@
+<wmsStore>
+  <id>WMSStoreInfoImpl-7cd53224:17ff4993504:-7ff6</id>
+  <name>catasto wms</name>
+  <description>catasto wms</description>
+  <type>WMS</type>
+  <enabled>true</enabled>
+  <workspace>
+    <id>WorkspaceInfoImpl-7cd53224:17ff4993504:-7fff</id>
+  </workspace>
+  <metadata>
+    <entry key="useConnectionPooling">true</entry>
+  </metadata>
+  <__default>false</__default>
+  <capabilitiesURL>https://wms.cartografia.agenziaentrate.gov.it/inspire/wms/ows01.php?SERVICE=WMS&amp;VERSION=1.3.0&amp;REQUEST=GetCapabilities</capabilitiesURL>
+  <maxConnections>6</maxConnections>
+  <readTimeout>60</readTimeout>
+  <connectTimeout>30</connectTimeout>
+</wmsStore>

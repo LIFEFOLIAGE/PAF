@@ -1,0 +1,15 @@
+insert into foliage2.flgforme_trattamento_tab (cod_forma_trattamento,desc_forma_trattamento,id_gove,is_fine_turno) values
+	 ('RASO','Taglio a raso',1,true),
+	 ('AVVIAMENTO','Taglio di avviamento',1,false),
+	 ('PREPARAZIONE','Taglio di preparazione',1,false),
+	 ('SEMENTAZIONE','Taglio di sementazione',1,false),
+	 ('SGOMBERO','Taglio di sgombero',1,true),
+	 ('A_BUCHE','Taglio a buche',1,true),
+	 ('SALTUARIO','Taglio saltuario',1,false),
+	 ('SFOLLO_FUSTAIA','Sfollo e diradamento',1,false),
+	 ('RASO_SEMPLICE','Taglio a raso semplice (senza rilascio di matricine)',2,true),
+	 ('RASO_CON_MATRICINE','Taglio a raso con rilascio di matricine (matricinato, intensamente matricinato, composto)',2,true),
+	 ('STERZO','Taglio a sterzo',2,false),
+	 ('SFOLLO_CEDUO','Sfollo e diradamento',2,false),
+	 ('FITOSANITARIO_FUSTAIA','Taglio fitosanitario',1,false),
+	 ('FITOSANITARIO_CEDUO','Taglio fitosanitario',2,false);

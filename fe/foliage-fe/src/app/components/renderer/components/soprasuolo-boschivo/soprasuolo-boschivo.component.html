@@ -1,0 +1,231 @@
+<div *ngIf="this.ready"
+	novalidate="" ref="webform" class="formio-form">
+	<div ref="component"
+		class="row formio-component formio-component-columns formio-component-columns  formio-component-label-hidden"
+		style="margin-bottom: 0px!important;">
+		<div
+			[class.d-none]="componentOptions && componentOptions['embedSoprasuoloInMapPopup']"
+			ref="column-ev4em8q"
+			class="col">
+			<div ref="component"
+				class="form-group has-feedback formio-component formio-component-number formio-component-superficieDellintervento"
+				style="margin-bottom: 0px!important;">
+				<label id="l-es278a2-superficieDellintervento" for="es278a2-superficieDellintervento"
+					class="col-form-label field-required" ref="label">
+					Superficie dell'intervento:
+				</label>
+
+				<input-ettari
+						idInput="l-es278a2-superficieDellintervento"
+						cssInput="form-control"
+						[valoreMetriQ]="this.datiEffettivi.superficie"
+						(valoreMetriQChange)="this.onChangeProperty('superficie', $event)"
+						[disabled]="isReadOnly">
+				</input-ettari>
+				<div class="formio-errors invalid-feedback" ref="messageContainer" style="display: inline;"
+					 [style.visibility.hydden]="this.errori['superficie']==undefined">
+					<div class="form-text error">{{this.errori["superficie"]}}</div>
+				</div>
+			</div>
+		</div>
+		<div ref="column-ev4em8q" class="col">
+			<div ref="component"
+				class="form-group has-feedback formio-component formio-component-select formio-component-formaDiGoverno formio-modified"
+				style="margin-bottom: 30px!important;">
+				<label id="l-eiwt16g-formaDiGoverno" for="selFormaDiGoverno" class="col-form-label field-required" ref="label">
+					Forma di governo:
+				</label>
+				@if(this.formaGovFissa == undefined) {
+					<select aria-required="false" lang="it" class="form-control" type="text"
+						id="selFormaDiGoverno" ref="selectContainer" aria-invalid="false"
+						[ngModel]="this.datiEffettivi.formaDiGoverno"
+						(ngModelChange)="this.onChangeProperty('formaDiGoverno', $event)" [disabled]="isReadOnly"
+						>
+						<option [ngValue]="undefined" disabled></option>
+						<option *ngFor="let forma of this.formeGoverno; trackBy: trackFormaGov" [ngValue]="forma.desc_gove">
+							{{forma.desc_gove}}
+						</option>
+					</select>
+				}
+				@else {
+					<select aria-required="false" lang="it" class="form-control" type="text"
+						id="selFormaDiGoverno" ref="selectContainer" aria-invalid="false"
+						[ngModel]="this.datiEffettivi.formaDiGoverno"
+						(ngModelChange)="this.onChangeProperty('formaDiGoverno', $event)" disabled
+						>
+						<ng-container *ngFor="let forma of this.formeGoverno; trackBy: trackFormaGov">
+							<option *ngIf="forma.desc_gove==this.formaGovFissa" [ngValue]="forma.desc_gove" selected>
+								{{forma.desc_gove}}
+							</option>
+						</ng-container>
+					</select>
+				}
+				<div class="formio-errors invalid-feedback" ref="messageContainer" style="display: inline;"
+					 [style.visibility.hydden]="this.errori['formaDiGoverno']==undefined">
+					<div class="form-text error">{{this.errori["formaDiGoverno"]}}</div>
+				</div>
+			</div>
+		</div>
+		<div class="formio-errors invalid-feedback" ref="messageContainer"></div>
+	</div>
+	<div ref="component" class="formio-component formio-component-panel" style="margin-bottom: 30px!important;">
+		<div class="mb-2 card border">
+			<div ref="header" aria-controls="efkpkqf-soprasuoloPanel" aria-expanded="true" role="button"
+				class="card-header bg-default">
+				<span class="mb-0 card-title">
+					Soprassuolo
+				</span>
+			</div>
+			<div id="efkpkqf-soprasuoloPanel" ref="nested-soprasuoloPanel" class="card-body">
+				<div ref="component"
+					class="row formio-component formio-component-columns formio-component-columns1  formio-component-label-hidden"
+					id="e4bicmk">
+					<div ref="column-e4bicmk" class="col-md-6 col-md-offset-0 col-md-push-0 col-md-pull-0">
+						<div ref="component"
+							class="form-group has-feedback formio-component formio-component-select formio-component-strutturaDelSoprasuolo formio-modified"
+							id="ele21e">
+							<label id="l-ele21e-strutturaDelSoprasuolo" for="ele21e-strutturaDelSoprasuolo"
+								class="col-form-label field-required" ref="label">
+								Struttura:
+							</label>
+							<select aria-required="false" id="ele21e-strutturaDelSoprasuolo" lang="it"
+								class="form-control" type="text" name="data[strutturaDelSoprasuolo]"
+								ref="selectContainer" aria-invalid="false"
+								[ngModel]="this.datiEffettivi.strutturaDelSoprasuolo"
+								(ngModelChange)="this.onChangeProperty('strutturaDelSoprasuolo', $event)"
+								[disabled]="isReadOnly">
+								<option [ngValue]="undefined" selected disabled></option>
+								<option *ngFor="let forma of this.struttureSoprasuolo"
+									[ngValue]="forma.id_sspr"
+									>
+									{{forma.desc_sspr}}
+								</option>
+
+							</select>
+							<div class="formio-errors invalid-feedback" ref="messageContainer" style="display: inline;"
+								 [style.visibility.hydden]="this.errori['strutturaDelSoprasuolo']==undefined">
+								<div class="form-text error">{{this.errori["strutturaDelSoprasuolo"]}}</div>
+							</div>
+						</div>
+					</div>
+					<div *ngIf="this.showEta" ref="column-e4bicmk"
+						class="col-md-6 col-md-offset-0 col-md-push-0 col-md-pull-0">
+						<div ref="component"
+							class="form-group has-feedback formio-component formio-component-number formio-component-etaMediaDelSoprassuoloAnni"
+							id="ep6ns3">
+							<label id="l-ep6ns3-etaMediaDelSoprassuoloAnni" for="ep6ns3-etaMediaDelSoprassuoloAnni"
+								class="col-form-label field-required" ref="label">
+								{{this.labelEta}}
+							</label>
+							<div ref="element">
+								<input [ngModel]="this.datiEffettivi.etaMediaDelSoprassuoloAnni"
+									(ngModelChange)="this.onChangeProperty('etaMediaDelSoprassuoloAnni', $event)"
+									aria-required="false" aria-labelledby="l-ep6ns3-etaMediaDelSoprassuoloAnni"
+									id="ep6ns3-etaMediaDelSoprassuoloAnni" value="" inputmode="decimal" lang="it"
+									class="form-control" type="text" name="data[etaMediaDelSoprassuoloAnni]" ref="input"
+									pattern="[0-9,]*" aria-invalid="false"
+									[disabled]="isReadOnly">
+							</div>
+							<div class="formio-errors invalid-feedback" ref="messageContainer" style="display: inline;"
+								 [style.visibility.hydden]="this.errori['eta']==undefined">
+								<div class="form-text error">{{this.errori["eta"]}}</div>
+							</div>
+						</div>
+						<div ref="component"
+							class="form-group has-feedback formio-component formio-component-number formio-component-etaMediaDeiPolloniAnni  formio-hidden"
+							id="elk862g">
+						</div>
+					</div>
+					<div class="formio-errors invalid-feedback" ref="messageContainer"></div>
+				</div>
+				<div ref="component"
+					class="form-group has-feedback formio-component formio-component-select formio-component-tipoDiSoprasuolo"
+					id="emsz98">
+					<label class="col-form-label field-required" ref="label" for="emsz98-tipoDiSoprasuolo">
+						Tipo di soprassuolo:
+					</label>
+					<select lang="it" class="form-control" type="text" id="emsz98-tipoDiSoprasuolo"
+							[ngModel]="this.datiEffettivi.tipoDiSoprasuolo"
+							(ngModelChange)="this.onChangeProperty('tipoDiSoprasuolo', $event)"
+							[disabled]="isReadOnly"
+						>
+						<!-- <option [ngValue]="undefined" disabled selected></option> -->
+						<option [ngValue]="null">
+							<span>Misto</span>
+						</option>
+						<option [ngValue]="'Conifera'">
+							<span>Conifera</span>
+						</option>
+						<option [ngValue]="'Latifoglia'">
+							<span>Latifoglia</span>
+						</option>
+					</select>
+					<div class="formio-errors invalid-feedback" ref="messageContainer" style="display: inline;"
+						 [style.visibility.hydden]="this.errori['tipoDiSoprasuolo']==undefined">
+						<div class="form-text error">{{this.errori["tipoDiSoprasuolo"]}}</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="formio-errors invalid-feedback" ref="messageContainer"></div>
+	</div>
+	<ng-container  *ngFor="let governo of ['Ceduo', 'Fustaia']">
+		<div *ngIf="this.showTrattamento[governo]"
+			ref="component" class="formio-component formio-component-panel"
+			style="margin-bottom: 30px!important;">
+			<div class="mb-2 card border">
+				<div ref="header" [attr.aria-controls]="'eell3cc-trattamento' + governo + ' Panel'" aria-expanded="true" role="button"
+					class="card-header bg-default">
+					<span class="mb-0 card-title field-required">
+						Selezione Forma di Trattamento {{governo}}
+					</span>
+				</div>
+				<div class="card-body">
+					<div ref="component"
+						class="row formio-component formio-component-columns formio-component-label-hidden">
+						<table style="margin-top: 20px; margin-bottom: 20px; border: none;">
+							<thead>
+								<tr>
+									<th class="px-2">Applicata in precedenza</th>
+									<th class="px-2">Proposta</th>
+									<th class="px-2">Descrizione</th>
+									<th class="px-2">Intervento di fine turno</th>
+								</tr>
+							</thead>
+							<tbody>
+								<ng-container *ngFor="let trattamento of this.liste[governo]">
+									<tr>
+										<td (click)="this.onChangeProperty('trattamentoPrecedente'+governo, trattamento.id_forma_trattamento)"
+											class="px-2 text-center m" style="vertical-align: middle;">
+											<input type="radio" style="width: 20px; height: 20px; vertical-align: middle;"
+												[title]="trattamento.desc_forma_trattamento + '(applicata in precedenza)'"
+												[disabled]="isReadOnly"
+												[checked]="this.datiEffettivi['trattamentoPrecedente'+governo]==trattamento.id_forma_trattamento">
+										</td>
+										<td (click)="this.onChangeTrattamentoAttuale('trattamento' + governo, trattamento)"
+											class="px-2 text-center m" style="vertical-align: middle;">
+											<input type="radio" style="width: 20px; height: 20px; vertical-align: middle;"
+												[title]="trattamento.desc_forma_trattamento + '(proposta)'"
+												[disabled]="isReadOnly || !trattamento.is_abilitato"
+												[checked]="this.datiEffettivi['trattamento' + governo]==trattamento.id_forma_trattamento">
+										</td>
+										<td class="px-2" style="padding-top: 10px; vertical-align: middle;">
+											{{trattamento.desc_forma_trattamento}}</td>
+										<td class=" px-2 text-center" style="vertical-align: middle;">
+											{{(trattamento.is_fine_turno ? "Si":"No")}}
+										</td>
+									</tr>
+								</ng-container>
+							</tbody>
+						</table>
+						<div class="formio-errors invalid-feedback" ref="messageContainer" style="display: inline;"
+							 [style.visibility.hydden]="this.errori['formaTrattamento' + governo]==undefined">
+							<div class="form-text error">{{this.errori['formaTrattamento' + governo]}}</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="formio-errors invalid-feedback" ref="messageContainer"></div>
+		</div>
+	</ng-container>
+</div>

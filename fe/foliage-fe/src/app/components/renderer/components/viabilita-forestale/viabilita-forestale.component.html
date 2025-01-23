@@ -1,0 +1,29 @@
+<div>
+    <table style="margin-top: 20px; margin-bottom: 20px; border: none;">
+        <thead>
+        <tr>
+            <th class="px-2" style="width: 100px;"></th>
+            <th class="px-2">Codice</th>
+            <th class="px-2">Nome</th>
+            <th class="px-2">Descrizione</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <ng-container *ngFor="let viabilita of tipiDiViabilita">
+            <tr>
+                <td (click)="this.setTipoViabilita(viabilita)"
+                    class="px-2 text-center m" style="vertical-align: middle;">
+                    <input type="radio" style="width: 20px; height: 20px; vertical-align: middle;"
+                           [disabled]="isReadOnly"
+                           [checked]="this.codViabilitaSelezionata==viabilita.codTipoViabilita"
+                    >
+                </td>
+                <td class="px-2" style="padding-top: 10px; vertical-align: middle;">{{viabilita.codTipoViabilita}}</td>
+                <td class="px-2" style="padding-top: 10px; vertical-align: middle;">{{viabilita.nomeTipoViabilita}}</td>
+                <td class="px-2" style="padding-top: 10px; vertical-align: middle;">{{viabilita.descTipoViabilita}}</td>
+            </tr>
+        </ng-container>
+        </tbody>
+    </table>
+</div>

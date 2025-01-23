@@ -1,0 +1,34 @@
+
+<ng-template #defaultCellTemplate let-resources="resources" let-col="col" let-row="row" let-idxCol="idxCol">
+	{{
+		this.formatValue(row.data, idxCol)
+	}}
+</ng-template>
+@for(col of this.columns; let idxCol=$index; track idxCol) {
+	<td
+			[style.text-align]="[DataFormat.Decimal, DataFormat.Integer, DataFormat.Ettari].includes(col.dataFormat ?? DataFormat.Default) ? 'right' : 'unset'"
+		>
+		<ng-container [ngTemplateOutlet]="col.cellTemplate || defaultCellTemplate"
+			[ngTemplateOutletContext]="{col:col, row: this.data, idxRow: this.index, idxCol: idxCol, resources: this.resources}">
+		</ng-container>
+	</td>
+	<!-- [style.padding-right]="(col.sortEnabled) ? '20px' : 'unset'" -->
+}
+@if(rowErrors && rowErrors.length > 0) {
+	<div class="table-error-overlay gray-b-grad">
+		<span class="table-error-content">
+			<ng-container *ngFor="let error of rowErrors">
+				<i bTooltip
+						[class]="'px-1 bi ' + error.icon"
+						title="{{error.message}}">
+				</i>
+			</ng-container>
+			<!-- @for(error of rowErrors; track $index) {
+				<i bTooltip
+						[class]="'px-1 bi ' + error.icon"
+						title="{{error.message}}">
+				</i>
+			} -->
+		</span>
+	</div>
+}

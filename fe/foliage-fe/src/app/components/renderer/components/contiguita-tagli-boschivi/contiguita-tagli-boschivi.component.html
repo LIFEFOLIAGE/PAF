@@ -1,0 +1,106 @@
+<h3>Contiguità tagli boschivi</h3>
+
+<div class="alert alert-light my-4" role="alert">
+    <p class="mb-0">La legge prevede la verifica della contiguità dell’intervento di taglio boschivo proposto con tagli
+        boschivi effettuati in precedenza. I parametri da rispettare sono riportati nella seguente tabella</p>
+</div>
+
+<table *ngIf="datiTabella" class="m-auto"
+       style="margin-top: 20px; margin-bottom: 20px; border: 1px solid black; border-collapse: collapse">
+    <thead>
+    <tr>
+        <th class="px-2"
+            style="border: 1px solid black; border-collapse: collapse;"
+        >Forma di governo
+        </th>
+        <th class="px-2"
+            style="border: 1px solid black; border-collapse: collapse;"
+        >Tipo di trattamento
+        </th>
+        <th class="px-2"
+            style="border: 1px solid black; border-collapse: collapse;"
+        >Specie prevalente
+        </th>
+        <th class="px-2"
+            style="border: 1px solid black; border-collapse: collapse;"
+        >Periodo di riferimento in cui valutare la contiguità (anni)
+        </th>
+        <th class="px-2"
+            style="border: 1px solid black; border-collapse: collapse;"
+        >Soglia di superficie
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    <ng-container *ngFor="let dato of datiTabella">
+        <tr>
+            <td class="px-2"
+                style="border: 1px solid black; border-collapse: collapse;"
+            >{{dato.formaGoverno}}</td>
+            <td class="px-2"
+                style="border: 1px solid black; border-collapse: collapse;"
+            >{{dato.trattamento}}</td>
+            <td class="px-2"
+                style="border: 1px solid black; border-collapse: collapse;"
+            >{{dato.speciePrevalente}}</td>
+            <td class="px-2 text-center"
+                style="border: 1px solid black; border-collapse: collapse;"
+            >{{dato.periodoRiferimento}}</td>
+            <td class="px-2 text-center"
+                style="border: 1px solid black; border-collapse: collapse;"
+            >{{dato.sogliaSuperficie}}</td>
+        </tr>
+    </ng-container>
+    </tbody>
+</table>
+
+<div class="alert alert-light my-4" role="alert">
+    <p class="mb-0">Il supporto webgis consente la verifica della contiguità con tagli boschivi esclusivamente per il
+        bosco ceduo. Nel caso di boschi governati a fustaia il professionista può verificare la contiguità con mezzi
+        propri.
+    </p>
+</div>
+
+<div *ngIf="rilieviArray.length == 0; else sovrapposizioniTemplate">
+    <div class="alert alert-success my-4" role="alert">
+        <h4 class="alert-heading m-0">Il sistema non ha rilevato sovrapposizioni</h4>
+    </div>
+</div>
+
+<ng-template #sovrapposizioniTemplate>
+    <h3>Sovrapposizioni rilevate dal sistema</h3>
+
+    <app-table [data]="this.rilieviArray"
+               [hideHeader]="false"
+               [filter]="false"
+               [pagination]="{pageSizes: [], defaultPageSize: 10}"
+               [rowHandler]="{selection: false, highlight: false}"
+    >
+        <columns>
+            <column headerText="Codice istanza" dataField="codIstanza" [sortEnabled]="false"></column>
+            <column headerText="Superficie (h)" dataField="superficie" [sortEnabled]="false"></column>
+            <column headerText="Superficie in sovrapposizione" dataField="sovrapposizione"
+                    [sortEnabled]="false"></column>
+        </columns>
+    </app-table>
+
+    <div class="row justify-content-end my-5">
+        <div class="col col-12">
+            <h5 class="mt-4">Si desidera rimuovere le sovrapposizioni rilevate in modo automatico?</h5>
+        </div>
+        <div class="col col-auto">
+            <button type="button"
+                    class="btn btn-success"
+                    (click)="yesClick()">
+                Sì
+            </button>
+        </div>
+        <div class="col col-auto">
+            <button type="button"
+                    class="btn btn-light"
+                    (click)="noClick()">
+                No
+            </button>
+        </div>
+    </div>
+</ng-template>

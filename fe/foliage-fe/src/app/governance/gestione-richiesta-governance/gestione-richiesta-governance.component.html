@@ -1,0 +1,116 @@
+<div style="padding-left: 15px; padding-right: 15px;">
+	<div class="mt-3">
+		<h1 style="text-align: center;">
+			{{this.titolo}}
+		</h1>
+	</div>
+	<div class="mt-3 container" style="display: flex; flex-direction: row; justify-content: space-between;">
+		<button type="button" class="btn btn-primary" (click)="this.vaiAlleRichieste()">Vai alle Richieste</button>
+		@if (this.idRichiesta) {
+			@if (this.datiEsecuzione) {
+				<button type="button" class="btn btn-danger" (click)="this.elimina()">Elimina</button>
+			}
+			@else {
+				<button type="button" class="btn btn-warning" (click)="this.modifica()">Modifica</button>
+			}
+		}
+		@else {
+			<div></div>
+		}
+	</div>
+	<div class="mt-3">
+		<app-dati-schedulazione-governance [(datiSchedulazione)]="this.datiSchedulazione" [isReadOnly]="true"></app-dati-schedulazione-governance>
+	</div>
+	@if(this.datiEsecuzione) {
+		<div class="mt-3 card border">
+			<div class="card-header bg-default">
+				<span class="mb-0 card-title">
+					Dati Esecuzione
+				</span>
+			</div>
+			<div class="card-body">
+				<div class="row">
+					<div class="col-md-6 col-md-offset-0 col-md-push-0 col-md-pull-0">
+						<div class="form-group has-feedback">
+							<label class="col-form-label" for="inpDataAvvio">
+								Data Di Avvio
+							</label>
+							<div ref="element">
+								<input type="text" id="inpDataAvvio"
+									class="form-control"
+									[ngModel]="this.datiEsecuzione.strDataAvvio"
+									disabled
+								/>
+							</div>
+						</div>
+					</div>
+
+					
+					<div class="col-md-6 col-md-offset-0 col-md-push-0 col-md-pull-0">
+						<div class="form-group has-feedback">
+							<label class="col-form-label" for="inpDurata">
+								Durata
+							</label>
+							<div ref="element">
+								<input type="text" id="inpDurata"
+									class="form-control"
+									[ngModel]="this.datiEsecuzione.strDurata"
+									disabled
+								/>
+							</div>
+						</div>
+					</div>
+				</div>
+		
+			</div>
+		</div>
+		
+		@if (this.reportGenerati && this.reportGenerati.length > 0) {
+			<div class="mt-3">
+				<h2 style="text-align: center;">Report Generati</h2>
+				<div class="container">
+					@for (report of this.reportGenerati; track $index) {
+						<div class="my-5 mx-2">
+							<h6>
+								<p>
+									<b>
+										{{report.codice.replace('_', ' ')}}
+									</b>
+									<br>
+									<i>
+										{{report.descrizione}}
+									</i>
+								</p>
+							</h6>
+							<p>
+								{{this.dataRife.year()}}
+							</p>
+							<div style="display: flex; flex-direction: row;">
+								<div style="text-align: left;">
+									{{report.nomeFileConData}}, {{report.dataDesc}}
+								</div>
+								<div style="flex-grow: 1; border-bottom: 1px dotted black;">
+								</div>
+								<div style="text-align: right;">
+									[
+										@for(formato of report.formatoFiles; let index = $index; track index) {
+											@if(index != 0) {
+												|
+											}
+											<a (click)="downloadReport(report, this.dataRife, formato)">{{formato}}</a>
+										}
+									]
+								</div>
+							</div>
+						</div>
+					}
+				</div>
+			</div>
+		}
+	}
+	@else {
+		<div class="mt-3" style="width: 100%; display: flex; justify-content: center;">
+			<h2>Richiesta non ancora elaborata</h2>
+		</div>
+	}
+</div>

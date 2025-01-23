@@ -1,0 +1,14 @@
+<div class="global-container" id="wrapper">
+	<div style="margin-left:20px;margin-right:20px;margin-top:2rem">
+		<app-privacy_v1></app-privacy_v1>
+		@if (this.showButtons) {
+			<div style="margin-top:20px">
+				<p>Cliccando sul tasto CONTINUA si dichiara di aver letto il documento presente in questa pagina e di aver preso visione delle condizioni riportate</p>
+				<div style="display: flex;justify-content: center;">
+					<button id="tastoDanger" (click)="logout()" class="btn btn-primary" style="margin-right:15px">Esci</button>
+					<button (click)="setFlagAccettazione()" class="btn btn-primary">Continua</button>
+				</div>
+			</div>
+		}
+	</div>
+</div>

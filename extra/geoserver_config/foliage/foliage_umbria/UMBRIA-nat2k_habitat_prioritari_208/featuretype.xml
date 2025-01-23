@@ -1,0 +1,48 @@
+<featureType>
+  <id>FeatureTypeInfoImpl--6b1c5aa0:18d5e1c587f:-507b</id>
+  <name>UMBRIA-nat2k_habitat_prioritari_208</name>
+  <nativeName>nat2k_habitat_prioritari_208</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl-7cd53224:17ff4993504:-7ffe</id>
+  </namespace>
+  <title>nat2k_habitat_prioritari_208</title>
+  <keywords>
+    <string>features</string>
+    <string>nat2k_habitat_prioritari_208</string>
+  </keywords>
+  <nativeCRS>GEOGCS[&quot;RDN2008&quot;, 
+  DATUM[&quot;Rete Dinamica Nazionale 2008&quot;, 
+    SPHEROID[&quot;GRS 1980&quot;, 6378137.0, 298.257222101, AUTHORITY[&quot;EPSG&quot;,&quot;7019&quot;]], 
+    TOWGS84[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 
+    AUTHORITY[&quot;EPSG&quot;,&quot;1132&quot;]], 
+  PRIMEM[&quot;Greenwich&quot;, 0.0, AUTHORITY[&quot;EPSG&quot;,&quot;8901&quot;]], 
+  UNIT[&quot;degree&quot;, 0.017453292519943295], 
+  AXIS[&quot;Geodetic longitude&quot;, EAST], 
+  AXIS[&quot;Geodetic latitude&quot;, NORTH], 
+  AUTHORITY[&quot;EPSG&quot;,&quot;6706&quot;]]</nativeCRS>
+  <srs>EPSG:6706</srs>
+  <nativeBoundingBox>
+    <minx>11.89892864227295</minx>
+    <maxx>13.271403312683105</maxx>
+    <miny>42.407283782958984</miny>
+    <maxy>43.597694396972656</maxy>
+    <crs>EPSG:6706</crs>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>11.89892864227295</minx>
+    <maxx>13.271403312683105</maxx>
+    <miny>42.407283782958984</miny>
+    <maxy>43.597694396972656</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <store class="dataStore">
+    <id>DataStoreInfoImpl-4dd5f913:18c6c117e6a:-7d97</id>
+  </store>
+  <maxFeatures>0</maxFeatures>
+  <numDecimals>0</numDecimals>
+  <overridingServiceSRS>false</overridingServiceSRS>
+  <skipNumberMatched>false</skipNumberMatched>
+  <circularArcPresent>false</circularArcPresent>
+</featureType>

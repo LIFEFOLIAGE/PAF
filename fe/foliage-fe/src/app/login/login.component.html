@@ -1,0 +1,38 @@
+<div class="container-welcome">
+	<div class="content-welcome">
+		<div class="row justify-content-center">
+			<div class="col col-auto">
+				<img loading=lazy class="logo-welcome" src="assets/images/logo-foliage.png" alt=""/>
+			</div>
+			<div class="col col-auto align-self-center">
+				<h1 class="text-welcome" style="color: #008f66">Benvenuto</h1>
+			</div>
+		</div>
+		
+		<div class="row justify-content-center">
+			<div style="width: 100%; display: flex; flex-direction: row; justify-content: center; margin-top: 50px;">
+				@if (this.authenticated) {
+					<!-- <button class="btn btn-danger" style="height: 50px; width: 150px;" type="button" (click)="logout()">
+						<div style="display: flex; flex-direction: row; justify-content: space-evenly">
+							<svg class="icon" style="fill: white; height: 25px; width: 25px;">
+								<use xlink:href="assets/images/svg/wd-sprite.svg#wd-logout"></use>
+							</svg>
+							Esci
+						</div>
+					</button> -->
+				}
+				@else {
+					<button class="btn btn-success" style="height: 50px; width: 150px;"  type="button" (click)="login()">
+						<div style="display: flex; flex-direction: row; justify-content: space-evenly">
+							<svg class="icon" style="fill: white; height: 25px; width: 25px;">
+								<use xlink:href="assets/images/svg/wd-sprite.svg#wd-login-header"></use>
+							</svg>
+							Accedi
+						</div>
+					</button>
+				}
+			</div>
+		</div>
+	</div>
+
+</div>

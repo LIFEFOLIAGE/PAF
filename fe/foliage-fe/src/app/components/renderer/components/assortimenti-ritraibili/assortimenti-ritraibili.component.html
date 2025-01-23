@@ -1,0 +1,138 @@
+
+@for(numElenco of arrSpeci; track $index) {
+	@if (numElenco=='0' || isSecondaVisible()) {
+		<div class="mb-2 card border">
+			<div class="card-header bg-default">
+				<span class="mb-0 card-title">
+					{{(numElenco == '0' ? 'Prima':'Seconda')}} specie forestale
+				</span>
+			</div>
+			<div class="card-body">
+				<div class="row">
+					<div class="col-md-6 col-md-offset-0 col-md-push-0 col-md-pull-0">
+						<div class="form-group has-feedback">
+							<label [htmlFor]="'selSpecie'+numElenco"
+								class="col-form-label field-required">
+								Specie forestale:
+							</label>
+							<select [attr.id]="'selSpecie'+numElenco"
+									class="form-control"
+									[ngModel]="this.datiEffettivi['specie' + numElenco]"
+									(ngModelChange)="this.onChangeSpecie(numElenco, $event)"
+									[disabled]="isReadOnly"
+								>
+								<option *ngFor="let specie of this.getListaSpeci()"
+									[ngValue]="specie.id_specie">
+									{{specie.nome_specie}} ({{specie.nome_scentifico}})
+								</option>
+							</select>
+							<div class="formio-errors" style="display: inline;"
+									[style.visibility.hydden]="this.errori['specie' + numElenco]==undefined"
+								>
+								<label><small class="text-danger">{{this.errori['specie' + numElenco]}}</small></label>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6 col-md-offset-0 col-md-push-0 col-md-pull-0">
+						<div class="form-group has-feedback">
+							<label class="col-form-label field-required">
+								Copertura: (%)
+								<span class="sr-only">, numeric only,</span>
+							</label>
+							<div ref="element">
+								<input aria-required="false"
+									inputmode="decimal" lang="it" class="form-control" type="text"
+									pattern="[0-9,]*" aria-invalid="false"
+									[ngModel]="this.datiEffettivi['percCopertura' + numElenco]"
+									(ngModelChange)="this.onChangePercIntervento(numElenco, $event)"
+									[disabled]="isReadOnly">
+							</div>
+							<div class="formio-errors" style="display: inline;"
+									[style.visibility.hydden]="this.errori['percCopertura' + numElenco]==undefined"
+								>
+								<label><small class="text-danger">{{this.errori['percCopertura' + numElenco]}}</small></label>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="table-responsive no-top-border-table mt-5">
+					<table class="table">
+						<thead>
+							<tr>
+								<th class="cell-align-left">
+									<div>
+										<label ><strong>Destinazione di uso
+											</strong></label>
+									</div>
+								</th>
+								<th class="cell-align-left">
+									<div>
+										<label><strong>Assortimento</strong></label>
+									</div>
+								</th>
+								<th class="text-end">
+									<div>
+										<label><strong>Autoconsumo (%)</strong></label>
+									</div>
+								</th>
+								<th class="text-end">
+									<div>
+										<label><strong>Vendita sul mercato (%)</strong></label>
+									</div>
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							@for(valore of percRichieste; track idxRich; let idxRich=$index) {
+								<tr>
+									<td class="cell-align-left">
+										<div>
+											<label >{{valore.destinazione}}</label>
+										</div>
+									</td>
+									<td class="cell-align-left">
+										<div>
+											<label>{{valore.assortimento}}</label>
+										</div>
+									</td>
+									@for (dest of ['PercAutoc', 'PercVendita']; track $index) {
+										<td class="cell-align-left">
+											<div>
+												<div ref="element">
+													<input class="form-control text-end"
+														[attr.title]="valore.assortimento + ' - percentuale in '+(dest == 'PercAutoc' ? 'autoconsumo' : 'vendita') "
+														[ngModel]="this.datiEffettivi[valore.chiave + dest + numElenco]??0"
+														(ngModelChange)="this.onChangePerc(valore.chiave, dest, numElenco, $event)"
+														[disabled]="isReadOnly"
+														pattern="[0-9,]*"
+														aria-invalid="false">
+												</div>
+												@if(this.errori[valore.chiave + dest + numElenco]) {
+													<div class="formio-errors">
+														<label><small class="text-danger">{{this.errori[valore.chiave + dest + numElenco]}}</small></label>
+													</div>
+												}
+											</div>
+										</td>
+									}
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+				@if (this.errori['totali' + numElenco] != undefined) {
+					<div class="formio-errors">
+						<label><small class="text-danger">{{this.errori['totali' + numElenco]}}</small></label>
+					</div>
+				}
+			</div>
+		</div>
+	}
+}
+<!-- <div style="margin-bottom: 30px;">
+	@if(this.errori['totali'] != undefined) {
+		<div class="formio-errors">
+			<label><small class="text-danger">{{this.errori['totali']}}</small></label>
+		</div>
+	}
+</div> -->

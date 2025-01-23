@@ -1,0 +1,30 @@
+@if (file)	{
+	<div class="row" style="align-items: center; max-width: 800px;">
+		@if(!isReadOnly) {
+			<div class="col-1">
+				<button type="button" class="btn pulsante" (click)="rimuoviFile()">
+					<i class="bi bi-remove"></i>
+				</button>
+			</div>
+		}
+		<div class="col-9">
+			<a [href]="file.url" [download]="file.name">{{file.name}}</a>
+		</div>
+		<div class="col-2" style="text-align: right;">
+			{{file.size | bytes}}
+		</div>
+	</div>
+}
+@else {
+	<div style="display: flex; flex-direction: row; align-items: center; margin-top: 15px; margin-bottom: 10px; width: max-content;">
+		File non caricato
+		@if(!isReadOnly) {
+			<label [htmlFor]="'allegato'+idx" class="btn btn-secondary" style="margin-left: 30px">Allega</label>
+			<input [id]="'allegato'+idx"
+				type="file"
+				[accept]="accept"
+				(change)="allega(html.getInputElmentFiles($event.target))"
+				style="display: none;">
+		}
+	</div>
+}

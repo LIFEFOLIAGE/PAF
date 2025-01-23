@@ -1,0 +1,23 @@
+<div style="padding-left: 15px; padding-right: 15px;">
+	<!-- <app-breadcrumb [model]="this.breadcrumbModel"></app-breadcrumb>
+	<div class="mt-3">
+		<h1 style="text-align: center;">
+			{{this.titolo}}
+		</h1>
+	</div> -->
+	<div class="mt-3 container" style="display: flex; flex-direction: row; justify-content: space-between;">
+		<button type="button" class="btn btn-primary" (click)="this.vaiAlleRichieste()">Vai alle Richieste</button>
+		@if (this.idRichiesta) {
+			<button type="button" class="btn btn-danger" (click)="this.elimina()">Elimina</button>
+		}
+		@else {
+			<div></div>
+		}
+	</div>
+	<div class="mt-3">
+		<app-dati-schedulazione-governance [(datiSchedulazione)]="this.datiSchedulazione" [isReadOnly]="false"></app-dati-schedulazione-governance>
+	</div>
+	<div class="mt-3" style="display: flex; flex-direction: row; justify-content: flex-end;">
+		<button type="button" class="btn btn-success" (click)="this.salva()">Salva</button>
+	</div>
+</div>

@@ -1,0 +1,83 @@
+<div class="editor-scheda-layout">
+	<div class="editor-scheda-panel" >
+		@if(this.scheda && this.scheda.conf && this.scheda.tipo) {
+			@switch (this.scheda.tipo) {
+				@case ('formio') {
+					<div #container
+						class="editor-scheda-formio-container">
+						<app-formio-renderer
+							[context]="this.contesto"
+							[formData]="this.dati"
+							[form]="this.scheda.conf"
+							[isReadOnly]="this.isReadOnly"
+							[dictionariesData]="this.dictionariesData"
+							(dataChanged)="this.onDataChanged($event)"
+							(componentInit)="this.onComponentInit($event)">
+						</app-formio-renderer>
+					</div>	
+				}
+				@case ('tabella') {
+					<app-table-renderer2 #container 
+						[isReadOnly]="this.isReadOnly"
+						[conf]="this.scheda.conf"
+						[resources]="this.resources"
+						[context]="this.contesto"
+						[dictionariesData]="this.dictionariesData"
+						[dati]="this.dati"
+						(changeEdit)="this.setEdit($event)"
+						(dataChanged)="this.onDataChanged($event)"
+						(componentInit)="this.onComponentInit($event)">
+					</app-table-renderer2>
+				}
+				@case ('tabellaGis') {
+					<app-gis-table #container 
+						[isReadOnly]="this.isReadOnly"
+						[conf]="this.scheda.conf"
+						[nomeMappa]="this.scheda.nome"
+						[context]="this.contesto"
+						[resources]="this.resources"
+						[dictionariesData]="this.dictionariesData"
+						[dati]="this.dati"
+						[importedValue]="this.importedValue"
+						(changeEdit)="this.setEdit($event)"
+						(tableChanged)="this.onTableChanged($event)"
+						(dataChanged)="this.onDataChanged($event)"
+						(componentInit)="this.onComponentInit($event)">
+					</app-gis-table>
+				}
+				@case ('component') {
+					<div #container  style="padding: 0rem 1rem 1rem 0rem;">
+						<app-component-renderer
+							[componentConf]="this.scheda.conf"
+							[isReadOnly]="isReadOnly"
+							[context]="this.contesto"
+							[resources]="this.resources"
+							[dictionariesData]="this.dictionariesData"
+							[dati]="this.dati"
+							(changeEdit)="this.setEdit($event)"
+							(dataChanged)="this.onDataChanged($event)"
+							(componentInit)="this.onComponentInit($event)"
+							(export)="this.onExport($event)"
+							>
+						</app-component-renderer>
+					</div>
+				}
+			}
+		}
+	</div>
+	@if(this.scheda && this.scheda.tipo && !this.isReadOnly && !this.onEdit) {
+		<div
+			style="position: absolute; bottom: 5px; right: 20px; display: flex; flex-direction: column; margin-top: auto; z-index: 10;">
+			<div style="display: flex; flex-direction: row;">
+				<ng-template #unchanged>
+					<button type="button" class="btn btn-success" style="margin-left: auto;" disabled>Conferma</button>
+					<button type="button" class="btn btn-warning" style="margin-left: 10px;" disabled>Annulla</button>
+				</ng-template>
+				<ng-container *ngIf="this.changed; else unchanged">
+					<button type="button" class="btn btn-success" style="margin-left: auto;" (click)="this.confermaDati()">Conferma</button>
+					<button type="button" class="btn btn-warning" style="margin-left: 10px;" (click)="this.annullaModifiche()">Annulla</button>
+				</ng-container>
+			</div>
+		</div>
+	}
+</div>

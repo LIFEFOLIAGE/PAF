@@ -1,0 +1,15 @@
+<layer>
+  <name>UMBRIA-aree_paesaggistiche_215</name>
+  <id>LayerInfoImpl-4dd5f913:18c6c117e6a:-7d95</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--570ae188:124761b8d78:-7fe0</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-4dd5f913:18c6c117e6a:-7d96</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+</layer>

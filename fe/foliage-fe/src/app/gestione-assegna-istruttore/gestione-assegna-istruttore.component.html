@@ -1,0 +1,66 @@
+<h1 style="text-align: center;">Assegna istruttore</h1>
+<div style="margin-left: 0.375rem; margin-right: 0.375rem;">
+	<div style="margin-bottom: 20px; display: grid; grid-template-columns: 1fr 10px 1fr 10px 1fr;">
+		<div style="grid-column: 1;">
+			<label for="selProfilo" class="col-form-label">
+				Profilo richiesto
+			</label>
+			<select id="selProfilo"
+				[(ngModel)]="this.profiloSelezionato"
+				disabled
+				class="form-control">
+				<option [value]="-1">Seleziona un profilo...</option>
+				<option *ngFor="let profilo of this.elencoProfili" [value]="profilo.idProfilo">{{profilo.descProfilo}}</option>
+			</select>
+		</div>
+		<div style="grid-column: 3;">
+			<label for="inpUser" class="col-form-label">
+				Username
+			</label>
+			<input type="search" id="inpUser"
+				class="form-control" placeholder="Username" [(ngModel)]="this.username"/>
+		</div>
+		<div style="grid-column: 5;">
+			<label for="inpCodFisc" class="col-form-label">
+				Codice Fiscale
+			</label>
+			<input type="search" id="inpCodFisc" class="form-control" placeholder="Codice Fiscale" [(ngModel)]="this.codiceFiscale"/>
+		</div>
+	</div>
+	<div style="margin-bottom: 20px;">
+		<!-- <app-selettore-ambito [showRegione]="true" (changeAmbito)="this.onChangeAmbito($event)"></app-selettore-ambito> -->
+		<app-selettore-ambito
+			(changeAmbito)="this.onChangeAmbito($event)"
+			[isReadOnly]=true
+			[idAmbito]="idAmbitoTerr"
+			[emitInitialValue]=true
+		></app-selettore-ambito>
+	</div>
+	<div style="margin-bottom: 20px; display: flex; flex-direction: row;">
+		<button class="btn btn-primary" style="margin-left: auto;" (click)="this.ricerca()">Cerca</button>
+	</div>
+</div>
+<app-table [data]="this.elencoUtenti"
+					 [hideHeader]="false"
+					 [pagination]="{pageSizes: [0, 5, 10, 15], defaultPageSize: 0}"
+					 [filter]="true"
+					 [rowHandler]="{selection: false, highlight: false}"
+>
+	<columns>
+		<column headerText="Codice Utente" dataField="id_uten" [sortEnabled]="true"></column>
+		<column headerText="Codice Fiscale" dataField="codi_fisc" [sortEnabled]="true"></column>
+		<column headerText="Cognome" dataField="cognome" [sortEnabled]="true"></column>
+		<column headerText="Nome" dataField="nome" [sortEnabled]="true"></column>
+		<column headerText="Username" dataField="user_name" [sortEnabled]="true"></column>
+		<column headerText="Data Attivazione" dataField="data_ins" [dataFormat]="DataFormat.ShortDate" [sortEnabled]="true" colHeadSpan="1"></column>
+		<column [cellTemplate]="showUtenteCellTemplate" colHeadSpan="1"></column>
+	</columns>
+</app-table>
+
+<ng-template #showUtenteCellTemplate let-resources="resources" let-col="col" let-data="row.data">
+	<button type="button" class="btn" style="padding: 5px; color: blue;" (click)="this.assegnaIstruttore(data)"
+		title="Assegna istruttore">
+		<i class="bi bi-hand-index"></i>
+	</button>
+</ng-template>
+

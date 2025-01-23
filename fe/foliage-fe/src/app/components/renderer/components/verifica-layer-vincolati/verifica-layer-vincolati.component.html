@@ -1,0 +1,105 @@
+@if(existsLayers!=undefined)  {
+	@if(existsLayers) {
+		<h3>Zone soggette a vincoli coinvolte</h3>
+		<app-table [data]="this.rilieviArray"
+								[hideHeader]="false"
+								[filter]="false"
+								[pagination]="{pageSizes: [], defaultPageSize: 10}"
+								[rowHandler]="{selection: false, highlight: false}"
+		>
+			<columns>
+				<column headerText="Categoria" dataField="categoria" [sortEnabled]="false"></column>
+				<column headerText="Codice" dataField="codice" [sortEnabled]="false"></column>
+				<column headerText="Descrizione" dataField="descrizione" [sortEnabled]="false"></column>
+			</columns>
+		</app-table>
+		@if (avvisiArray.length > 0) {
+			<div class="alert alert-warning my-4" role="alert">
+				<h4 class="alert-heading">Avvisi</h4>
+				<ng-container *ngFor="let avviso of avvisiArray; index as i; last as isLast">
+					<p [class.mb-0]="isLast">{{avviso.value}}</p>
+					<ng-container *ngIf="this.linkAvvisi[avviso.code] != undefined">
+						<a style="margin: 10px;"
+							*ngFor="let link of this.linkAvvisi[avviso.code]" [href]="link.path">{{link.nome}}</a>
+					</ng-container>
+					<hr *ngIf="!isLast">
+				</ng-container>
+			</div>
+		}
+		@if (interventiConsentitiArray.length > 0) {
+			<h3>Selezione Intervento</h3>
+			<table style="margin-top: 20px; margin-bottom: 20px; border: none;">
+				<thead>
+				<tr>
+					<th class="px-2">Selezionato</th>
+					<!-- <th class="px-2">ID</th> -->
+					<th class="px-2">Tipo intervento</th>
+					<th class="px-2">Allegato</th>
+					<ng-container *ngIf="this.context.codTipoIstanzaSpecifico=='TAGLIO_BOSCHIVO'">
+						<th class="px-2">Forme di trattamento consentite</th>
+						<th class="px-2">Forma di governo</th>
+					</ng-container>
+				</tr>
+				</thead>
+				<tbody>
+					@for(intervento of interventiConsentitiArray; track $index) {
+						<!-- <ng-container *ngFor="let intervento of interventiConsentitiArray">
+						</ng-container> -->
+						<tr>
+							<td (click)="this.setTipoInterventoSelezionato(intervento)"
+								class="px-2 text-center m" style="vertical-align: middle;">
+								<input type="radio" style="width: 20px; height: 20px; vertical-align: middle;"
+												[disabled]="isReadOnly"
+												[checked]="this.idSchedaInterventoSelezionata==intervento.idSchedaIntervento"
+								>
+							</td>
+							<!-- <td class="px-2">{{intervento.idSchedaIntervento}}</td> -->
+							<td class="px-2" style="padding-top: 10px; vertical-align: middle;">{{intervento.tipoIntervento}}</td>
+							<td class=" px-2 text-center" style="vertical-align: middle;">
+								<a [routerLink]="intervento.urlFilePdf" target="_blank">
+									<img height="20" width="20" id="iconaPrivacy" src="assets/images/icona-pdf.png">
+								</a>
+							</td>
+							<ng-container *ngIf="this.context.codTipoIstanzaSpecifico=='TAGLIO_BOSCHIVO'">
+								<td class="px-2" style="padding-top: 10px; padding-bottom: 10px; vertical-align: middle;">{{intervento.formeDiTrattamentoConsentite.join(", ")}}</td>
+								<td class="px-2">{{intervento.formaDiGoverno}}</td>
+							</ng-container>
+						</tr>
+					}
+				
+				</tbody>
+			</table>
+			<div *ngIf="this.errore!=undefined" style="display: unset" class="formio-errors invalid-feedback">
+				<label ref="html" class=""><small class="text-danger">{{this.errore}}</small></label>
+			</div>
+		}
+		@else {
+			<ng-container *ngTemplateOutlet="presaVisione"></ng-container>
+		}
+	}
+	@else {
+		<div class="alert alert-success my-4" role="alert">
+			<h4 class="alert-heading m-0">L'intervento non ricade in zone soggette a vincoli</h4>
+		</div>
+		<ng-container *ngTemplateOutlet="presaVisione"></ng-container>
+		
+	}
+	
+	<ng-template #presaVisione>
+		<div style="display: flex; flex-direction: row; justify-content: flex-end; width: 100%;">
+			<div>
+				<div style="display: flex; flex-direction: row;">
+					<input id="inputVisione" type="checkbox" class="form-check" style="margin-right: 20px;"
+						[ngModel]="hasVisioneVincoli??false"
+						(ngModelChange)="this.setHasVisioneVincoli($event)"
+						[disabled]="this.isReadOnly"
+					/>
+					<label for="inputVisione" class="col-form-label field-required">Dichiaro di aver preso visione</label>
+				</div>
+				<div *ngIf="this.errore!=undefined" style="display: unset" class="formio-errors invalid-feedback">
+					<label ref="html" class=""><small class="text-danger">{{this.errore}}</small></label>
+				</div>
+			</div>
+		</div>
+	</ng-template>
+}

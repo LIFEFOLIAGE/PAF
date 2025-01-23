@@ -1,0 +1,153 @@
+<div style="padding-left: 5px; padding-right: 5px;">
+	<!-- <h1 style="text-align: center;">
+		Cruscotto vigilanza
+	</h1> -->
+
+	<div style="display: grid; grid-template-columns: 1fr 10px 1fr 10px 1fr 10px 1fr; margin-bottom: 20px;">
+		<div style="display: flex; flex-direction: column; grid-column-start: 1; grid-column-end: 4;">
+			<label for="inpUser" class="col-form-label">Tipo di Istanza</label>
+			<select class="form-control" style="grid-column: 1;" title="Stato" [(ngModel)]="this.tipoIstanza"
+							(ngModelChange)="this.onChangeTipoIstanza($event)">
+				<option [ngValue]="undefined" selected>Seleziona il tipo di istanza...</option>
+				<option *ngFor="let tipo of this.tipiIstanza" [ngValue]="tipo">{{tipo.nome}}</option>
+			</select>
+		</div>
+
+		<div style="grid-column: 5;">
+			<label for="inpUser" class="col-form-label">Nome o codice istanza</label>
+			<input class="form-control" type="search" title="Filtro" [(ngModel)]="this.searchText"
+						 placeholder="Nome o codice istanza"/>
+		</div>
+
+		<div *ngIf="this.currProfilo?.tipo != 'PROP'" style="grid-column: 7;">
+			<label for="inpUser" class="col-form-label">Codice Fiscale Titolare</label>
+			<input class="form-control" type="search" title="Filtro" [(ngModel)]="this.cfTitolare"
+						 placeholder="Codice Fiscale Titolare"/>
+		</div>
+	</div>
+	<div style="display: flex; margin-bottom: 20px; flex-direction: column;">
+		<label class="col-form-label">Ente Gestore</label>
+		<div style="border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color)!important; border-radius: 0.375rem; padding: 1rem;">
+			<app-selettore-ambito style="width: 100%;" [ambitiTerritoriali]="this.ambitiTerr"
+					(changeAmbito)="this.onChangeAmbito($event)"></app-selettore-ambito>
+		</div>
+	</div>
+	<div style="display: grid; grid-template-columns: 1fr 10px 1fr 10px 1fr 10px 1fr; margin-bottom: 20px;">
+		<div style="grid-column: 1;">
+			<label for="selStato" class="col-form-label">Stato Istanza</label>
+			<select id="selStato"
+					class="form-control" style="grid-column: 1;" title="Stato"
+					[(ngModel)]="this.statoIstanza">
+				<option [ngValue]="undefined" selected>Seleziona lo stato...</option>
+				<option *ngFor="let stato of this.elencoStatiIstanza" [ngValue]="stato.id_stato">{{stato.desc_stato}}</option>
+			</select>
+		</div>
+		<div *ngIf="this.statoIstanza == 4" style="grid-column: 3;">
+			<label for="selStatoLavori" class="col-form-label">Stato Avanzamento Lavori</label>
+			<select id="selStatoLavori"
+				class="form-control" title="Stato avanzamento lavori" [(ngModel)]="this.statoAvanzamento">
+				<option [ngValue]="undefined" selected>Seleziona lo stato di avanzamento lavori...</option>
+				<option *ngFor="let stato of this.elencoStatoLavori"
+								[ngValue]="stato.idStato">{{stato.descStato}}</option>
+			</select>
+		</div>
+	</div>
+
+	<div *ngIf="this.statoIstanza == undefined || this.statoIstanza == 4"
+			style="display: grid; grid-template-columns: 1fr 10px 1fr ;">
+		<div style="display: flex; margin-bottom: 20px; flex-direction: column; grid-column: 1;">
+			<label class="col-form-label">Data di approvazione</label>
+			<div
+				style="border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color)!important; border-radius: 0.375rem; padding: 1rem;">
+				<div class="row">
+					<div class="col">
+						<label for="inpInizioDataDa" class="col-form-label">Da</label>
+						<input class="form-control" id="inpInizioDataDa"
+										type="date"
+										title="Data di approvazione - inizio"
+										[max]="maxDataApprovazioneInizio"
+										[(ngModel)]="dataApprovazioneInizio"
+										(ngModelChange)="onChangeDate($event, 'dataApprovazioneInizio')"/>
+					</div>
+					<div class="col">
+						<label for="inpInizioDataA" class="col-form-label">A</label>
+						<input class="form-control" id="inpInizioDataA"
+										type="date"
+										title="Data di approvazione - fine"
+										[min]="minDataApprovazioneFine"
+										[(ngModel)]="dataApprovazioneFine"
+										(ngModelChange)="onChangeDate($event, 'dataApprovazioneFine')"/>
+	
+					</div>
+				</div>
+			</div>
+		</div>
+	
+		<div style="display: flex; margin-bottom: 20px; flex-direction: column; grid-column: 3;">
+			<label class="col-form-label">Termine del periodo di validità</label>
+			<div
+				style="border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color)!important; border-radius: 0.375rem; padding: 1rem;">
+				<div class="row">
+					<div class="col">
+						<label for="inpFineDataDa" class="col-form-label">Da</label>
+						<input class="form-control" id="inpFineDataDa"
+										type="date"
+										title="Termine periodo attività - inizio"
+										[max]="maxTerminePeriodoAttivitaInizio"
+										[(ngModel)]="terminePeriodoAttivitaInizio"
+										(ngModelChange)="onChangeDate($event, 'terminePeriodoAttivitaInizio')"/>
+					</div>
+					<div class="col">
+						<label for="inpFineDataA" class="col-form-label">A</label>
+						<input class="form-control" id="inpFineDataA"
+										type="date"
+										title="Termine periodo attività - fine"
+										[min]="minTerminePeriodoAttivitaFine"
+										[(ngModel)]="terminePeriodoAttivitaFine"
+										(ngModelChange)="onChangeDate($event, 'terminePeriodoAttivitaFine')"/>
+	
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div style="display: flex; height: 40px; margin-bottom: 20px;">
+		<button type="button" style="margin-left: auto;" class="btn btn-outline-success"
+						(click)="this.esecuzioneRicerca()">
+			Cerca
+		</button>
+	</div>
+
+	<ng-template #showButtonCellTemplate let-resources="resources" let-col="col" let-row="row">
+		<div style="white-space: nowrap;">
+			<button type="button" class="pulsante btn" style="padding: 6px 6px 6px 6px;"
+							(click)="this.openGestioneIstanza(row.data.codIstanza)">
+				<i class="bi bi-gear"></i>
+			</button>
+		</div>
+	</ng-template>
+
+	<app-table [data]="this.data"
+						 [hideHeader]="false"
+						 [pagination]="{pageSizes: [0, 5, 10, 15, 25, 50], defaultPageSize: 50}"
+						 [filter]="false"
+						 [rowHandler]="{selection: false, highlight: false}"
+	>
+		<columns>
+			<column headerText="Codice Fiscale" dataField="codFiscaleTitolare" [sortEnabled]="true"></column>
+			<column headerText="Cognome" dataField="cognomeTitolare" [sortEnabled]="true"></column>
+			<column headerText="Nome Titolare" dataField="nomeTitolare" [sortEnabled]="true"></column>
+			<column headerText="Codice Istanza" dataField="codIstanza" [sortEnabled]="true"></column>
+			<column headerText="Tipo Istanza" dataField="codTipoIstanza" [sortEnabled]="true"></column>
+			<column headerText="Nome Istanza" dataField="nomeIstanza" [sortEnabled]="true"></column>
+			<column headerText="Stato" dataField="descStato" [sortEnabled]="true"></column>
+			<column headerText="Data Istanza" dataField="dataIstanza" [sortEnabled]="true"
+							[dataFormat]="DataFormat.ShortDate"></column>
+			<column headerText="Codice Fiscale Gestore" dataField="codFiscaleGestore" [sortEnabled]="true"></column>
+			<column headerText="Tipo Ente" dataField="tipoEnte" [sortEnabled]="true"></column>
+			<column headerText="Nome Ente" dataField="nomeEnte" [sortEnabled]="true" colHeadSpan="1"></column>
+			<column [cellTemplate]="showButtonCellTemplate" colHeadSpan="1"></column>
+		</columns>
+	</app-table>
+</div>

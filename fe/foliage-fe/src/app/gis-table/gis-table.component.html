@@ -1,0 +1,335 @@
+<style>
+	.lightgray-bg {
+		background-color: rgba(127, 127, 127, 0.2);
+	}
+	.highlighted-bg {
+		background-color: rgba(255, 255, 0, 0.8);
+	}
+	.selected-bg {
+		background-color: rgba(0, 255, 0, 0.8);
+	}
+</style>
+<ng-template #errorsTemplate>
+	@if(this.errori.length != 0) {
+		<div style="position: absolute; left: 60px; top: 60px; z-index: 100;">
+			@if(this.onErrori) {
+				<div (mouseleave)="this.onErrori = false"
+						style="display: flex; flex-direction: column; background-color: white; color: black; border-radius: 5px; overflow: hidden; border: 1px solid red;">
+					<div style="width: 100%; display: flex; flex-direction: row; justify-content: space-between; display: flex; align-items: center; background-color: rgba(255, 0, 0, 0.2);">
+						<div style="padding: 5px;">
+							{{(this.errori.length == 1 ? '1 geometria ' : (this.errori.length +' geometrie'))}} con problemi
+						</div>
+						<button type="button"
+								style="background-color: darksalmon; color: red;" class="btn pulsante"
+								title="Sono presenti problemi"
+								(click)="this.onErrori=false"
+							>
+							<i class="bi bi-x-square-fill"></i>
+						</button>
+					</div>
+					<div style="overflow-y: auto; max-height: calc(100vh / 2);">
+						@for(e of this.errori; track index; let odd = $odd, index = $index) {
+							<div style="width: 100%; display: grid; column-gap: 5px; grid-template-columns: 50px 1fr; padding: 5px;"
+									[class.lightgray-bg]="odd && selectedRowIdx != e.idx && highlightedRowIdx != e.idx"
+									[class.highlighted-bg]="selectedRowIdx != e.idx && highlightedRowIdx == e.idx"
+									[class.selected-bg]="selectedRowIdx == e.idx"
+									(click)="this.seleziona(e.idx)"
+									(mouseenter)="this.evidenzia(e.idx)"
+									(mouseleave)="this.evidenzia(undefined)"
+								>
+								<div style="grid-column: 1; text-align: right;">{{(1 + index)}}</div>
+								<div style="grid-column: 2; display: flex; flex-direction: column; width: 100%;">
+									@for(msg of e.msgs; track $index) {
+										<div>
+											{{msg}}
+										</div>
+									}
+								</div>
+							</div>
+						}
+					</div>
+				</div>
+			}
+			@else {
+				<button type="button"
+						style="background-color: red; color: white;" class="btn pulsante"
+						title="Sono presenti problemi"
+						(click)="this.onErrori=true"
+					>
+					<i class="bi bi-exclamation-triangle"></i>
+				</button>
+			}
+		</div>
+	}
+</ng-template>
+
+<div style="width: 100%; height: 100%;">
+	<!--350px è la larghezza del menù di navigazione a sinistra-->
+	<div style="height: 40px; max-width: 100%; display: flex; flex-direction: row; margin-bottom: 5px;">
+		<button type="button" *ngIf="!this.isReadOnly"
+				(click)="this.importa()"
+				title="Importa geometrie da file GeoJSON"
+				class="btn btn-outline-primary"
+				style="flex-grow: 0;"
+			>
+			<i class="bi bi-folder2-open"></i>
+		</button>
+		<button type="button"
+				(click)="this.esporta()"
+				title="Esporta geometrie su file GeoJSON"
+				class="btn btn-outline-primary"
+				style="flex-grow: 0;"
+			>
+			<i class="bi bi-download"></i>
+		</button>
+		<button type="button"
+				(click)="this.inquadra()"
+				title="Inquadra le geometrie"
+				class="btn btn-outline-primary"
+				style="flex-grow: 0;"
+			>
+			<i class="bi bi-aspect-ratio"></i>
+		</button>
+		@if((!this.choices || this.choices.length == 0)) {
+			@if (this._conf.interactions) {
+				@if (this._conf.interactions.general) {
+					@for(azione of this._conf.interactions.general; track $index) {
+						<button type="button" *ngIf="!this.isReadOnly || this.isReadOnlyAction(azione.action)"
+								(click)="this.callAzione(azione.action)"
+								[title]="azione.label"
+								class="btn"
+								style="flex-grow: 0;"
+								[disabled]="(this.completamentoAzione.length > 0)"
+								[class.btn-outline-primary]="this.completamentoAzione.length == 0"
+							>
+							<i [class]="azione.icon"></i>
+						</button>
+					}
+				}
+				@if (this._conf.interactions.element) {
+					@for(azione of this._conf.interactions.element; track $index) {
+						<button type="button" *ngIf="!this.isReadOnly || this.isReadOnlyAction(azione.action)"
+								(click)="this.callAzione(azione.action)"
+								[disabled]="(this.selectedRowIdx==undefined || this.completamentoAzione.length > 0)"
+								[title]="azione.label"
+								class="btn"
+								style="flex-grow: 0;"
+								[class.btn-outline-primary]="(this.selectedRowIdx!=undefined && this.completamentoAzione.length == 0)"
+								[class.pulsante]="!(this.selectedRowIdx!=undefined && this.completamentoAzione.length == 0)"
+							>
+							<i [class]="azione.icon"></i>
+						</button>
+					}
+				}
+			}
+		}
+		<div style="margin-right: 5px;flex-grow: 0;"></div>
+		<div class="marquee" style="display: flex; flex-grow: 1; height: 100%;align-content: center; align-items: center; width: 1px;">
+			@if(this.message) {
+				<div class="marquee-div">
+					{{this.message}}
+				</div>
+			}
+			@else {
+				<!-- @if(this.nomeMappa) {
+					<div style="height: 100%; padding: 5px 0px; display: flex; flex-direction: row; width: 100%; justify-content: center; align-content: center; align-items: center;">
+						{{this.nomeMappa}}
+					</div>
+				} -->
+				<div style="height: 100%; padding: 5px 0px; display: flex; flex-direction: row; justify-content: end; align-content: center; align-items: center; margin-left: auto; margin-right: 10px;">
+					SRID: {{this._conf.mappa.shape.srid}}
+				</div>
+			}
+		</div>
+		<ng-container *ngIf="this.choices && this.choices.length > 0">
+			<select class="form-control" style="flex-grow: 0; width: unset;" (change)="this.onChangeChoice($event)" [(ngModel)]="this.currentChoice">
+				<option *ngFor="let opt of this.choices" [value]="opt.value">{{opt.label}}</option>
+			</select>
+		</ng-container>
+
+		<button type="button" *ngFor="let azione of this.completamentoAzione"
+				[title]="azione.label"
+				[class]="azione.btnClass"
+				style="flex-grow: 0;"
+				(click)="azione.action()"
+			>
+			<i [class]="azione.icon"></i>
+		</button>
+	</div>
+	<!-- <ng-template #noTable>
+		<div style="height: calc(100% - 45px); width: 100%;">
+			<ng-container [ngTemplateOutlet]="errorsTemplate">
+			</ng-container>
+			<app-map
+				[context]="this.context"
+				[conf]="this.confMappa"
+				[dati]="this.dati"
+				[importedValue]="this._importedValue"
+				[resources]="this.resources"
+				[dictionariesData]="this.dictionariesData"
+				[isReadOnly]="this.isReadOnly"
+				[schedaInfo]="this.schedaInfo"
+				[inserting]="this.inserting"
+				
+				(dataChanged)="this.onMapDataChanged($event)"
+				(cancelChanges)="this.onMapCancelChanges($event)"
+				(selection)="this.onMapSelection($event)"
+				(highlight)="this.onMapHighlight($event)"
+				(mapCreated)="this.onMapCreated($event)"
+				(export)="this.onExport($event)"
+				(schedaElementCreated)="this.onSchedaElementCreated($event)"
+			>
+			</app-map>
+		</div>
+		<div style="display: none;">
+			<app-table-renderer2
+				[conf]="this.confTabella"
+				[dati]="this.dati"
+				[resources]="this.resources"
+				[dictionariesData]="this.dictionariesData"
+				[selectedRow]="this.selectedRow"
+				[highlightRow]="this.highlightedRow"
+				(selection)="this.onTabSelection($event)"
+				(highlight)="this.onTabHighlight($event)"
+				(componentInit)="this.onTableComponentInit($event)"
+				(export)="this.onExport($event)"
+			>
+			</app-table-renderer2>
+		</div>
+	</ng-template> -->
+
+	@if (this.confTabella.columns && this.confTabella.columns.length > 0) {
+		<as-split
+			direction="horizontal" style="height: calc(100% - 45px); width: 100%;">
+			<as-split-area [size]="(this.completamentoAzione.length == 0 ? 60 : 100)">
+				<ng-container [ngTemplateOutlet]="errorsTemplate">
+				</ng-container>
+				<app-map
+					[context]="this.context"
+					[conf]="this.confMappa"
+					[dati]="this.dati"
+					[importedValue]="this._importedValue"
+					[resources]="this.resources"
+					[dictionariesData]="this.dictionariesData"
+					[isReadOnly]="this.isReadOnly"
+					[schedaInfo]="this.schedaInfo"
+					[inserting]="this.inserting"
+					(dataChanged)="this.onMapDataChanged($event)"
+					(cancelChanges)="this.onMapCancelChanges($event)"
+					(selection)="this.onMapSelection($event)"
+					(highlight)="this.onMapHighlight($event)"
+					(mapCreated)="this.onMapCreated($event)"
+					(export)="this.onExport($event)"
+					(schedaElementCreated)="this.onSchedaElementCreated($event)"
+				>
+				</app-map>
+			</as-split-area>
+			<as-split-area [size]="(this.completamentoAzione.length == 0 ? 40 : 0)" [visible]="(this.completamentoAzione.length == 0)" style="overflow: auto;">
+			<!-- <as-split-area [size]="40"> -->
+				<app-table-renderer2
+					[conf]="this.confTabella"
+					[dati]="this.dati"
+					[resources]="this.resources"
+					[dictionariesData]="this.dictionariesData"
+					[selectedRow]="this.selectedRow"
+					[highlightRow]="this.highlightedRow"
+					(selection)="this.onTabSelection($event)"
+					(highlight)="this.onTabHighlight($event)"
+					(componentInit)="this.onTableComponentInit($event)"
+				>
+				</app-table-renderer2>
+			</as-split-area>
+		</as-split>
+	}
+	@else {
+		<div style="height: calc(100% - 45px); width: 100%;">
+			<ng-container [ngTemplateOutlet]="errorsTemplate">
+			</ng-container>
+			<app-map
+				[context]="this.context"
+				[conf]="this.confMappa"
+				[dati]="this.dati"
+				[importedValue]="this._importedValue"
+				[resources]="this.resources"
+				[dictionariesData]="this.dictionariesData"
+				[isReadOnly]="this.isReadOnly"
+				[schedaInfo]="this.schedaInfo"
+				[inserting]="this.inserting"
+				
+				(dataChanged)="this.onMapDataChanged($event)"
+				(cancelChanges)="this.onMapCancelChanges($event)"
+				(selection)="this.onMapSelection($event)"
+				(highlight)="this.onMapHighlight($event)"
+				(mapCreated)="this.onMapCreated($event)"
+				(export)="this.onExport($event)"
+				(schedaElementCreated)="this.onSchedaElementCreated($event)"
+			>
+			</app-map>
+		</div>
+		<div style="display: none;">
+			<app-table-renderer2
+				[conf]="this.confTabella"
+				[dati]="this.dati"
+				[resources]="this.resources"
+				[dictionariesData]="this.dictionariesData"
+				[selectedRow]="this.selectedRow"
+				[highlightRow]="this.highlightedRow"
+				(selection)="this.onTabSelection($event)"
+				(highlight)="this.onTabHighlight($event)"
+				(componentInit)="this.onTableComponentInit($event)"
+				(export)="this.onExport($event)"
+			>
+			</app-table-renderer2>
+		</div>
+	}
+	<!-- <as-split *ngIf="this.confTabella.columns && this.confTabella.columns.length > 0, else noTable"
+		direction="horizontal" style="height: calc(100% - 45px); width: 100%;">
+		<as-split-area [size]="(this.completamentoAzione.length == 0 ? 60 : 100)">
+			<ng-container [ngTemplateOutlet]="errorsTemplate">
+			</ng-container>
+			<app-map
+				[context]="this.context"
+				[conf]="this.confMappa"
+				[dati]="this.dati"
+				[importedValue]="this._importedValue"
+				[resources]="this.resources"
+				[dictionariesData]="this.dictionariesData"
+				[isReadOnly]="this.isReadOnly"
+				[schedaInfo]="this.schedaInfo"
+				[inserting]="this.inserting"
+				(dataChanged)="this.onMapDataChanged($event)"
+				(cancelChanges)="this.onMapCancelChanges($event)"
+				(selection)="this.onMapSelection($event)"
+				(highlight)="this.onMapHighlight($event)"
+				(mapCreated)="this.onMapCreated($event)"
+				(export)="this.onExport($event)"
+				(schedaElementCreated)="this.onSchedaElementCreated($event)"
+			>
+			</app-map>
+		</as-split-area>
+		<as-split-area [size]="(this.completamentoAzione.length == 0 ? 40 : 0)" [visible]="(this.completamentoAzione.length == 0)" style="overflow: auto;">
+			<app-table-renderer2
+				[conf]="this.confTabella"
+				[dati]="this.dati"
+				[resources]="this.resources"
+				[dictionariesData]="this.dictionariesData"
+				[selectedRow]="this.selectedRow"
+				[highlightRow]="this.highlightedRow"
+				(selection)="this.onTabSelection($event)"
+				(highlight)="this.onTabHighlight($event)"
+				(componentInit)="this.onTableComponentInit($event)"
+			>
+			</app-table-renderer2>
+		</as-split-area>
+	</as-split> -->
+</div>
+<div style="display: none;">
+	<a #exportGeoJsonlink
+		[download]="this.getGeoJsonExportFilename()">
+	</a>
+	<input #importGeoJsonFile
+		type="file"
+		accept=".geojson"
+		(change)="allegaGeoJsonImportati(this.html.getInputElmentFiles($event.target))"
+	>
+</div>

@@ -1,0 +1,77 @@
+<div class="mb-2 card border">
+	<div class="card-header bg-default">
+		<span class="mb-0 card-title">
+			Dati Schedulazione
+		</span>
+	</div>
+	<div class="card-body">
+		<div class="row">
+			<div class="col-md-6 col-md-offset-0 col-md-push-0 col-md-pull-0">
+				<div class="form-group has-feedback">
+					<label for="inpDataAvvio"
+						class="col-form-label" [class.field-required]="!isReadOnly">
+						Data Di Avvio Richiesta:
+					</label>
+					<div ref="element">
+						<input type="datetime-local" id="inpDataAvvio"
+							class="form-control" value="00:00"
+							[ngModel]="this.datiSchedulazione.dataAvvioRichiesta"
+							(ngModelChange)="this.onChangeDatiSchedulazione('dataAvvioRichiesta', this.htmlService.toLocalDateTime($event))"
+							[disabled]="isReadOnly"
+						/>
+					</div>
+					<div class="formio-errors" style="display: inline;"
+							[style.visibility.hydden]="this.errori['dataAvvioRichiesta']==undefined"
+						>
+						<label><small class="text-danger">{{this.errori['dataAvvioRichiesta']}}</small></label>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-md-6 col-md-offset-0 col-md-push-0 col-md-pull-0">
+				<div class="form-group has-feedback">
+					<label for="inpDataInizio"
+						class="col-form-label" [class.field-required]="!isReadOnly">
+						Data Inizio Periodo Monitoraggio:
+					</label>
+					<div ref="element">
+						<input type="date" id="inpDataInizio"
+							class="form-control"
+							[ngModel]="this.datiSchedulazione.dataInizio"
+							(ngModelChange)="this.onChangeDatiSchedulazione('dataInizio', this.htmlService.toLocalDate($event))"
+							[disabled]="isReadOnly"
+						/>
+					</div>
+					<div class="formio-errors" style="display: inline;"
+							[style.visibility.hydden]="this.errori['dataInizio']==undefined"
+						>
+						<label><small class="text-danger">{{this.errori['dataInizio']}}</small></label>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6 col-md-offset-0 col-md-push-0 col-md-pull-0">
+				<div class="form-group has-feedback">
+					<label for="inpDataFine"
+						class="col-form-label" [class.field-required]="!isReadOnly">
+						Data Fine Periodo Monitoraggio:
+					</label>
+					<div ref="element">
+						<input type="date" id="inpDataFine"
+							class="form-control"
+							[ngModel]="this.datiSchedulazione.dataFine"
+							(ngModelChange)="this.onChangeDatiSchedulazione('dataFine', this.htmlService.toLocalDate($event))"
+							[disabled]="isReadOnly"
+						/>
+					</div>
+					<div class="formio-errors" style="display: inline;"
+							[style.visibility.hydden]="this.errori['dataFine']==undefined"
+						>
+						<label><small class="text-danger">{{this.errori['dataFine']}}</small></label>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

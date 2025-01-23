@@ -1,0 +1,319 @@
+<div class="card border mb-5">
+	<div class="card-header bg-default">
+		<span class="mb-0 card-title">Informazioni Unità Omogenea</span>
+	</div>
+
+	<div class="card-body">
+		<div class="row g-3">
+			<div class="col col-12">
+				<label class="fw-bold">Nome:</label> {{datiEffettivi['nomeUo']}}
+			</div>
+			<div class="col col-6">
+				<label class="fw-bold">Superficie utile (ha):</label> {{
+				(Number.parseFloat(datiEffettivi['superficieUtile']??0) / 10000).toFixed(2) }}
+			</div>
+			<div class="col col-6">
+				<label class="fw-bold">Forma di governo:</label> {{datiEffettivi['formaDiGoverno']}}
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<app-assortimenti-ritraibili
+	[resources]="resources"
+	[dati]="datiAssortimenti"
+	[isReadOnly]="isReadOnly"
+	[context]="context"
+	(dataChanged)="onAssortimentiChanged($event)"
+	(componentInit)="onInitAssortimentiRitraibili($event)">
+</app-assortimenti-ritraibili>
+
+<div>
+	<label for="s-metodo-cubatura" class="col-form-label field-required">Metodo cubatura</label>
+	<select id="s-metodo-cubatura" class="form-control" [ngModel]="this.datiEffettivi['metodoDiCubatura']"
+		(ngModelChange)="this.onChangeMetodoDiCubaturaById($event)" [disabled]="isReadOnly">
+		<option *ngFor="let metodoCubatura of this.metodiDiCubatura" [ngValue]="metodoCubatura.chiave">
+			{{metodoCubatura.label}}
+		</option>
+	</select>
+	@if(this.errori['metodoDiCubatura']) {
+		<div class="formio-errors">
+			<label><small class="text-danger">{{this.errori['metodoDiCubatura']}}</small></label>
+		</div>
+	}
+	@if (showDescrizioneMetodo) {
+		<label for="ta-descrizione" class="col-form-label field-required">Descrizione metodo</label>
+		<textarea id="ta-descrizione" class="form-control" [ngModel]="this.datiEffettivi['descrizioneMetodoCubatura']"
+			(ngModelChange)="this.onChangeDescrizioneMetodoDiCubatura($event)" [disabled]="isReadOnly">
+		</textarea>
+		@if(this.errori['descrizioneMetodoCubatura']) {
+			<div class="formio-errors">
+				<label><small class="text-danger">{{this.errori['descrizioneMetodoCubatura']}}</small></label>
+			</div>
+		}
+	}
+</div>
+
+<div class="my-5">
+	<div *ngIf="showTabellaCeduo" class="card border mt-5">
+		<div class="card-header bg-default">
+			<span class="mb-0 card-title">Tavola di cubatura Ceduo</span>
+		</div>
+
+		<div class="card-body">
+			<table style="width: 100%;">
+				<thead>
+					<tr>
+						<th></th>
+							@for(gruppo of this.gruppi; track $index) {
+								<th class="border" colspan="2" style="text-align: center;">
+									{{gruppo.header}}
+								</th>
+							}
+					</tr>
+					<tr>
+						<th></th>
+						@for(gruppo of this.gruppi; track $index) {
+							@for (unita of this.unitaMisura; track $index) {
+								<th class="border" style="text-align: center;">
+									{{unita.header}}
+								</th>
+							}
+						}
+					</tr>
+				</thead>
+				<tbody>
+					@for(categoria of this.categorieCeduo; track $index) {
+						<tr>
+							<td class="border text-end pe-2" style="white-space: nowrap; text-align: center; width: 250px;">
+								{{categoria.header}}
+							</td>
+							@for(gruppo of this.gruppi; track $index) {
+								@for(unita of this.unitaMisura; track $index) {
+									@if(isReadOnly || gruppo.isReadOnly) {
+										<td class="p-1">
+											<div class="form-group">
+												<input type="number" min="0" style="margin: 0px; padding: 0px 5px;"
+													class="form-control text-end" [disabled]="true"
+													[class.border-danger]="errori[getKeyForTableField(categoria.nome, gruppo.nome, unita.nome)]"
+													[ngModel]="this.datiEffettivi[getKeyForTableField(categoria.nome, gruppo.nome, unita.nome)]??0">
+											</div>
+										</td>
+									}
+									@else {
+										<td class="p-1">
+											<div class="form-group">
+												<input type="number" min="0" style="margin: 0px; padding: 0px 5px;"
+													class="form-control text-end"
+													[class.border-danger]="errori[getKeyForTableField(categoria.nome, gruppo.nome, unita.nome)]"
+													[ngModel]="this.datiEffettivi[getKeyForTableField(categoria.nome, gruppo.nome, unita.nome)]??0"
+													(ngModelChange)="this.changeValoreCubatura('CEDUO', categoria.nome, gruppo.nome, unita.nome, $event)">
+											</div>
+										</td>
+									}
+								}
+							}
+						</tr>
+					}
+					<tr>
+						<th class="border text-end pe-2" style="white-space: nowrap; text-align: center; width: 250px;">
+							Totale
+						</th>
+						@for(gruppo of this.gruppi; track $index) {
+							@for(unita of this.unitaMisura; track $index) {
+								<td class="p-1">
+									<div class="form-group">
+										<input type="number" min="0" style="margin: 0px; padding: 0px 5px;"
+											class="form-control text-end" [disabled]="true"
+											[ngModel]="this.datiEffettivi[getKeyForTableField('totCEDUO', gruppo.nome, unita.nome)]??0">
+									</div>
+								</td>
+							}
+						}
+					</tr>
+				</tbody>
+			</table>
+
+		</div>
+	</div>
+
+	<div *ngIf="this.showTabellaFustaia && this.datiEffettivi['specie0'] != undefined" class="card border mt-5">
+		<div class="card-header bg-default">
+			<span class="mb-0 card-title">Tavola di cubatura Fustaia</span>
+		</div>
+		<div class="card-body">
+			<table>
+				<thead>
+					<tr>
+						<th></th>
+						<th *ngFor="let gruppo of this.gruppi" class="border" colspan="2" style="text-align: center;">
+							{{gruppo.header}}
+						</th>
+					</tr>
+					<tr>
+						<th></th>
+						@for(gruppo of this.gruppi; track $index) {
+							@for (unita of this.unitaMisura; track $index) {
+								<th class="border" style="text-align: center;">
+									{{unita.header}}
+								</th>
+							}
+						}
+					</tr>
+				</thead>
+				<tbody>
+					@for(categoria of this.categorieFustaia; track index; let index = $index) {
+						@if(this.datiEffettivi[categoria.nome] && this.datiEffettivi[categoria.nome] && this.datiEffettivi['percCopertura' +  index]) {
+							<tr>
+								<td class="border text-end pe-2" style="white-space: nowrap; text-align: center; width: 250px;">
+									{{this.datiEffettivi[categoria.headerKey]}}
+								</td>
+								@for(gruppo of this.gruppi; track $index) {
+									@for(unita of this.unitaMisura; track $index) {
+										@if(isReadOnly || gruppo.isReadOnly) {
+											<td class="p-1">
+												<div class="form-group">
+													<input type="number" min="0" style="margin: 0px; padding: 0px 5px;"
+														class="form-control text-end" [disabled]="true"
+														[class.border-danger]="errori[getKeyForTableField(categoria.nome, gruppo.nome, unita.nome)]"
+														[ngModel]="this.datiEffettivi[getKeyForTableField(categoria.nome, gruppo.nome, unita.nome)]??0">
+												</div>
+											</td>
+										}
+										@else {
+											<td class="p-1">
+												<div class="form-group">
+													<input type="number" min="0" style="margin: 0px; padding: 0px 5px;"
+														class="form-control text-end"
+														[class.border-danger]="errori[getKeyForTableField(categoria.nome, gruppo.nome, unita.nome)]"
+														[ngModel]="this.datiEffettivi[getKeyForTableField(categoria.nome, gruppo.nome, unita.nome)]??0"
+														(ngModelChange)="this.changeValoreCubatura('FUSTAIA', categoria.nome, gruppo.nome, unita.nome, $event)">
+												</div>
+											</td>
+										}
+									}
+								}
+							</tr>
+						}
+					}
+					<tr>
+						<th class="border text-end pe-2" style="white-space: nowrap; text-align: center; width: 250px;">
+							Totale
+						</th>
+						@for(gruppo of this.gruppi; track $index) {
+							@for(unita of this.unitaMisura; track $index) {
+								<td class="p-1">
+									<div class="form-group">
+										<input type="number" min="0" style="margin: 0px; padding: 0px 5px;"
+											class="form-control text-end" [disabled]="true"
+											[ngModel]="this.datiEffettivi[getKeyForTableField('totFUSTAIA', gruppo.nome, unita.nome)]??0">
+									</div>
+								</td>
+							}
+						}
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	<div class="card border mt-5">
+		<div class="card-header bg-default">
+			<span class="mb-0 card-title">Volumi</span>
+		</div>
+		<div class="card-body">
+			<table style="width: 100%; margin-top: 20px;">
+				<thead>
+					<tr>
+						<th></th>
+						@for(gruppo of this.gruppi; track $index) {
+						<th class="border" style="text-align: center;">
+							{{gruppo.header}}(m³)
+						</th>
+						}
+					</tr>
+				</thead>
+				<tbody>
+					@if (this.showTabellaFustaia && this.showTabellaCeduo) {
+						@for(governo of ['CEDUO', 'FUSTAIA']; track $index) {
+							<tr>
+								<td class="border" style="text-align: right; padding: 0px 20px;">
+									{{
+									(governo == 'CEDUO' ? 'Ceduo' : 'Fustaia')
+									}}
+								</td>
+								@for(gruppo of this.gruppi; track $index) {
+									<td style="text-align: center;" class="p-1">
+										<input type="number" min="0" style="margin: 0px; padding: 0px 5px; min-width: 80px;"
+											class="form-control text-end" [disabled]="true"
+											[ngModel]="this.datiEffettivi[getKeyForTableField('vol'+ governo, gruppo.nome, 'Mc')]??0">
+									</td>
+								}
+							</tr>
+						}
+					}
+					<tr>
+						<th class="border" style="text-align: right; padding: 0px 20px;">Totale</th>
+						@for(gruppo of this.gruppi; track $index) {
+							<td style="text-align: center;" class="p-1">
+								<input type="number" min="0" style="margin: 0px; padding: 0px 5px; min-width: 80px;"
+									class="form-control text-end" [disabled]="true"
+									[ngModel]="this.datiEffettivi[getKeyForTableField('volTOTALE', gruppo.nome, 'Mc')]??0">
+							</td>
+						}
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+<!-- <div class="card border my-5">
+	<div class="card-header bg-default">
+		<span class="mb-0 card-title">Identificazione della sottocategoria forestale</span>
+	</div>
+	<div class="card-body">
+		<div class="row">
+			<div class="col col-6">
+				<div class="form-group">
+					<label for="s-categoria" class="col-form-label field-required">Categoria</label>
+					<div class="input-group">
+						<select id="s-categoria" class="form-control" [ngModel]="this.datiEffettivi['categoria']"
+							(ngModelChange)="this.onChangeCategoriaById($event)" [disabled]="isReadOnly">
+							<option *ngFor="let categoria of this.categorie" [ngValue]="categoria.id_categoria">
+								{{categoria.nome_categoria}}
+							</option>
+						</select>
+					</div>
+					<div class="formio-errors invalid-feedback" ref="messageContainer" style="display: inline;"
+						[style.visibility.hydden]="this.errori['categoria']==undefined">
+						<div class="form-text error">{{this.errori["categoria"]}}</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="col col-6">
+				<div class="form-group">
+					<label for="s-sottocategoria" class="col-form-label field-required">Sottocategoria</label>
+					<div class="input-group">
+						<select id="s-sottocategoria" class="form-control" [ngModel]="this.datiEffettivi['sottocategoria']"
+							(ngModelChange)="this.onChangeSottocategoriaById($event)"
+							[disabled]="isReadOnly || this.datiEffettivi['categoria'] == undefined">
+							<ng-container *ngIf="this.currCategoria != undefined">
+								<option *ngFor="let sottocategoria of this.currCategoria.sottocategorie"
+									[ngValue]="sottocategoria.id_sottocategoria">
+									{{sottocategoria.nome_sottocategoria}}
+								</option>
+							</ng-container>
+						</select>
+					</div>
+					<div class="formio-errors invalid-feedback" ref="messageContainer" style="display: inline;"
+						[style.visibility.hydden]="this.errori['sottocategoria']==undefined">
+						<div class="form-text error">{{this.errori["sottocategoria"]}}</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div> -->

@@ -1,0 +1,154 @@
+@if (this.ready) {
+	<h1 class="titolo-corto">
+		{{this.titoloCorto}}
+	</h1>
+	<div class="editor-istanza-panel">
+		<div class="editor-istanza-sidebar">
+			<div style="margin: 0px 5px 0px 5px; height: 128px; font-size: smaller;">
+				<div style="display: inline;">
+					<label style="font-weight: bold;">{{this.contesto.descTipoIstanzaSpecifico}}:</label>
+				</div>
+				<label style="font-weight: bold; margin-top: 5px">Titolare:</label>
+				<p>
+					{{this.contesto.codiceFiscaleTitolare + " - " + this.contesto.cognomeTitolare + " " + this.contesto.nomeTitolare}}
+				</p>
+				<p>
+					{{this.contesto.codIstanza}}
+				</p>
+			</div>
+			<div style="display: flex; flex-direction: column; height: calc(100% - 163px); overflow-y: auto; font-size: smaller;"
+				class="hierarchy-list-view">
+				@for (sezione of this.sezioniPratica; track idxSezione; let idxSezione=$index) {
+					<div class="hierarchy-list-view-body">
+						<label class="label-quadro">
+							{{sezione.nome}}
+						</label>
+						@for(scheda of sezione.schede; track idxScheda; let idxScheda=$index) {
+							<button class="hierarchy-list-view-header py-1"
+									[class.selected]="scheda == this.schedaSelezionata"
+									style="display: inline-flex; width: 100%"
+									(click)="this.selezioneScheda(idxSezione, idxScheda)"
+									[disabled]="scheda == this.schedaSelezionata || !this.isSchedaAttiva(idxSezione, idxScheda, scheda.idxSalvataggio)"
+								>
+								<div style="display: grid; column-gap: 1px; grid-template-columns: 1fr 24px 24px; width: 100%;">
+									<!-- text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black; -->
+									<div style="grid-column: 1; text-align: left;">{{scheda.nome}}</div>
+									@if(!this.isReadOnly && scheda.idxSalvataggio && this.statoCompilazione[scheda.idxSalvataggio]) {
+										@if (this.statoCompilazione[scheda.idxSalvataggio].isObbligatoria) {
+											<div style="grid-column: 2; text-align: center;">
+												<!-- <i class="bi bi-exclamation-square" style="color: yellow;" title="Compilazione della scheda necessaria"></i> -->
+												<!-- <img src="https://openclipart.org/download/14428/h0us3s-Signs-Hazard-Warning-9.svg" title="Compilazione della scheda necessaria" style="margin: 2px;"/> -->
+												<img src="assets/images/svg/h0us3s-Signs-Hazard-Warning-9.svg" title="Compilazione della scheda necessaria" style="margin: 2px;"/>
+											</div>
+										}
+										@if(this.statoCompilazione[scheda.idxSalvataggio].dataSalvataggio != undefined) {
+											<div style="grid-column: 3; text-align: center;">
+												<img src="assets/images/svg/primary-system-floppy.svg" [title]="'Data salvataggio: '+this.statoCompilazione[scheda.idxSalvataggio].dataSalvataggio" style="margin: 2px;"/>
+												<!-- <img src="https://openclipart.org/download/201078/primary-system-floppy.svg" [title]="'Data salvataggio: '+this.statoCompilazione[scheda.idxSalvataggio].dataSalvataggio" style="margin: 2px;"/> -->
+												<!-- <img src="https://openclipart.org/download/198600/mono-system-floppy.svg" [title]="'Data salvataggio: '+this.statoCompilazione[scheda.idxSalvataggio].dataSalvataggio" style="margin: 2px;"/> -->
+												<!-- <img src="https://openclipart.org/download/211780/matt-icons_media-floppy.svg" [title]="'Data salvataggio: '+this.statoCompilazione[scheda.idxSalvataggio].dataSalvataggio" style="margin: 2px;"/> -->
+												<!-- <i class="bi bi-floppy" style="color: blue;" [title]="'Data salvataggio: '+this.statoCompilazione[scheda.idxSalvataggio].dataSalvataggio"></i> -->
+											</div>
+										}
+									}
+								</div>
+							</button>
+						}
+					</div>
+				}
+			</div>
+			<div style="margin-top: auto; padding-left: 5px; font-size: smaller;">
+				@if (this.dictionariesRilevamenti && this.rilevamenti && this.rilevamenti.length > 0) {
+					<button
+							class="butt-rilevamenti py-1"
+							style="width: 100%;"
+							[disabled]="this.onRilevamenti"
+							(click)="this.apriRilevamenti()"
+						>
+						Mappa dei Rilievi in Campo
+					</button>
+				}
+				@else {
+					<button
+							class="butt-rilevamenti py-1"
+							style="width: 100%; background-color: #575757;"
+							[disabled]="true"
+						>
+						Rilievi in Campo non presenti
+					</button>
+				}
+			</div>
+		</div>
+		<div class="editor-istanza-content">
+			<div class="top-menu">
+				<!-- <button class="btn btn-outline-dark mx-2" style="width: calc(100% - 30px);">
+					<div style="display: flex; flex-direction: row;">
+						<i class="bi bi-list"></i>
+						<div style="flex-grow: 1; text-align: left; margin-left: 20px">
+							@if (this.schedaSelezionata.nome != undefined) {
+								{{this.schedaSelezionata.nome}}
+							}
+							@else {
+								{{"Seleziona una scheda..."}}
+							}
+						</div>
+					</div>
+				</button> -->
+				<label for="selSelezioneScheda" class="col-form-label">
+					Scheda:
+				</label>
+				<select id="selSelezioneScheda"
+					class="form-control mx-2" style="flex-grow: 1" [ngModel]="currSchedaKey">
+					@for (sezione of this.sezioniPratica; track idxSezione; let idxSezione=$index) {
+						<optgroup [label]="sezione.nome">
+						@for(scheda of sezione.schede; track idxScheda; let idxScheda=$index) {
+							<option
+								[ngValue]="this.getSchedaKey(idxSezione, idxScheda)"
+								(click)="this.selezioneScheda(idxSezione, idxScheda)"
+								[disabled]="scheda == this.schedaSelezionata || !this.isSchedaAttiva(idxSezione, idxScheda, scheda.idxSalvataggio)"
+								>
+								{{scheda.nome}}
+							</option>
+						}
+						</optgroup>
+					}
+				</select>
+			</div>
+			<div class="under-menu">
+				@if(this.onRilevamenti) {
+					<app-gis-table
+						[isReadOnly]="true"
+						[context]="this.contesto"
+						[dati]="this.rilevamenti"
+						[conf]="this.schedaRilevamenti.conf"
+						[resources]="this.resources"
+						[dictionariesData]="this.dictionariesRilevamenti"
+						[nomeMappa]="'Rilievi in Campo'"
+						(export)="this.onExportRilevamento($event)"
+					>
+					</app-gis-table>
+				}
+				@else {
+					<app-editor-scheda
+						[isReadOnly]="this.isReadOnly||this.schedaSelezionata?.readOnly??false"
+						[contesto]="this.contesto"
+						[resources]="this.resources"
+						[scheda]="{
+							tipo: this.schedaSelezionata?.tipo,
+							conf: this.schedaSelezionata?.conf,
+							nome: this.nomeSchedaSelezionata,
+							tipoDati: this.schedaSelezionata?.tipoDati,
+							ignoredProps: this.schedaSelezionata.ignoredProps
+						}"
+						[dictionariesData]="this.dictionariesData"
+						[dati]="this.datiSchedaSelezionata"
+						[importedValue]="this.importedValue"
+						[dataConfirmed]="this.onDataConfirmedBuond"
+						[dataChanged]="this.onDataChangedBuond">
+					</app-editor-scheda>
+				}
+			</div>
+		</div>
+		<!-- <div style="margin-top: auto;"></div> -->
+	</div>	
+}

@@ -1,0 +1,92 @@
+@if (this.datiEffettivi) {
+	<div style="display: flex; width: 100%; flex-direction: column;">
+		<div style="margin-top: 20px;">
+			<label for="inpNome" class="col-form-label">Nome:</label>
+			<input type="text" id="inpNome"
+				class="form-control" [value]="this.datiEffettivi.nome" disabled/>
+		</div>
+		<div style="margin-top: 20px; display: flex; flex-direction: row; justify-content: space-between;">
+			<div>
+				<label for="inpTipo" class="col-form-label">Tipo:</label>
+				<input type="text" id="inpTipo"
+					class="form-control" [value]="this.datiEffettivi.tipoRilevamento" disabled/>
+			</div>
+			<div style="width: 5px;"></div>
+			<div>
+				<label for="inpGeometria" class="col-form-label">Geometria</label>
+				<input type="text" id="inpGeometria"
+					class="form-control" [value]="this.datiEffettivi.tipoGeometria" disabled/>
+			</div>
+		</div>
+		<div style="margin-top: 20px;">
+			<label class="col-form-label">Note</label>
+			<textarea class="form-control" [value]="this.datiEffettivi.note" disabled></textarea>
+		</div>
+		@if(this.canExport && this.exports[datiEffettivi.tipoGeometria]) {
+			<div style="margin-top: 20px; width: 100%; display: flex; flex-direction: column; align-items: end;">
+				
+				<div class="dropdown">
+					<div style="min-width: 300px; text-align: end;">
+						<button title="Riporta la geometria in un'altra scheda"
+							class="btn btn-primary dropdown-toggle" type="button" id="dropdownRiportaGeometria" data-bs-toggle="dropdown" aria-expanded="false">
+							<i class="bi bi-arrow-left-right"></i>
+							Riporta geometria in un'altra scheda
+						</button>
+						<ul class="dropdown-menu dropdown-menu-end w-auto" aria-labelledby="dropdownRiportaGeometria">
+							@for(exp of this.exports[datiEffettivi.tipoGeometria]; track $index) {
+								<button type="button" class="dropdown-item" (click)="this.esporta(exp.path)">
+									{{exp.nome}}
+								</button>
+							}
+						</ul>
+					</div>
+				</div>
+			</div>
+		}
+		<div style="margin-top: 20px; width: 100%; display: flex; flex-direction: column;">
+			@if(this.datiEffettivi.listaFoto && this.datiEffettivi.listaFoto.length > 0) {
+				<div style="margin: 0px 5px; display: flex; justify-content: center;">
+					<label>
+						{{this.datiEffettivi.listaFoto.length}} Immagini
+					</label>
+				</div>
+				@if(this.datiEffettivi.listaFoto.length > 1) {
+					<div style="width: 100%; display: flex; flex-direction: row; align-items: flex-start; padding: 5px; overflow-x: auto;">
+						@for(foto of this.datiEffettivi.listaFoto; track $index) {
+							<button type="button"
+									class="foto-button"
+									[class.current-foto-button]="this.currFotoIdx == $index"
+									style="margin: 5px;"
+									[disabled]="this.currFotoIdx == $index"
+									(click)="this.setFotoIdx($index)"
+								>
+								<div style="display: flex; flex-direction: column; justify-content: center; align-content: center; align-items: center; width: 120px;">
+									<img [src]="foto.base64encFoto" width="80"/>
+									<label style="font-size: small; overflow: hidden; word-wrap: break-word; vertical-align: middle; height: 3lh;">
+										{{foto.nomeFoto}}
+									</label>
+								</div>
+							</button>
+						}
+					</div>
+				}
+				@if(this.datiEffettivi.listaFoto[this.currFotoIdx]) {	
+					<div style="padding: 5px;">
+						<img [src]="this.datiEffettivi.listaFoto[this.currFotoIdx].base64encFoto" style="max-width: 100%; max-height: 100%;"/>
+					</div>
+					<a [href]="this.datiEffettivi.listaFoto[this.currFotoIdx].base64encFoto" target="_blank" [download]="this.datiEffettivi.listaFoto[this.currFotoIdx].nomeFoto">
+						<label style="overflow: hidden; word-wrap: break-word; vertical-align: middle; height: 3lh;">
+							{{this.datiEffettivi.listaFoto[this.currFotoIdx].nomeFoto}}
+						</label>
+					</a>
+				}
+			}
+			@else {
+				<div style="margin: 0px 5px; display: flex; justify-content: center;">
+					<label>Nessuna Immagine</label>
+				</div>
+			}
+		</div>
+		
+	</div>
+}

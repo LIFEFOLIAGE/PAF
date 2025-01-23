@@ -1,0 +1,61 @@
+<div style="display: flex; flex-direction: column; width: 100%;">
+	<app-formio-renderer [context]="this.context" [formData]="this.datiRiferimentiParticella"
+		[form]="this.schedaFormioParticelleCatastali" [isReadOnly]="this.isReadOnly"
+		[dictionariesData]="this.dictionariesData" (dataChanged)="this.onRiferiementiPartocelleDataChanged($event)"
+		(componentInit)="this.onParticelleCatastaliComponentInit($event)">
+	</app-formio-renderer>
+
+
+
+	<div ref="component"
+		class="row formio-component formio-component-columns formio-component-columns2  formio-component-label-hidden">
+		<div ref="column-ehab9j" class="col-md-6 col-md-offset-0 col-md-push-0 col-md-pull-0">
+			<div ref="component"
+				class="form-group has-feedback formio-component formio-component-number required"
+				id="eni7o78">
+				<label id="l-eni7o78-superficie" for="dett-superficie" class="col-form-label  field-required"
+					ref="label">
+					Superficie catastale (mq)
+					<span class="sr-only">, numeric only,</span>
+				</label>
+				<input-ettari
+					idInput="dett-superficie"
+					cssInput="form-control"
+					[valoreMetriQ]="this.datiEffettivi.superficie"
+					[disabled]="isReadOnly"
+					(valoreMetriQChange)="this.onChangeInputSuperficie('superficie', $event)"
+					placeholder="aree improduttive">
+				</input-ettari>
+				<div class="formio-errors invalid-feedback" ref="messageContainer" style="display: inline;"
+						 [style.visibility.hydden]="this.errori['superficie']==undefined">
+					<label ref="html" class=""><small class="text-danger">{{this.errori["superficie"]}}</small></label>
+				</div>
+			</div>
+		</div>
+		@if (this.componentOptions.isIstanzaSopraSoglia) {
+			<div ref="column-ehab9j" class="col-md-6 col-md-offset-0 col-md-push-0 col-md-pull-0">
+				<div ref="component"
+					class="form-group has-feedback formio-component formio-component-number required"
+					id="ej0n62h">
+					<label id="l-ej0n62h-superficieInterventoPart" for="dett-superficieInterventoPart"
+						class="col-form-label  field-required" ref="label">
+						Superficie di intervento (mq)
+						<span class="sr-only">, numeric only,</span>
+					</label>
+					<input-ettari
+						idInput="dett-superficieInterventoPart"
+						cssInput="form-control"
+						[valoreMetriQ]="this.datiEffettivi.superficieInterventoPart"
+						[disabled]="isReadOnly"
+						(valoreMetriQChange)="this.onChangeInputSuperficie('superficieInterventoPart', $event)"
+						placeholder="aree improduttive">
+					</input-ettari>
+					<div class="formio-errors invalid-feedback" ref="messageContainer" style="display: inline;"
+							 [style.visibility.hydden]="this.errori['superficieInterventoPart']==undefined">
+						<label ref="html" class=""><small class="text-danger">{{this.errori["superficieInterventoPart"]}}</small></label>
+					</div>
+				</div>
+			</div>
+		}
+	</div>
+</div>

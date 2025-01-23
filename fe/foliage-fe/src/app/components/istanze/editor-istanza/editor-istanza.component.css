@@ -1,0 +1,151 @@
+.hierarchy-list-view {
+	height: 100%;
+	/* margin-left: 10px; */
+	/*max-width: 350px;
+	min-width: 350px;*/
+	/* border-top-left-radius: 10px; */
+}
+
+
+/*default olivedrab-forestgreen*/
+/*selected yellowgreen*/
+/*disabled darkgray*/
+
+.hierarchy-list-view-header {
+	border-radius: 10px;
+	/*background-color: var(--sitePrimaryDarkBlu);*/
+	/* border-top-right-radius: 10px; */
+	color: white;
+	/*background-color: forestgreen;*/
+	background-color: #196719;
+	margin-top: 1px;
+	font-weight: 600;
+	padding-left: 20px;
+	border-style: hidden;
+	font-weight: 700;
+}
+
+.hierarchy-list-view-header.selected:disabled {
+	/*background-color: yellowgreen;*/
+	background-color: #A80000;
+}
+
+.hierarchy-list-view-header:disabled {
+	background-color: dimgray;
+}
+
+.hierarchy-list-view-body {
+	display: inline-flex;
+	flex-direction: column;
+	/*width: calc(100% - 10px);*/
+	padding-left: 5px;
+	/* padding-right: 5px; */
+	margin-top: 10px;
+	/* margin-bottom: 10px; */
+	width: 100%;
+
+	background-color: darkseagreen;
+	border-top-right-radius: 10px;
+	border-bottom-right-radius: 10px;
+}
+
+.hierarchy-list-view-header:not(:last-child) {
+	margin-bottom: 4px;
+}
+
+.label-quadro {
+	/* background-color: gold; */
+	padding-left: 10px;
+	font-weight: 900;
+	margin-bottom: 6px;
+}
+
+/*.butt-scheda-selezionato {*/
+/*	background-color: yellowgreen;*/
+/*}*/
+
+
+
+
+.butt-rilevamenti {
+	border-radius: 10px;
+	color: white;
+	background-color: #12429B;
+	margin-top: 1px;
+	font-weight: 600;
+	border-style: hidden;
+}
+
+.butt-rilevamenti:disabled {
+	background-color: #A80000;
+}
+
+
+.editor-istanza-sidebar {
+	max-width: 350px;
+	min-width: 350px;
+	flex-grow: 0;
+	display: flex;
+	flex-direction: column;
+	background-color: white;
+	max-height: 100%;
+	overflow-y: auto;
+}
+@media (max-width: 767px) {
+	.editor-istanza-sidebar {
+		display: none;
+	}
+}
+
+.editor-istanza-panel {
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+	height:100%;
+}
+
+.editor-istanza-content {
+	width: 100%;
+	max-height: 100%;
+	overflow: hidden;
+}
+@media ((min-height: 768px) or (min-width: 768px)) {
+	.editor-istanza-content {
+		width: 100%;
+		/* max-height: 100%; */
+		overflow: hidden;
+	}	
+}
+
+.top-menu {
+	display: flex;
+	flex-direction: row;
+	margin-left: 10px;
+	margin-right: 10px;
+	margin-bottom: 10px;
+}
+
+@media(min-width: 768px) {
+	.top-menu {
+		display: none;
+		height: 50px;
+	}
+}
+
+@media(min-width: 768px) {
+	.under-menu {
+		height: 100%;
+	}
+}
+@media(max-width: 767px) {
+	.under-menu {
+		height: calc(100% - 50px);
+	}
+}
+
+@media(min-width: 768px) {
+	.titolo-corto {
+		text-align: center;
+		display: none;
+	}
+}

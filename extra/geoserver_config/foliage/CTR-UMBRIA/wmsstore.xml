@@ -1,0 +1,18 @@
+<wmsStore>
+  <id>WMSStoreInfoImpl--4edd0e85:18bfbc2fe87:-7e7b</id>
+  <name>CTR-UMBRIA</name>
+  <description>Carta Tecnica Regionale</description>
+  <type>WMS</type>
+  <enabled>true</enabled>
+  <workspace>
+    <id>WorkspaceInfoImpl-7cd53224:17ff4993504:-7fff</id>
+  </workspace>
+  <metadata>
+    <entry key="useConnectionPooling">true</entry>
+  </metadata>
+  <__default>false</__default>
+  <capabilitiesURL>http://geo.umbriaterritorio.it/arcgis/services/public/CTR_5K/MapServer/WMSServer</capabilitiesURL>
+  <maxConnections>6</maxConnections>
+  <readTimeout>60</readTimeout>
+  <connectTimeout>30</connectTimeout>
+</wmsStore>

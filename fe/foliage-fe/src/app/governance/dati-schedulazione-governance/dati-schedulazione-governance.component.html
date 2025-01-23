@@ -1,0 +1,81 @@
+<div class="mb-2 card border">
+	<div class="card-header bg-default">
+		<span class="mb-0 card-title">
+			Dati Schedulazione
+		</span>
+	</div>
+	<div class="card-body">
+		<div class="row">
+			<div class="col-md-6 col-md-offset-0 col-md-push-0 col-md-pull-0">
+				<div class="form-group has-feedback">
+					<label class="col-form-label" for="inpDataAvvioRichiesta" [class.field-required]="!isReadOnly">
+						Data Di Avvio Richiesta
+					</label>
+					<div ref="element">
+						<input type="datetime-local" id="inpDataAvvioRichiesta"
+							class="form-control"
+							[ngModel]="this.datiSchedulazione.dataAvvioRichiesta"
+							(ngModelChange)="this.onChangeDatiSchedulazione('dataAvvioRichiesta', this.htmlService.toLocalDateTime($event))"
+							[disabled]="isReadOnly"
+						/>
+					</div>
+					<div class="formio-errors" style="display: inline;"
+							[style.visibility.hydden]="this.errori['dataAvvioRichiesta']==undefined"
+						>
+						<label><small class="text-danger">{{this.errori['dataAvvioRichiesta']}}</small></label>
+					</div>
+				</div>
+			</div>
+			
+		</div>
+
+		<div class="row">
+			
+			<div class="col-md-6 col-md-offset-0 col-md-push-0 col-md-pull-0">
+				<div class="form-group has-feedback">
+					<label for="selTipoElab" class="col-form-label" [class.field-required]="!isReadOnly">
+						Tipologia di Elaborazione
+					</label>
+					<div ref="element">
+						<select id="selTipoElab"
+								[ngModel]="this.tipoElaborazione"
+								(ngModelChange)="this.onChangeTipoElaborazione($event)"
+								class="form-control"
+								[disabled]="isReadOnly"
+							>
+							<option [ngValue]="undefined" disabled>Seleziona...</option>
+							@for(tipoElab of this.tipiElab; track $index) {
+								<option [ngValue]="tipoElab">{{tipoElab.cod_batch}}: {{tipoElab.desc_batch}}</option>
+							}
+						</select>
+					</div>
+					<div class="formio-errors" style="display: inline;"
+							[style.visibility.hydden]="this.errori['dataAvvioRichiesta']==undefined"
+						>
+						<label><small class="text-danger">{{this.errori['dataAvvioRichiesta']}}</small></label>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6 col-md-offset-0 col-md-push-0 col-md-pull-0">
+				<div class="form-group has-feedback">
+					<label for="inpDataRife" class="col-form-label" [class.field-required]="!isReadOnly">
+						Data di Riferimento
+					</label>
+					<div ref="element">
+						<input type="date" id="inpDataRife"
+							class="form-control"
+							[ngModel]="this.datiSchedulazione.dataRife"
+							(ngModelChange)="this.onChangeDatiSchedulazione('dataRife', this.htmlService.toLocalDate($event))"
+							[disabled]="isReadOnly"
+						/>
+					</div>
+					<div class="formio-errors" style="display: inline;"
+							[style.visibility.hydden]="this.errori['dataRife']==undefined"
+						>
+						<label><small class="text-danger">{{this.errori['dataRife']}}</small></label>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,37 @@
+<h3>Stazione forestale</h3>
+<table class="m-auto"
+	style="margin-top: 20px; margin-bottom: 20px; border: 1px solid black; border-collapse: collapse">
+	<thead>
+		<tr>
+			<th class="px-2" style="border: 1px solid black; border-collapse: collapse;">Caratteristica</th>
+			<th class="px-2" style="border: 1px solid black; border-collapse: collapse;">Minimo</th>
+			<th class="px-2" style="border: 1px solid black; border-collapse: collapse;">Massimo</th>
+			<th class="px-2" style="border: 1px solid black; border-collapse: collapse;">Media</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td class="px-2" style="border: 1px solid black; border-collapse: collapse;">Altimetria (m s.l.m.)</td>
+			<td class="px-2 text-center" style="border: 1px solid black; border-collapse: collapse;">{{this.datiEffettivi.minAltimetria | number: '1.2-2' : 'it-IT'}}</td>
+			<td class="px-2 text-center" style="border: 1px solid black; border-collapse: collapse;">{{this.datiEffettivi.maxAltimetria | number: '1.2-2' : 'it-IT'}}</td>
+			<td class="px-2 text-center" style="border: 1px solid black; border-collapse: collapse;">{{this.datiEffettivi.avgAltimetria | number: '1.2-2' : 'it-IT'}}</td>
+		</tr>
+		<tr>
+			<td class="px-2" style="border: 1px solid black; border-collapse: collapse;">Pendenza (%)</td>
+			<td class="px-2 text-center" style="border: 1px solid black; border-collapse: collapse;">{{this.datiEffettivi.minPendenza | number: '1.2-2' : 'it-IT'}}</td>
+			<td class="px-2 text-center" style="border: 1px solid black; border-collapse: collapse;">{{this.datiEffettivi.maxPendenza | number: '1.2-2' : 'it-IT'}}</td>
+			<td class="px-2 text-center" style="border: 1px solid black; border-collapse: collapse;">{{this.datiEffettivi.avgPendenza | number: '1.2-2' : 'it-IT'}}</td>
+		</tr>
+		<!-- <ng-container *ngFor="let dato of datiSezioneForestale">
+			<tr>
+				<td class="px-2" style="border: 1px solid black; border-collapse: collapse;">{{dato.nome}}</td>
+				<td class="px-2 text-center" style="border: 1px solid black; border-collapse: collapse;">{{dato.minimo}}
+				</td>
+				<td class="px-2 text-center" style="border: 1px solid black; border-collapse: collapse;">
+					{{dato.massimo}}</td>
+				<td class="px-2 text-center" style="border: 1px solid black; border-collapse: collapse;">{{dato.media}}
+				</td>
+			</tr>
+		</ng-container> -->
+	</tbody>
+</table>

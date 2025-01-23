@@ -1,0 +1,12 @@
+<div style="display: flex; flex-direction: column; position: relative">
+	<div style="margin-bottom: 20px; width: 100%; display: flex; flex-direction: column;">
+<!--		<h3>Allegati</h3>-->
+		<app-formio-renderer
+			[isReadOnly]="this.isReadOnly"
+			[form]="this.formAllegati"
+			[formData]="this.datiFormAllegatiIniziale"
+			(dataChanged)="this.onDataFormAllegatiChanged($event)"
+			(componentInit)="this.onFormInit($event)">
+		</app-formio-renderer>
+	</div>
+</div>

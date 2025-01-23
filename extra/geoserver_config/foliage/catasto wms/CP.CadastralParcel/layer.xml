@@ -1,0 +1,15 @@
+<layer>
+  <name>CP.CadastralParcel</name>
+  <id>LayerInfoImpl-7cd53224:17ff4993504:-7ff4</id>
+  <type>WMS</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--570ae188:124761b8d78:-7fe2</id>
+  </defaultStyle>
+  <resource class="wmsLayer">
+    <id>WMSLayerInfoImpl-7cd53224:17ff4993504:-7ff5</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+</layer>

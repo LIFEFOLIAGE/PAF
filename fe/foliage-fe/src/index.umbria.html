@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="it">
+<head>
+	<meta charset="utf-8">
+	<title>FoliageFe</title>
+	<base href="/foliage/umbria/">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="icon" type="image/x-icon" href="favicon.ico">
+
+
+	<link href="assets/css/syntax.css" rel="stylesheet">
+	<link href="assets/css/main.css" rel="stylesheet">
+	<link href="assets/css/bootstrap.min.css" rel="stylesheet">
+	<link href="assets/css/bootstrap.min.css" rel="stylesheet">
+	<link href="assets/css/bootstrap-icons.css" rel="stylesheet">
+	<link href="assets/css/formio.full.min.css" rel="stylesheet">
+	<link href="assets/css/flatpickr.min.css" rel="stylesheet">
+
+	<style>
+		body { min-height: 100vh; }
+		.col-form-label {
+			font-weight: bold;
+		}
+		.debug {
+			border-style: inset;
+		}
+		div .card {
+				background-color: unset;
+		}
+		a:not([href]):not([class]), a:not([href]):not([class]):hover {
+			color: rgba(var(--bs-link-color-rgb),var(--bs-link-opacity,1));
+    		text-decoration: underline;
+			cursor: pointer;
+		}
+		.formio-component {
+				margin-bottom: 1rem!important;
+		}
+		.ref-elemento {
+				float: right;
+				font-size: x-small;
+				font-style: oblique;
+		}
+		.bi-remove-circle::before {
+				content: "\f623";
+		}
+
+		.bi-remove::before {
+				content: "\f5DE";
+		}
+		.bi-edit::before {
+				content: "\F4CA";
+		}
+		.table>:not(caption)>*>* {
+			background-color: unset;
+		}
+		.sr-only {
+			display: none;
+		}
+		.editgrid-table-container {
+			max-width: unset;
+		}
+		.formio-dialog-content {
+			top: 100px;
+		}
+		.h1,.h2,.h3,.h4,.h5,.h6,h1,h2,h3,h4,h5,h6 {
+			color: unset;
+		}
+		.formio-hidden {
+			margin-bottom: 0px!important;
+		}
+		.table>:not(caption)>*>* {
+			padding: .25rem .25rem;
+		}
+		.ol-compassctrl.map-compass {
+			top: -5px;
+			right: 0px;
+			width: 50px;
+			height: 50px;
+		}
+		input[type='file'][tabindex='-1'] {
+			display: none;
+		}
+		input::-webkit-outer-spin-button,
+		input::-webkit-inner-spin-button {
+			-webkit-appearance: none;
+			margin: 0;
+		}
+		input[type=number]{
+			-moz-appearance: textfield;
+			appearance: textfield;
+		}
+	</style>
+</head>
+<body>
+
+
+	<app-root></app-root>
+	<script src="assets/js/flatpickr.min.js" type="text/javascript" referrerpolicy="origin" crossorigin="anonymous"></script>
+	<script src="assets/js/bootstrap.bundle.min.js" type="text/javascript" referrerpolicy="origin" crossorigin="anonymous"></script>
+</body>
+</html>

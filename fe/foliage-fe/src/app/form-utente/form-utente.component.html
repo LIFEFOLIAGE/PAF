@@ -1,0 +1,24 @@
+<div style="width: 100%; display: block;">
+	<div style="display: flex; flex-direction: row; margin-bottom: 20px; padding-left: 15px; padding-right: 15px;">
+		<div style="margin-left: auto;"></div>
+		<button type="button" *ngFor="let sezione of this.sezioni" class="btn btn-primary"
+			style="margin-left: 10px; height: 40px;"
+			(click)="this.goTo(sezione.nome)">
+			{{sezione.nome}}
+		</button>
+	</div>
+	<app-editor-scheda
+		style="padding-left: 15px; display: block; overflow: auto;"
+		[contesto]="undefined" 
+		[scheda]="{
+			tipo: 'formio',
+			conf: this.form,
+			nome: 'Profilo Utente',
+			tipoDati: this.tipoDatiScheda
+		}"
+		[dati]="this.userData"
+		[isReadOnly]="this.isReadOnly"
+		[dataConfirmed]="this.onDataProfiloConfirmedBound"
+		[dataChanged]="this.onDataProfiloChangedBound">
+	</app-editor-scheda>
+</div>

@@ -1,0 +1,47 @@
+<wmsLayer>
+  <id>WMSLayerInfoImpl--667d0ee0:18d445c81a0:-4848</id>
+  <name>OI.ORTOIMMAGINI.2012.32</name>
+  <nativeName>OI.ORTOIMMAGINI.2012.32</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl-7cd53224:17ff4993504:-7ffe</id>
+  </namespace>
+  <title>Copertura regioni zona WGS84 - UTM32</title>
+  <description>Ortofoto digitali, con pixel di 50 centimetri, acquisite dall&apos;Agenzia per l&apos;Erogazioni in Agricoltura mediante l&apos;impiego di camera digitale, delle regioni appartenenti alla zona WGS84-UTM32: Valle d&apos;Aosta, Piemonte, Liguria, Trentino Alto Adige, Veneto, Emilia Romagna, Toscana, Sardegna.</description>
+  <abstract>Ortofoto digitali, con pixel di 50 centimetri, acquisite dall&apos;Agenzia per l&apos;Erogazioni in Agricoltura mediante l&apos;impiego di camera digitale, delle regioni appartenenti alla zona WGS84-UTM32: Valle d&apos;Aosta, Piemonte, Liguria, Trentino Alto Adige, Veneto, Emilia Romagna, Toscana, Sardegna.</abstract>
+  <keywords>
+    <string>Orto immagini</string>
+    <string>informazione</string>
+    <string>fotografia aerea (immagine)</string>
+    <string>Ortofoto</string>
+  </keywords>
+  <nativeCRS>GEOGCS[&quot;Monte Mario&quot;, 
+  DATUM[&quot;Monte Mario&quot;, 
+    SPHEROID[&quot;International 1924&quot;, 6378388.0, 297.0, AUTHORITY[&quot;EPSG&quot;,&quot;7022&quot;]], 
+    TOWGS84[-104.1, -49.1, -9.9, 0.971, -2.917, 0.714, -11.68], 
+    AUTHORITY[&quot;EPSG&quot;,&quot;6265&quot;]], 
+  PRIMEM[&quot;Greenwich&quot;, 0.0, AUTHORITY[&quot;EPSG&quot;,&quot;8901&quot;]], 
+  UNIT[&quot;degree&quot;, 0.017453292519943295], 
+  AXIS[&quot;Geodetic longitude&quot;, EAST], 
+  AXIS[&quot;Geodetic latitude&quot;, NORTH], 
+  AUTHORITY[&quot;EPSG&quot;,&quot;4265&quot;]]</nativeCRS>
+  <srs>EPSG:4265</srs>
+  <nativeBoundingBox>
+    <minx>6.33499</minx>
+    <maxx>19.8408</maxx>
+    <miny>35.0343</miny>
+    <maxy>47.3101</maxy>
+    <crs>EPSG:4265</crs>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>6.33499</minx>
+    <maxx>19.8408</maxx>
+    <miny>35.0343</miny>
+    <maxy>47.3109</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <store class="wmsStore">
+    <id>WMSStoreInfoImpl--667d0ee0:18d445c81a0:-4849</id>
+  </store>
+</wmsLayer>

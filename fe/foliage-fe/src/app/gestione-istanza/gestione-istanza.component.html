@@ -1,0 +1,250 @@
+<div style="padding: 12px;">
+	@if(infoIstanza) {
+		<div class="row" style="margin-top: 10px;">
+			<div class="col col-12">
+				<h2>Dettagli Istanza</h2>
+			</div>
+		</div>
+		<div class="row" style="margin-top: 10px; gap: 10px 0px">
+			<div class="col col-auto">
+				<label class="fw-bold">Tipo:</label>
+				<p>{{infoIstanza.descrizioneTipo}}</p>
+			</div>
+			<div class="col col-auto">
+				<label class="fw-bold">Ente territoriale:</label>
+				<p>{{infoIstanza.enteTerritoriale}}</p>
+			</div>
+			<div class="col col-auto">
+				<label class="fw-bold">Stato:</label>
+				<p>{{infoIstanza.descrizioneStato}}</p>
+			</div>
+			@if(infoIstanza.stato == "COMPILAZIONE"){
+				<div class="col col-auto">
+					<label class="fw-bold">Sezioni Compilate:</label>
+					<p style="text-align: right;">{{infoIstanza.numSchedeComp}}/{{infoIstanza.numSchede}}</p>
+				</div>
+				<div class="col col-auto">
+					<label class="fw-bold">Di cui Obbligatorie:</label>
+					<p style="text-align: right;">{{infoIstanza.numSchedeObbligComp}}/{{infoIstanza.numSchedeObblig}}</p>
+				</div>
+			}
+			@if(infoIstanza.dataInvio != undefined) {
+				<div class="col col-auto">
+					<label class="fw-bold">Data Presentazione:</label>
+					<p>{{infoIstanza.dataInvio | date: 'dd/MM/yyyy'}}</p>
+				</div>
+			}
+			<div *ngIf="infoIstanza.dataValutazione != undefined"
+					class="col col-auto">
+				<label class="fw-bold">Data Valutazione:</label>
+				<p>{{infoIstanza.dataValutazione | date: 'dd/MM/yyyy'}}</p>
+			</div>
+			<div *ngIf="infoIstanza.dataFineValidita != undefined"
+					class="col col-auto">
+				<label class="fw-bold">Data Fine Validità:</label>
+				<p>{{infoIstanza.dataFineValidita | date: 'dd/MM/yyyy'}}</p>
+			</div>
+			<div *ngIf="infoIstanza.mesiProroga != undefined"
+					class="col col-auto">
+				<label class="fw-bold">Mesi in Proroga:</label>
+				<p>{{infoIstanza.mesiProroga}}</p>
+			</div>
+		</div>
+		<div class="row" style="margin-top: 10px; gap: 10px 0px;">
+			<div class="col col-12">
+				<h2>Titolare Istanza</h2>
+			</div>
+			<div class="col col-auto">
+				<label class="fw-bold">Nome:</label>
+				<p>{{infoIstanza.titolare.nome}}</p>
+			</div>
+			<div class="col col-auto">
+				<label class="fw-bold">Cognome:</label>
+				<p>{{infoIstanza.titolare.cognome}}</p>
+			</div>
+			<div class="col col-auto">
+				<label class="fw-bold">Codice fiscale:</label>
+				<p>{{infoIstanza.titolare.codFiscale}}</p>
+			</div>
+		</div>
+		@if(infoIstanza.gestore != undefined) {
+			<div class="row" style="margin-top: 10px; gap: 10px 0px;">
+				<div class="col col-12">
+					<h2>Utente Gestore</h2>
+				</div>
+				<ng-container *ngIf="infoIstanza.gestore?.username">
+					<div class="col col-auto">
+						<label class="fw-bold">Nome:</label>
+						<p>{{infoIstanza.gestore.nome}}</p>
+					</div>
+					<div class="col col-auto">
+						<label class="fw-bold">Cognome:</label>
+						<p>{{infoIstanza.gestore.cognome}}</p>
+					</div>
+					<div class="col col-auto">
+						<label class="fw-bold">Codice fiscale:</label>
+						<p>{{infoIstanza.gestore.codFiscale}}</p>
+					</div>
+					<!-- <div class="col col-auto">
+						<label class="fw-bold">Utenza:</label>
+						<p>{{infoIstanza.gestore.username}}</p>
+					</div> -->
+					<div *ngIf="passaggioGestoreButtonVisible" class="col col-auto">
+						<button type="button" class="btn btn-primary" (click)="openPassaggioGestore()">Assegna gestore</button>
+					</div>
+					<div *ngIf="rimuoviGestoreButtonVisible" class="col col-auto">
+						<button type="button" class="btn btn-warning" (click)="rimuoviGestore()">Rimuovi gestore</button>
+					</div>
+				</ng-container>
+				
+				<ng-container *ngIf="infoIstanza.gestore?.username == undefined">
+					<div class="col col-auto">
+						Nessun Gestore
+					</div>
+					<div *ngIf="passaggioGestoreButtonVisible" class="col col-auto">
+						<button type="button" class="btn btn-primary" (click)="openPassaggioGestore()">Assegna gestore</button>
+					</div>
+				</ng-container>
+			</div>
+		}
+		<div class="row" style="margin-top: 10px; gap: 10px 0px;">
+			<ng-container *ngIf="infoIstanza.istruttore != undefined && infoIstanza.istruttore?.username != undefined">
+				<div class="col col-12">
+					<h2>Utente Istruttore</h2>
+				</div>
+				<div class="col col-auto">
+					<label class="fw-bold">Nome:</label>
+					<p>{{infoIstanza.istruttore.nome}}</p>
+				</div>
+				<div class="col col-auto">
+					<label class="fw-bold">Cognome:</label>
+					<p>{{infoIstanza.istruttore.cognome}}</p>
+				</div>
+				<div class="col col-auto">
+					<label class="fw-bold">Codice fiscale:</label>
+					<p>{{infoIstanza.istruttore.codFiscale}}</p>
+				</div>
+				<!-- <div class="col col-auto">
+					<label class="fw-bold">Utenza:</label>
+					<p>{{infoIstanza.istruttore.username}}</p>
+				</div> -->
+			</ng-container>
+			
+			<div *ngIf="assegnaIstruttoreButtonVisible" class="col col-auto">
+				<button type="button" class="btn btn-primary" (click)="openAssegnaIstruttore()">Assegna Istruttore</button>
+			</div>
+			<div *ngIf="assegnaIstruttoreButtonVisible" class="col col-auto">
+				<button type="button" class="btn btn-primary" (click)="prendiInCarico()">Prendi in Carico</button>
+			</div>
+			<div *ngIf="valutazioneButtonVisible" class="col col-auto">
+				<button type="button" class="btn btn-primary" (click)="openValutazione()">Compila Istruttoria</button>
+			</div>
+			<div *ngIf="consultaIstruttoriaButtonVisible" class="col col-auto">
+				<button type="button" class="btn btn-primary" (click)="consultaValutazione()">Consulta Istruttoria</button>
+			</div>
+			<div *ngIf="allegaButtonVisible" class="col col-auto">
+				<button type="button" class="btn btn-primary" (click)="openValutazione()">Allega Documenti</button>
+			</div>
+			<div *ngIf="revocaButtonVisible" class="col col-auto">
+				<button type="button" class="btn btn-primary" (click)="revocaIstruttore()">Revoca Istruttoria</button>
+			</div>
+		</div>
+		@if(this.infoIstanza.stato == 'APPROVATA') {
+			<div class="row" style="margin-top: 10px; gap: 10px 0px;">
+				<div class="col col-12">
+					<h2>Date lavori</h2>
+				</div>
+				@if (infoIstanza.dataInizioLavori == undefined) {
+					@if(inizioLavoriButtonVisible) {
+						<div class="col col-auto">
+							<label for="inpInizioLavori" class="col-form-label">Inzio:</label>
+							<input class="form-control" id="inpInizioLavori" [min]="this.now" [max]="this.infoIstanza.dataFineValidita"
+								type="date" [ngModel]="this.updatedDate" (ngModelChange)="onDateChanged($event, 'inizio')"/>
+						</div>
+						<div class="col col-auto">
+							<div style="display:flex; flex-direction: column; justify-content:end; height:100%">
+								<button type="button" class="btn btn-success" (click)="comunicaInizio()" [disabled]="this.updatedDate==undefined">
+									Segnala Inizio Lavori
+								</button>
+							</div>
+						</div>
+					}
+					@else {
+						<div class="col col-auto">
+							<label class="fw-bold">Inizio:</label>
+							<p>
+								Non comunicata
+							</p>
+						</div>
+					}
+				}
+				@else {
+					<div class="col col-auto">
+						<label class="fw-bold">Inizio:</label>
+						<p>
+							{{infoIstanza.dataInizioLavori | date: 'dd/MM/yyyy'}}
+						</p>
+					</div>
+					@if (infoIstanza.dataFineLavori == undefined) {
+						@if (fineLavoriButtonVisible) {
+							<div class="col col-auto">
+								<label for="inpFineLavori" class="col-form-label">Fine:</label>
+								<input class="form-control" id="inpFineLavori" [min]="this.now" [max]="this.infoIstanza.dataFineValidita"
+									type="date" [ngModel]="this.updatedDate" (ngModelChange)="onDateChanged($event, 'inizio')"/>
+							</div>
+							<div class="col col-auto">
+								<div style="display:flex; flex-direction: column; justify-content:end; height:100%">
+									<button type="button" class="btn btn-success" (click)="comunicaFine()" [disabled]="this.updatedDate==undefined">
+										Segnala Fine Lavori
+									</button>
+								</div>
+							</div>
+						}
+						@else {
+							<div class="col col-auto">
+								<label class="fw-bold">Fine:</label>
+								<p>
+									Non comunicata
+								</p>
+							</div>
+							
+						}
+					}
+					@else {
+						<div class="col col-auto">
+							<label class="fw-bold">Data Fine:</label>
+							<p>
+								{{infoIstanza.dataFineLavori | date: 'dd/MM/yyyy'}}
+							</p>
+						</div>
+					}
+				}
+			</div>
+		}
+	}
+
+
+	<div class="row justify-content-end" style="margin-top: 10px; gap: 10px 0px;">
+		<div *ngIf="richiestaProrogaButtonVisible" class="col col-auto">
+			<button type="button" class="btn btn-primary" (click)="openRichiestaDiProroga()">Richiesta di Proroga</button>
+		</div>
+		<div *ngIf="consultazioneButtonVisible" class="col col-auto">
+			<button type="button" class="btn btn-primary" (click)="openConsultazione()">Consulta Istanza</button>
+		</div>
+		<div *ngIf="consultazioneButtonVisible" class="col col-auto">
+			<button type="button" class="btn btn-primary" (click)="openPdf()">Consulta Modulistica</button>
+		</div>
+		<div *ngIf="compilazioneButtonVisible" class="col col-auto">
+			<button type="button" class="btn btn-primary" (click)="openCompilazione()">Compila Istanza</button>
+		</div>
+		<div *ngIf="compilazioneButtonVisible" class="col col-auto">
+			<button type="button" class="btn btn-primary" (click)="openPdfCompilazione()">Compila Modulistica</button>
+		</div>
+		<div *ngIf="compilazioneButtonVisible" class="col col-auto">
+			<button type="button" class="btn btn-danger" (click)="dropIstanza()">Elimina Istanza</button>
+		</div>
+		<div *ngIf="invioButtonVisible" class="col col-auto">
+			<button type="button " class="btn btn-success" (click)="openInvio()">Invia</button>
+		</div>
+	</div>
+</div>

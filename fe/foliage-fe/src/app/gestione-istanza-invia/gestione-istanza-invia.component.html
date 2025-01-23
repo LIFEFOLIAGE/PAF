@@ -1,0 +1,127 @@
+@if(this.codIstanza) {
+	<!-- <h1 style="text-align: center;">Invia istanza</h1> -->
+	
+	
+
+	<div style="display: flex; flex-direction: column; position: relative">
+		
+		<!-- @if (
+			(isModuloFirmaDigitale == true && this.allegatoFirmaDigitale)
+			||  (isModuloFirmaDigitale == false && this.allegatoFirmaOlografa && this.documentoAllegato)
+		) {
+		} -->
+		<div style="margin-bottom: 20px; width: 100%; display: flex; flex-direction: column;">
+			<div style="padding: 15px;">
+				<label class="col-form-label field-required">
+					Bollo:
+				</label>		
+				<app-file-allegato
+						[(file)]="this.datiForm.bolloInvio"
+						[isReadOnly]="false"
+					>
+				</app-file-allegato>
+			</div>
+			@if(!this.datiForm.bolloInvio) {
+				<div style="margin-bottom: 20px; margin-left: 20px;">
+					<a href="assets/pdf/modello-imposta-di-bollo-1.pdf" download="Modulo dichiarazione_bollo.pdf">Download Modulo per la Dichiarazione del Bollo</a>
+				</div>
+			}
+			<div style="padding: 15px;">
+				<label class="col-form-label field-required">
+					Diritti di Istruttoria:
+				</label>		
+				<app-file-allegato
+						[(file)]="this.datiForm.dirittiIstruttoria"
+						[isReadOnly]="false"
+					>
+				</app-file-allegato>
+			</div>
+		</div>
+
+		<!-- <div style="margin-bottom: 20px; margin-left: 20px; margin-right: 20px; display: flex; flex-direction: column;">
+			<label>Note:</label>
+			<textarea [(ngModel)]="this.note" class="form-control"></textarea>
+		</div> -->
+	
+		<div style="padding: 15px; margin-top: 5px;">
+			<button class="btn btn-primary" (click)="this.downloadPdf()"> Scarica Documento Pdf dell'Istanza da Firmare</button>
+		</div>
+		<div style="padding: 15px; margin-top: 5px; display: flex; flex-direction: column; justify-content: flex-start;">
+			<label class="col-form-label field-required">Modalità di firma:</label>
+			<div class="" role="group">
+				<div>
+					<input type="radio" id="radioFirmaDigitale" style="margin-right: 20px;" [value]="true" [(ngModel)]="isModuloFirmaDigitale"/>
+					<label for="radioFirmaDigitale">Firma Digitale</label>
+				</div>
+				<div>
+					<input type="radio" id="radioFirmaOlografa" style="margin-right: 20px;" [value]="false" [(ngModel)]="isModuloFirmaDigitale"/>
+					<label for="radioFirmaOlografa">Firma Olografa</label>
+				</div>
+			</div>
+		</div>
+		@if (isModuloFirmaDigitale!= undefined) {
+			<div style="padding: 15px; border: 1px solid black; border-radius: 20px; margin: 20px;">
+				@if(isModuloFirmaDigitale) {
+					<div style="padding: 15px;">
+						<label class="col-form-label field-required">
+							Documento Pdf dell'Istanza da Inviare con Firma digitale:
+						</label>
+						<div style="display: flex; flex-direction: row; justify-content: space-between; width: 100%;">
+							<app-file-allegato
+									style="flex-grow: 1;"
+									[(file)]="this.allegatoFirmaDigitale"
+									[isReadOnly]="false"
+								>
+							</app-file-allegato>
+						</div>
+					</div>
+				}
+				@else {
+					<div style="padding: 15px;">
+						<label class="col-form-label field-required">
+							Documento Pdf dell'Istanza da Inviare con Firma Olografa:
+						</label>
+						<div style="display: flex; flex-direction: row; justify-content: space-between; width: 100%;">
+							<app-file-allegato
+									style="flex-grow: 1;"
+									[(file)]="this.allegatoFirmaOlografa"
+									[isReadOnly]="false"
+								>
+							</app-file-allegato>
+						</div>
+					</div>
+		
+					<div style="padding: 15px;">
+						<label class="col-form-label field-required">
+							Documento d'identità:
+						</label>
+						<div style="display: flex; flex-direction: row; justify-content: space-between; width: 100%;">
+							<app-file-allegato
+									style="flex-grow: 1;"
+									[(file)]="this.documentoAllegato"
+									[isReadOnly]="false"
+								>
+							</app-file-allegato>
+						</div>
+					</div>
+				}
+			</div>
+		}
+
+		<div style="width: 100%; display: flex; flex-direction: row; margin-top: 20px;">
+			<div style='border-style:groove; padding: 5px; margin-left: 15px;'>Inviando la richiesta si dichiara (consapevoli
+				che ai sensi dell'articolo 76 del D.P.R. n. 445/2000 chiunque rilasci dichiarazioni mendaci formi atti falsi o ne
+				faccia uso nei casi previsti dalla stessa normativa, è punito ai sensi del codice penale e delle leggi speciali in
+				materia) il proprio impegno a mantenere aggiornate le utenze gestite e le istruzioni di pagamento del bollo e dei
+				diritti di istruttoria
+			</div>
+			<!-- [disabled]="!(this.datiForm.bolloInvio && this.datiForm.dirittiIstruttoria)" -->
+			<button style="margin-left: 15px; margin-right: 15px; margin-top: auto;" class="btn btn-success"
+							[disabled]="!canInviare()"
+							(click)="this.inviaRichiesta()">
+				Invia
+			</button>
+		</div>
+	</div>
+	
+}

@@ -1,0 +1,21 @@
+/* 
+input + span {
+	padding-right: 30px;
+}
+  
+input:invalid + span::after {
+	position: absolute;
+	content: "✖";
+ }
+  
+input:valid + span::after {
+	position: absolute;
+	content: "✓";
+}
+
+.validity {
+	font-size: 25px;
+    vertical-align: middle;
+    height: 100%;
+	margin-left: 5px;
+} */

@@ -1,0 +1,15 @@
+<layer>
+  <name>OI.ORTOIMMAGINI.2012.33</name>
+  <id>LayerInfoImpl--667d0ee0:18d445c81a0:-4845</id>
+  <type>WMS</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--570ae188:124761b8d78:-7fe2</id>
+  </defaultStyle>
+  <resource class="wmsLayer">
+    <id>WMSLayerInfoImpl--667d0ee0:18d445c81a0:-4846</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+</layer>

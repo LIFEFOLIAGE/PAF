@@ -1,0 +1,227 @@
+<div class="row">
+	<div class="col col-12">
+		<div ref="component" class="form-group formio-component formio-component-number"
+				 style="margin-bottom: 0px!important;">
+			<label id="l-dett-nomeUO" for="dett-nomeUO"
+						 class="col-form-label field-required" ref="label">
+				Nome unità omogenea
+				<span class="sr-only">, testo,</span>
+			</label>
+			<div ref="element">
+				<div class="input-group">
+					<input [(ngModel)]="this.datiEffettivi.nomeUO"
+						[disabled]="isReadOnly"
+						(ngModelChange)="this.onChangeProperty('nomeUO', $event)"
+						aria-required="false"
+						aria-labelledby="l-dett-nomeUO" id="dett-nomeUO"
+						value="" inputmode="decimal" placeholder="nome unità omogenea" lang="it"
+						class="form-control" type="text" ref="input"
+						aria-invalid="false">
+				</div>
+			</div>
+			<div class="formio-errors invalid-feedback" ref="messageContainer" style="display: inline;"
+					 [style.visibility.hydden]="this.errori['nomeUO']==undefined">
+				<label ref="html" class=""><small class="text-danger">{{this.errori["nomeUO"]}}</small></label>
+			</div>
+		</div>
+	</div>
+
+	<div class="col col-12">
+		<div ref="component" class="form-group formio-component formio-component-number"
+				 style="margin-bottom: 0px!important;">
+			<label id="l-dett-areeImproduttive" for="dett-areeImproduttive"
+						 class="col-form-label field-required" ref="label">
+				Aree improduttive
+				<span class="sr-only">, numeric only,</span>
+			</label>
+			<input-ettari
+					idInput="dett-areeImproduttive"
+					cssInput="form-control"
+					[valoreMetriQ]="this.datiEffettivi.areeImproduttive"
+					[disabled]="isReadOnly"
+					(valoreMetriQChange)="this.onChangeInputSuperficie('areeImproduttive', $event)"
+					placeholder="aree improduttive">
+			</input-ettari>
+			<div class="formio-errors invalid-feedback" ref="messageContainer" style="display: inline;"
+					 [style.visibility.hydden]="this.errori['areeImproduttive']==undefined">
+				<label ref="html" class=""><small class="text-danger">{{this.errori["areeImproduttive"]}}</small></label>
+			</div>
+		</div>
+	</div>
+
+	<div class="col col-12">
+		<div ref="component" class="form-group formio-component formio-component-number"
+				 style="margin-bottom: 0px!important;">
+			<label id="l-dett-chiarieRadure" for="dett-chiarieRadure"
+						 class="col-form-label field-required" ref="label">
+				Chiarie e radure
+				<span class="sr-only">, numeric only,</span>
+			</label>
+			<input-ettari
+					idInput="dett-chiarieRadure"
+					cssInput="form-control"
+					[valoreMetriQ]="this.datiEffettivi.chiarieRadure"
+					[disabled]="isReadOnly"
+					(valoreMetriQChange)="this.onChangeInputSuperficie('chiarieRadure', $event)"
+					placeholder="chiarie e radure">
+			</input-ettari>
+			<div class="formio-errors invalid-feedback" ref="messageContainer" style="display: inline;"
+					 [style.visibility.hydden]="this.errori['chiarieRadure']==undefined">
+				<label ref="html" class=""><small class="text-danger">{{this.errori["chiarieRadure"]}}</small></label>
+			</div>
+		</div>
+	</div>
+
+	<div class="col col-12">
+		<div ref="component" class="form-group formio-component formio-component-number"
+				 style="margin-bottom: 0px!important;">
+			<label id="l-dett-areeInterdette" for="dett-areeInterdette"
+						 class="col-form-label field-required" ref="label">
+				Aree interdette alla gestione
+				<span class="sr-only">, numeric only,</span>
+			</label>
+			<input-ettari
+					idInput="dett-areeInterdette"
+					cssInput="form-control"
+					[valoreMetriQ]="this.datiEffettivi.areeInterdette"
+					[disabled]="isReadOnly"
+					(valoreMetriQChange)="this.onChangeInputSuperficie('areeInterdette', $event)"
+					placeholder="aree interdette">
+			</input-ettari>
+			<div class="formio-errors invalid-feedback" ref="messageContainer" style="display: inline;"
+					 [style.visibility.hydden]="this.errori['areeInterdette']==undefined">
+				<label ref="html" class=""><small class="text-danger">{{this.errori["areeInterdette"]}}</small></label>
+			</div>
+		</div>
+	</div>
+
+	<div class="col col-12">
+		<div class="formio-errors invalid-feedback" ref="messageContainer" style="display: inline;"
+				 [style.visibility.hydden]="this.errori['sommaError']==undefined">
+			<label ref="html" class=""><small class="text-danger">{{this.errori["sommaError"]}}</small></label>
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col col-12">
+		<div ref="component" class="form-group formio-component formio-component-number"
+				 style="margin-bottom: 0px!important;">
+			<label id="l-dett-superficieDellintervento" for="dett-superficieDellintervento"
+						 class="col-form-label" ref="label">
+				Superficie totale
+				<span class="sr-only">, numeric only,</span>
+			</label>
+			<input-ettari
+					idInput="dett-superficieDellintervento"
+					cssInput="form-control"
+					[valoreMetriQ]="this.datiEffettivi.superficie"
+					[disabled]="true">
+			</input-ettari>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="col col-6">
+		<div ref="component" class="form-group formio-component formio-component-number"
+				 style="margin-bottom: 0px!important;">
+			<label id="l-dett-totaleAreeImproduttive" for="dett-totaleAreeImproduttive"
+						 class="col-form-label" ref="label">
+				Totale aree improduttive
+				<span class="sr-only">, numeric only,</span>
+			</label>
+			<input-ettari
+					idInput="dett-totaleAreeImproduttive"
+					cssInput="form-control"
+					[valoreMetriQ]="this.datiEffettivi.totaleAreeImproduttive"
+					[disabled]="true">
+			</input-ettari>
+			<div class="formio-errors invalid-feedback" ref="messageContainer" style="display: inline;"
+					 [style.visibility.hydden]="this.errori['totaleAreeImproduttive']==undefined">
+				<label ref="html" class=""><small class="text-danger">{{this.errori["totaleAreeImproduttive"]}}</small></label>
+			</div>
+		</div>
+	</div>
+
+	<div class="col col-6">
+		<div ref="component" class="form-group formio-component formio-component-number"
+				 style="margin-bottom: 0px!important;">
+			<label id="l-dett-superficieUtile" for="dett-superficieUtile"
+				class="col-form-label" ref="label">
+				Superficie forestale utile
+				<span class="sr-only">, numeric only,</span>
+			</label>
+			<input-ettari
+					idInput="dett-superficieUtile"
+					cssInput="form-control"
+					[valoreMetriQ]="this.datiEffettivi.superficieUtile"
+					[disabled]="true">
+			</input-ettari>
+		</div>
+	</div>
+</div>
+
+<!--<div *ngIf="context"-->
+<!--		 [class.d-none]="hideSoprasuolo"-->
+<!--		 class="mt-5"-->
+<!--&gt;-->
+<app-soprasuolo-boschivo
+	[dati]="this.datiSoprasuolo"
+	[isReadOnly]="this.isReadOnly"
+	[context]="this.context"
+	[resources]="this.resources"
+	[componentOptions]="this.componentOptions"
+	(changeEdit)="onChangeEditSoprasuoloBoschivo($event)"
+	(dataChanged)="onDataChangeSoprasuoloBoschivo($event)"
+	(componentInit)="onComponentInitSoprasuoloBoschivo($event)"
+></app-soprasuolo-boschivo>
+
+<div class="card border my-5">
+	<div class="card-header bg-default">
+		<span class="mb-0 card-title">Identificazione di categoria e sottocategoria forestale</span>
+	</div>
+	<div class="card-body">
+		<div class="row">
+			<div class="col col-12">
+				<div class="form-group">
+					<label for="s-categoria" class="col-form-label field-required">Categoria</label>
+					<div class="input-group">
+						<select id="s-categoria" class="form-control" [ngModel]="categoria"
+							(ngModelChange)="this.onChangeCategoria($event)" [disabled]="isReadOnly">
+							<option *ngFor="let categoria of this.categorie" [ngValue]="categoria">
+								{{categoria.nome_categoria}}
+							</option>
+						</select>
+					</div>
+					<div class="formio-errors invalid-feedback" ref="messageContainer" style="display: inline;"
+						[style.visibility.hydden]="this.errori['idCategoria']==undefined">
+						<div class="form-text error">{{this.errori["idCategoria"]}}</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col col-12">
+				<div class="form-group">
+					<label for="s-sottocategoria" class="col-form-label">Sottocategoria</label>
+					<div class="input-group">
+						<select id="s-sottocategoria" class="form-control" [ngModel]="this.datiEffettivi['idSottocategoria']"
+							(ngModelChange)="this.onChangeProperty('idSottocategoria', $event)"
+							[disabled]="isReadOnly || this.datiEffettivi['idCategoria'] == undefined">
+							<option [ngValue]="undefined"></option>
+							<option *ngFor="let sottocategoria of this.sottocategorie"
+								[ngValue]="sottocategoria.id_sottocategoria">
+								{{sottocategoria.nome_sottocategoria}}
+							</option>
+						</select>
+					</div>
+					<div class="formio-errors invalid-feedback" ref="messageContainer" style="display: inline;"
+						[style.visibility.hydden]="this.errori['idSottocategoria']==undefined">
+						<div class="form-text error">{{this.errori["idSottocategoria"]}}</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!--</div>-->

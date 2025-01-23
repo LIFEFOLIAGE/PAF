@@ -1,0 +1,67 @@
+<div style="padding-left: 15px; padding-right: 15px;">
+	<!-- <div class="mt-3">
+		<h1 style="text-align: center;">Cruscotto di Supporto alla Governance</h1>
+	</div> -->
+	<div class="mt-3 container" style="display: flex; flex-direction: row; justify-content: space-between;">
+		<button type="button" class="btn btn-primary" (click)="this.nuovaRichiesta()">Nuova Richiesta</button>
+		<button type="button" class="btn btn-primary" (click)="this.goToRichieste()">Elenco Richieste</button>
+	</div>
+	@if (this.reports) {
+		<h2 style="text-align: center;">Report Disponibili</h2>
+		<div class="container">
+			@for (report of this.reports; track $index) {
+				<div class="my-5 mx-2">
+					<h6>
+						<p>
+							<b>
+								{{report.codice.replace('_', ' ')}}
+							</b>
+							<br>
+							<i>
+								{{report.descrizione}}
+							</i>
+						</p>
+					</h6>
+					@if (report.anni.length == 0) {
+						<p>Nessun report disponibile</p>
+					}
+					@else {
+						@for (annoReport of this.report.anni; track $index) {
+							<p>
+								{{annoReport.anno}}
+								@for(dataReport of annoReport.date; track $index) {
+									<div style="display: flex; flex-direction: row;">
+										<div style="text-align: left;">
+											{{dataReport.nomeFileConData}}, {{dataReport.dataDesc}}
+										</div>
+										<div style="flex-grow: 1; border-bottom: 1px dotted black;">
+	
+										</div>
+										<div style="text-align: right;">
+											@if(dataReport.dataReq == undefined) {
+												<i class="bi bi-building-gear" [title]="'Eseguito automaticamente il ' + dataReport.startTime"></i>
+											}
+											@else {
+												<a [routerLink]="['richieste', dataReport.idExec]" [title]="'Richiesto il ' + dataReport.dataReq + ' ed eseguito il ' + dataReport.startTime">
+													<i class="bi bi-person-gear"></i>
+												</a>
+											}
+											[
+											@for(formato of report.formatoFiles; let index = $index; track index) {
+												@if(index != 0) {
+													|
+												}
+												<a (click)="downloadReport(report, dataReport, formato)">{{formato}}</a>
+											}
+											]
+										</div>
+									</div>
+								}
+							</p>
+						}
+					}
+				</div>
+			}
+		</div>
+	}
+</div>

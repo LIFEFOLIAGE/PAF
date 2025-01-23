@@ -1,0 +1,15 @@
+<layer>
+  <name>UMBRIA-nat2k_habitat_prioritari_208</name>
+  <id>LayerInfoImpl--6b1c5aa0:18d5e1c587f:-507a</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--570ae188:124761b8d78:-7fe0</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl--6b1c5aa0:18d5e1c587f:-507b</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+</layer>

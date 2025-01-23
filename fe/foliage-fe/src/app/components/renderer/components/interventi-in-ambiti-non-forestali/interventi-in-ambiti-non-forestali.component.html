@@ -1,0 +1,89 @@
+<div>
+	<h3>Interventi in ambiti non forestali</h3>
+</div>
+
+<div class="mb-5">
+	<div>
+		<label for="ejhnixy-primaMacrocategoria" class="col-form-label field-required">Tipologia uso del suolo:</label>
+		<select aria-required="false" id="ejhnixy-primaMacrocategoria" lang="it" class="form-control"
+			type="text" name="data[primaMacrocategoria]" ref="selectContainer" aria-invalid="false"
+			[ngModel]="this.datiEffettivi['idUsoSuolo']"
+			(ngModelChange)="this.onChangeTipologiaSuoloById($event)"
+			[disabled]="isReadOnly">
+			<option *ngFor="let tipologiaSuolo of this.tipologieSuolo"
+					[ngValue]="tipologiaSuolo.id_uso_suolo">
+				{{tipologiaSuolo.cod_uso_suolo}}: {{tipologiaSuolo.desc_uso_suolo}}
+			</option>
+		</select>
+		<div *ngIf="this.errori['idUsoSuolo']!=undefined" style="display: unset" class="formio-errors invalid-feedback" ref="messageContainer">
+			<label ref="html" class=""><small class="text-danger">{{this.errori['idUsoSuolo']}}</small></label>
+		</div>
+	</div>
+
+	<div class="mt-5" *ngIf="this.tipologieIntervento!=undefined">
+		<label for="selectIntervento" class="col-form-label field-required">Tipologia dell'intervento:</label>
+		<table id="selectIntervento" style="border: none;">
+			<thead>
+			<tr>
+				<th></th>
+				<th class="px-2">Cod. intervento</th>
+				<th class="px-2">Tipo intervento</th>
+				<th class="px-2">Rif. normativo</th>
+			</tr>
+			</thead>
+
+			<tbody>
+				@for (intervento of tipologieIntervento; track idx; let idx=$index) {
+					<tr>
+						<td class="px-2 text-center">
+							<input [attr.id]="'inpInte'+idx"
+								type="radio" style="width: 20px; height: 20px;"
+								[disabled]="isReadOnly"
+								[checked]="this.interventoSelezionato==intervento"
+								(change)="this.onChangeIntervento(intervento)">
+						</td>
+						<td class="px-2">{{this.idxSuoli[this.datiEffettivi['idUsoSuolo']].cod_uso_suolo}}_{{intervento.cod_tipo_intervento}}</td>
+						<td class="px-2">
+							<label [htmlFor]="'inpInte'+idx">
+								{{intervento.nome_tipo_intervento}}
+							</label>
+						</td>
+						<td class="px-2">{{intervento.riferimento_normativo}}</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+		<div *ngIf="this.errori['interventoSelezionato']!=undefined" style="display: unset" class="formio-errors invalid-feedback" ref="messageContainer">
+			<label ref="html" class="">
+				<small class="text-danger">
+					{{this.errori['interventoSelezionato']}}
+				</small>
+			</label>
+		</div>
+	</div>
+
+	<div class="mt-5" *ngIf="this.campoDaGestire!=undefined && this.interventoSelezionato">
+		<label for="i-gestire" class="col-form-label field-required">{{this.campoDaGestire}}:</label>
+			<input [ngModel]="this.datiEffettivi['valoreIntervento']"
+					(ngModelChange)="onChangeValoreIntervento($event)"
+					id="i-gestire"
+					class="form-control w-100"
+					type="text">
+			<div class="invalid-feedback"
+					[class.d-block]="this.errori['valoreIntervento']!=undefined">
+					<label ref="html" class=""><small class="text-danger">{{this.errori['valoreIntervento']}}</small></label>
+			</div>
+		<div class="mt-5">
+			<label for="descrizioneIntervento" class="col-form-label field-required">Descrizione Intervento:</label>
+			<textarea id="descrizioneIntervento"
+				maxlength="250"
+				[ngModel]="datiEffettivi['descrizioneIntervento']"
+				(ngModelChange)="onChangeProperty('descrizioneIntervento', $event)"
+				class="form-control w-100" required>
+			</textarea>
+		</div>
+		<div *ngIf="this.errori['descrizioneIntervento']!=undefined" style="display: unset" class="formio-errors invalid-feedback" ref="messageContainer">
+			<label ref="html" class=""><small class="text-danger">{{this.errori['descrizioneIntervento']}}</small></label>
+		</div>
+	</div>
+</div>

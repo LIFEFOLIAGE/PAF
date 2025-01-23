@@ -1,0 +1,18 @@
+.accordion-header {
+	padding: 10px;
+	background-color: #f5f5f5;
+	/* cursor: pointer; */
+}
+  
+.accordion-content {
+	/* display: none; */
+	visibility: collapse;
+	background-color: #f5f5f5;
+	padding: 10px;
+	height: 0px;
+}
+.accordion-content.open {
+	/* display: block; */
+	visibility: visible;
+	height: unset;
+}

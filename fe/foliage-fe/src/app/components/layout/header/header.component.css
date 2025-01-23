@@ -1,0 +1,10 @@
+.dropdown-item:active {
+    color: var(--bs-dropdown-link-active-color);
+    text-decoration: none;
+    background-color: gray;
+}
+
+.logo {
+    height: 88px;
+    margin-left: 10px;
+}

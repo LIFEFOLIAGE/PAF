@@ -3,10 +3,10 @@
 ## Requisiti
 
 *	7zip e unzip
-*	Apache 2 (con moduli reweite, proxy e proxy_http)
+*	Apache 2 (con moduli rewrite, proxy e proxy_http)
 *	GeoServer 2.15 e Tomcat 9 su java 11
 *	Un Identity Manager Service compatibile con il protocollo oauth2
-*   Java 21 e Maven per il backend del paccetto PAF
+*   Java 21 e Maven per il backend del pacchetto PAF
 *	PostgreSql v15 - Database
 *	PostgreSql - Client
 *	NodeJs v22.13
@@ -27,18 +27,18 @@ Tali host non devono necessariamente esser diversi, ma è importante che i coman
 
 ### <a id="installZip">Installazione 7zip e unzip</a>
 
-Sugli host **host-svilupppo** e **host-geoserver** occorre:
+Sugli host **host-sviluppo** e **host-geoserver** occorre:
 *	installare unzip per estrarre i file dei pacchetti per PAF, tomcat e geoserver
 ```bash
 sudo apt install unzip
 ```
-Sull'host **host-svilupppo** occorre:
+Sull'host **host-sviluppo** occorre:
 *	installare 7zip per estrarre i file dove sono stati archiviati i dati GIS esterni
 ```bash
 sudo apt install p7zip-full
 ```
 
-### <a id="installApache">Istallazione Apache 2</a>
+### <a id="installApache">Installazione Apache 2</a>
 
 Sull'host **host-pubblicazione** occorre installare il server web Apache 2 con le estensioni rewrite, proxy e proxy_http.
 ```bash
@@ -48,10 +48,10 @@ sudo a2enmod proxy
 sudo a2enmod proxy_http
 ```
 
-### <a id="setupGeoserver">Predisposizione Geoserver</a>
-Sull'host **host-geoserver** occorre installare Java 11 e Tomcat come requisiti di Geoserver.
+### <a id="setupGeoserver">Predisposizione GeoServer</a>
+Sull'host **host-geoserver** occorre installare Java 11 e Tomcat come requisiti di GeoServer.
 
-#### <a id="installJdk11">Istallazione Java 11</a>
+#### <a id="installJdk11">Installazione Java 11</a>
 ```bash
 sudo apt install openjdk-11-jdk
 ```
@@ -67,7 +67,7 @@ sudo sh -c 'chmod +x /opt/tomcat/latest/bin/*.sh'
 ```
 
 #### <a id="configTomcat">Configurazione script avvio Tomcat 9</a>
-Aprire il file con lo script del servizo
+Aprire il file con lo script del servizio
 
 ```bash
 sudo systemctl edit --full tomcat.service
@@ -110,7 +110,7 @@ Abilitare il servizio tomcat
 sudo systemctl enable --now tomcat
 ```
 
-#### <a id="deployGeoserver">Pubblicazione Geoserver</a>
+#### <a id="deployGeoserver">Pubblicazione GeoServer</a>
 
 Download ed estrazione geoserver
 ```bash
@@ -170,7 +170,7 @@ nel caso in cui la directory esista già assicurarsi che sia vuota
 mkdir -p $FOLIAGE_HOME
 ```
 
-### <a id="downloadSource">Download file contente il progetto PAF da Github</a>
+### <a id="downloadSource">Download file contenente il progetto PAF da GitHub</a>
 ```bash
 cd $FOLIAGE_HOME
 curl -LO https://github.com/LIFEFOLIAGE/LIFEFOLIAGE/archive/refs/heads/main.zip
@@ -194,7 +194,7 @@ In questa guida si presuppone che il server postgres sia già disponibile con un
 
 ### <a id="createDb">Creazione database, utenza applicativa, estensioni e schemi</a>
 
-Sull'host **host-sviluppo**, avviare il client psql in connessione verso il server Postgres in cui creare il database con un'utenza amministrativa (di solito è postgres) al database di gestione (di solito è postgres).
+Sull'host **host-sviluppo**, avviare il client psql in connessione verso il server Postgres in cui creare il database con un'utenza amministrativa (di solito è postgres) al database di gestione (di solito è postgres) ed esegiure i comandi SQL riportati.
 
 In particolare occorre fare le seguenti sostituzioni:
 *	Inserire l'indirizzo del server db al posto di `<host-db-server>`
@@ -232,7 +232,7 @@ CREATE SCHEMA foliage_extra AUTHORIZATION <nome-utenza-applicativa>;
 
 ### <a id="createDbObjs">Creazione delle tabelle e generazione della configurazione iniziale nel database PAF</a>
 
-Gli script con i comandi per la creazione degli oggetti nel database sono nella directory `$FOLIAGE_HOME/PAF/be/foliage/src/main/resources/dbScripts/v0.1` dove c'è lo script principale per predisporre lo schema foliage2 nella regione:
+Gli script con i comandi per la creazione degli oggetti nel database sono nella directory `$FOLIAGE_HOME/PAF/be/foliage/src/main/resources/dbScripts/v0.1` dove c'è lo script principale per predisporre lo schema foliage2 per la regione di interesse:
 
 * `main-<regione>.sql`: predispone l'ambiente con la configurazione per la regione.
 
@@ -253,7 +253,7 @@ cd $FOLIAGE_HOME/PAF/extra/dump-foliage_extra
 pg_restore --host=<host-db-server> --username=<nome-utenza-applicativa> --dbname=<nome-del-database-foliage> foliage_extra_<regione>.dmp
 ```
 
-## <a id="configGeoserver">Inizializzazione di geoserver</a>
+## <a id="configGeoserver">Inizializzazione di GeoServer</a>
 
 La configurazione per geoserver può essere importata copiando i file presenti in **host-sviluppo** nella directory del progetto `$FOLIAGE_HOME/PAF/extra/geoserver_config` dove è registrata la definizione dei servizi WFS per i layer vettoriali associati ai dati caricati precedentemente nello schema foliage_extra del database e dei servizi WMS che fanno da proxy verso le mappe esterne utilizzate dall'applicativo. I file di configurazione vanno copiati in **host-geoserver** nella directory di configurazione di geoserver (`/opt/tomcat/apache-tomcat-9.0.37/webapps/geoserver/data/workspaces/`). Inoltre dopo aver copiato i file occorre modificare manualmente alcune impostazioni per poter procedere.
 

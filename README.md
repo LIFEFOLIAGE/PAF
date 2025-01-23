@@ -156,7 +156,7 @@ nvm install v22.13.0
 
 ## Predisposizione dei sorgenti per l'applicativo PAF
 
-Sull'host **host-sviluppo** viene scaricato ed estratto il paccheto con i sorgenti del progetto PAF
+Sull'host **host-sviluppo** viene scaricato ed estratto il pacchetto con i sorgenti del progetto PAF
 
 ### <a id="definePafFolder">Identificazione della cartella per il progetto PAF</a>
 sostituire il percorso della directory di destinazione dei sorgenti del progetto PAF a `<cartella-sorgenti-paf-foliage>`
@@ -246,7 +246,7 @@ psql -U <nome-utenza-applicativa> -H <host-db-server> -d <nome-del-database-foli
 Le tabelle dello schema foliage_extra (che viene utilizzato per memorizzare i dati GIS esterni) possono essere recuperate dal file di dump che presente nella directory `PAF/extra/dump-foliage_extra`:
 * `foliage_extra_<regione>.dmp`: tabelle per l'ambiente della regione.
 
-A causa delle limitazioni sulle dimensioni dei file su Github, il dump con i dati GIS esterni è stato archiviato e scomposto in 6 file più piccoli, quindi prima di poter essere utilizzato va estratto con 7zip. Dall'host **host-sviluppo**
+A causa delle limitazioni sulle dimensioni dei file su GitHub, il dump con i dati GIS esterni è stato archiviato e scomposto in 6 file più piccoli, quindi prima di poter essere utilizzato va estratto con 7zip. Dall'host **host-sviluppo**
 ```bash
 cd $FOLIAGE_HOME/PAF/extra/dump-foliage_extra
 7z x foliage_extra_<regione>.7z.001

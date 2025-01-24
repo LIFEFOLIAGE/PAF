@@ -348,7 +348,7 @@ Sull'host **host-pubblicazione**, la configurazione del server web apache 2 può
 
 
 
-```text
+```xml
 <VirtualHost <indirizzo-host-pubblicazione>:<porta-pubblicazione>>
 	ServerAdmin webmaster@localhost
 	DocumentRoot <path-distribuzione-frontend>

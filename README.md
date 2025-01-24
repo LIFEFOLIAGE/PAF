@@ -405,13 +405,10 @@ export const iamConfig : Record<string, any>= {
 	scope: 'openid',
 	responseType: 'code',
 	sessionChecksEnabled: false,
-	// begin: richiesto se il documento non e' completamente conforme
 	strictDiscoveryDocumentValidation: false,
 	skipIssuerCheck: true,
-	// end: richiesto se il documento non e' completamente conforme
 	requireHttps: false,
 	showDebugInformation: true,
-	//disablePKCE: false,
 	useHttpBasicAuth: true,
 	timeoutFactor: 0.5
 };

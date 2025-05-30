@@ -1,0 +1,58 @@
+<featureType>
+  <id>FeatureTypeInfoImpl--5cc7c6df:196b4376cb6:-78b1</id>
+  <name>ExtendedLandCoverUnit</name>
+  <nativeName>ExtendedLandCoverUnit</nativeName>
+  <namespace>
+    <id>foliage_inspire_umbria_namespace</id>
+  </namespace>
+  <title>ExtendedLandCoverUnit</title>
+  <nativeCRS class="projected">PROJCS[&quot;ETRS89 / LAEA Europe&quot;, 
+  GEOGCS[&quot;ETRS89&quot;, 
+    DATUM[&quot;European Terrestrial Reference System 1989&quot;, 
+      SPHEROID[&quot;GRS 1980&quot;, 6378137.0, 298.257222101, AUTHORITY[&quot;EPSG&quot;,&quot;7019&quot;]], 
+      TOWGS84[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 
+      AUTHORITY[&quot;EPSG&quot;,&quot;6258&quot;]], 
+    PRIMEM[&quot;Greenwich&quot;, 0.0, AUTHORITY[&quot;EPSG&quot;,&quot;8901&quot;]], 
+    UNIT[&quot;degree&quot;, 0.017453292519943295], 
+    AXIS[&quot;Geodetic longitude&quot;, EAST], 
+    AXIS[&quot;Geodetic latitude&quot;, NORTH], 
+    AUTHORITY[&quot;EPSG&quot;,&quot;4258&quot;]], 
+  PROJECTION[&quot;Lambert_Azimuthal_Equal_Area&quot;, AUTHORITY[&quot;EPSG&quot;,&quot;9820&quot;]], 
+  PARAMETER[&quot;latitude_of_center&quot;, 52.0], 
+  PARAMETER[&quot;longitude_of_center&quot;, 10.0], 
+  PARAMETER[&quot;false_easting&quot;, 4321000.0], 
+  PARAMETER[&quot;false_northing&quot;, 3210000.0], 
+  UNIT[&quot;m&quot;, 1.0], 
+  AXIS[&quot;Easting&quot;, EAST], 
+  AXIS[&quot;Northing&quot;, NORTH], 
+  AUTHORITY[&quot;EPSG&quot;,&quot;3035&quot;]]</nativeCRS>
+  <srs>EPSG:3035</srs>
+  <nativeBoundingBox>
+    <minx>4477824.37428298</minx>
+    <maxx>4538443.8055601055</maxx>
+    <miny>2191285.9248880204</miny>
+    <maxy>2236806.1673675184</maxy>
+    <crs class="projected">EPSG:3035</crs>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>11.911773660529208</minx>
+    <maxx>12.668768199984182</maxx>
+    <miny>42.79359377291993</miny>
+    <maxy>43.22096882374373</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <store class="dataStore">
+    <id>DataStoreInfoImpl--5cc7c6df:196b4376cb6:-78b2</id>
+  </store>
+  <serviceConfiguration>false</serviceConfiguration>
+  <simpleConversionEnabled>false</simpleConversionEnabled>
+  <maxFeatures>0</maxFeatures>
+  <numDecimals>0</numDecimals>
+  <padWithZeros>false</padWithZeros>
+  <forcedDecimal>false</forcedDecimal>
+  <overridingServiceSRS>false</overridingServiceSRS>
+  <skipNumberMatched>false</skipNumberMatched>
+  <circularArcPresent>false</circularArcPresent>
+</featureType>

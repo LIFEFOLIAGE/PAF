@@ -5,7 +5,7 @@ import { IstanzaComponentInterface } from '../../../interfaces/istanza-component
 import { ExportValue } from '../../../istanze/editor-istanza/editor-istanza.component';
 import { environment } from '../../../../../environments/environment';
 
-const apiUrl = `${environment.apiOrigin??window.origin}${environment.apiServerPath}`;
+const apiUrl = `${environment.apiOrigin??window.origin}${environment.apiUrl}`;
 const schedaFormioParticelleCatastali = {
 	"components": [
 		{
@@ -23,7 +23,7 @@ const schedaFormioParticelleCatastali = {
 								"headers": [
 									{
 										"key": "Authorization",
-										"value": "{{submission.metadata.getAccessToken()}}"
+										"value": "{{window.getAccessToken()}}"
 									}
 								]
 							},
@@ -60,7 +60,7 @@ const schedaFormioParticelleCatastali = {
 								"headers": [
 									{
 										"key": "Authorization",
-										"value": "{{submission.metadata.getAccessToken()}}"
+										"value": "{{window.getAccessToken()}}"
 									}
 								]
 							},
@@ -284,6 +284,7 @@ export class ParticellaCatastaleComponent implements ComponentType<SimpleObjectC
 		if (this.componentOptions.isIstanzaSopraSoglia) {
 			this.checks.push(['superficieInterventoPart', 'superficie di intervento']);
 		}
+		this.checkErrors();
 	}
 	
 	ngOnChanges(changes: SimpleChanges): void {
@@ -297,6 +298,12 @@ export class ParticellaCatastaleComponent implements ComponentType<SimpleObjectC
 					currValue['superficie'] = (currValue['superficie'] == undefined)
 						? 0
 						: Number.parseFloat(currValue['superficie']).toFixed(2);
+
+					if (this.componentOptions.isIstanzaSopraSoglia) {
+						currValue['superficieInterventoPart'] = (currValue['superficieInterventoPart'] == undefined)
+							? 0
+							: Number.parseFloat(currValue['superficieInterventoPart']).toFixed(2);
+					}
 
 					this.datiEffettivi = { ...currValue };
 					this.datiRiferimentiParticella = { ...currValue };
@@ -321,9 +328,6 @@ export class ParticellaCatastaleComponent implements ComponentType<SimpleObjectC
 	}
 
 	checkErrors() {
-
-		
-
 		this.checks.forEach(
 			(s: string[]) => {
 				const key = s[0];
@@ -348,28 +352,12 @@ export class ParticellaCatastaleComponent implements ComponentType<SimpleObjectC
 						}
 					}
 				}
-
-
-				// if (v == undefined || isNaN(v) ) {
-				// 	this.errori[key] = `${nome} è un valore richiesto`;
-				// }
-				// else {
-				// 	if (v <= 0) {
-
-				// 	}
-				// 	else {
-				// 		delete this.errori[key];
-				// 	}
-				// }
-
+				//console.log({check: {key, nome, v, err: this.errori[key]}});
 			}
 		);
-		if (this.componentOptions.isIstanzaSopraSoglia) {
+		if (this.componentOptions.isIstanzaSopraSoglia && !this.errori['superficieInterventoPart']) {
 			if (this.datiEffettivi['superficie'] < this.datiEffettivi['superficieInterventoPart']) {
 				this.errori['superficieInterventoPart'] =  "La superficie dell'intervento non può superare la superficie catastale"
-			}
-			else {
-				delete this.errori['superficieInterventoPart'];
 			}
 		}
 	}

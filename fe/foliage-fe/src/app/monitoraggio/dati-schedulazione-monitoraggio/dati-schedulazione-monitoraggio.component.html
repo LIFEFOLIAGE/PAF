@@ -16,7 +16,7 @@
 						<input type="datetime-local" id="inpDataAvvio"
 							class="form-control" value="00:00"
 							[ngModel]="this.datiSchedulazione.dataAvvioRichiesta"
-							(ngModelChange)="this.onChangeDatiSchedulazione('dataAvvioRichiesta', this.htmlService.toLocalDateTime($event))"
+							(ngModelChange)="this.onChangeDataAvvio(this.htmlService.toLocalDateTime($event))"
 							[disabled]="isReadOnly"
 						/>
 					</div>
@@ -27,9 +27,40 @@
 					</div>
 				</div>
 			</div>
+			
+			<div class="col-md-6 col-md-offset-0 col-md-push-0 col-md-pull-0">
+				<div class="form-group has-feedback">
+					<label for="inpDataAvvio"
+						class="col-form-label" [class.field-required]="!isReadOnly">
+						Annualità in elaborazione:
+					</label>
+					<div ref="element">
+						<select id="selAnnualita"
+								class="form-control" style="grid-column: 1;" [(ngModel)]="this.periodoElaborazione"
+								(ngModelChange)="this.onChangePeriodoElaborazione($event)"
+								[disabled]="isReadOnly"
+							>
+							@for(periodo of this.elaborazioni; track $index) {
+								<option [ngValue]="periodo">{{periodo.descData}}</option>
+							}
+						</select>
+						<!-- <input type="datetime-local" id="inpDataAvvio"
+							class="form-control" value="00:00"
+							[ngModel]="this.datiSchedulazione.dataAvvioRichiesta"
+							(ngModelChange)="this.onChangeDatiSchedulazione('dataAvvioRichiesta', this.htmlService.toLocalDateTime($event))"
+							[disabled]="isReadOnly"
+						/> -->
+					</div>
+					<div class="formio-errors" style="display: inline;"
+							[style.visibility.hydden]="this.errori['dataAvvioRichiesta']==undefined"
+						>
+						<label><small class="text-danger">{{this.errori['dataAvvioRichiesta']}}</small></label>
+					</div>
+				</div>
+			</div>
 		</div>
 
-		<div class="row">
+		<!-- <div class="row">
 			<div class="col-md-6 col-md-offset-0 col-md-push-0 col-md-pull-0">
 				<div class="form-group has-feedback">
 					<label for="inpDataInizio"
@@ -72,6 +103,6 @@
 					</div>
 				</div>
 			</div>
-		</div>
+		</div> -->
 	</div>
 </div>

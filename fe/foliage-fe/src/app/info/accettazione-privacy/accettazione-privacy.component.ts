@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { BreadcrumbModel } from 'src/app/models/breadcrumb';
 import { BreadcrumbService } from 'src/app/services/breadcrumb.service';
 import { TitleService } from 'src/app/services/title.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
 	selector: 'app-accettazione-privacy',
@@ -13,7 +14,7 @@ import { TitleService } from 'src/app/services/title.service';
 export class AccettazionePrivacyComponent implements OnInit {
 	showButtons: boolean = false;
 	@Output() onAccetta: EventEmitter<void> = new EventEmitter<void>();
-
+	regione: string = environment.regione;
 
 	listaDocumenti: any[] = [
 		// {
@@ -91,7 +92,7 @@ export class AccettazionePrivacyComponent implements OnInit {
 		this.titleService.title = "Informativa sulla Privacy"
 		this.authService.cercaAccettazionePrivacy().then(
 			p => {
-				this.showButtons = !p;
+				this.showButtons = (p != undefined) || !p;
 				if (this.showButtons) {
 					this.breadcrumbService.breadcrumb = undefined;
 				}

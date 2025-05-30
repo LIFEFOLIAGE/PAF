@@ -3,7 +3,7 @@ import { BreadcrumbModel } from 'src/app/models/breadcrumb';
 import { ActivatedRoute, Router } from "@angular/router";
 import { BaseAuthService } from "../../services/auth.service";
 import { SessionManagerService } from "../../services/session-manager.service";
-import { ChronoUnit, LocalDateTime } from "@js-joda/core";
+import { ChronoUnit, DateTimeFormatter, LocalDateTime } from "@js-joda/core";
 import { BreadcrumbService } from 'src/app/services/breadcrumb.service';
 import { TitleService } from 'src/app/services/title.service';
 
@@ -73,8 +73,10 @@ export class ModificaRichiestaGovernanceComponent implements OnInit {
 			);	
 			this.breadcrumbService.breadcrumb = breadcrumbModel;
 			this.titleService.title = "Nuova Richiesta Elaborazione Governance";
-
-			this.datiSchedulazione.dataAvvioRichiesta = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+			const data : any = LocalDateTime.now()
+			const data1 : any = data.truncatedTo(ChronoUnit.MINUTES);
+			const data2: any = data1.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+			this.datiSchedulazione.dataAvvioRichiesta = data2;
 		}
 	}
 

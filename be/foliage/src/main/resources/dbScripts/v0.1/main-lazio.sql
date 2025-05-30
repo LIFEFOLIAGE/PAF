@@ -101,7 +101,6 @@ delete from foliage2.flgente_root_tab;
 \i popolamento/flgprofili_cist_tab.sql
 \i popolamento/flgtipo_istanza_tab_LAZIO.sql
 --\i popolamento/flgtipo_istanza_tab_UMBRIA.sql
-\echo 'flgschede_tipoistanza_tab'
 \i popolamento/flgschede_tipoistanza_tab.sql
 
 
@@ -140,3 +139,12 @@ delete from foliage2.flgente_root_tab;
 --\i popolamento/foliage_extra_umbria.dmp.sql
 
 
+\i aggiornamenti/20240828.sql
+\i aggiornamenti/20240901.sql
+\i aggiornamenti/20241014.sql
+\i aggiornamenti/20241104.sql
+\i aggiornamenti/20250225.sql
+\i aggiornamenti/20250403-lazio.sql
+\i aggiornamenti/20250508.sql
+\i aggiornamenti/20250521.sql
+\i aggiornamenti/20250530.sql

@@ -5,7 +5,6 @@ import { backendRequest, ngReloadComponent } from './utils';
 import { RequestService } from './request.service';
 import { Router, UrlSegment } from '@angular/router';
 import { FoliageStorageService } from './auth.storage';
-import { LocationStrategy } from '@angular/common';
 
 
 
@@ -221,7 +220,6 @@ export class MockAuthService extends BaseAuthService{
 	constructor(
 		private requestService2: RequestService,
 		private storageService2: OAuthStorage,
-		private locationStrategy: LocationStrategy,
 		private router: Router
 	) {
 		super(requestService2, storageService2);
@@ -247,7 +245,7 @@ export class MockAuthService extends BaseAuthService{
 		}
 		//window.location.reload();
 		//ngReloadComponent(this.router);
-		window.open(this.locationStrategy.getBaseHref(), '_self');
+		window.open(environment.baseHRef, '_self');
 		// const redUrl = this.postLoginRedirection;
 		// this.postLoginRedirection = undefined;
 		// if (redUrl) {
@@ -274,6 +272,45 @@ export class MockAuthService extends BaseAuthService{
 
 
 
+// const authConfig: AuthConfig = {
+//     issuer: 'https://10.206.193.173:9443/oauth2/oidcdiscovery',
+//     //issuer: 'http://localhost:4200/oauth2/oidcdiscovery',
+//     redirectUri: 'http://localhost:4200/menufoliage',
+//     logoutUrl: 'http://localhost:4200',
+//     clientId: '7vtXT__fL8EIvxUX2qZ6tcxfVI8a',
+//     dummyClientSecret: 'FLXGQlRMpI2hdq8Ncy6FfMc_dJQa',
+//     scope: 'openid',
+//     responseType: 'code',
+//     sessionChecksEnabled: false,
+//     // begin: richiesto perche' il documento non e' completamente conforme
+//     strictDiscoveryDocumentValidation: false,
+//     skipIssuerCheck: true,
+//     // end: richiesto perche' il documento non e' completamente conforme
+//     requireHttps: false,
+//     showDebugInformation: true,
+//     //disablePKCE: false,
+//     useHttpBasicAuth: true
+// };
+
+// const authConfig: AuthConfig = {
+// 	issuer: 'https://10.206.193.173:9443/oauth2/oidcdiscovery',
+// 	redirectUri: `${window.location.origin}`,
+// 	logoutUrl: 'http://localhost:4200/',
+// 	clientId: 'M3JAAnC5KDPIKimUbzPKQ61iJ4Ea',
+// 	dummyClientSecret: 'ftff68N1sy4eMuMEvPlfLfjV2Msa',
+// 	scope: 'openid',
+// 	responseType: 'code',
+// 	sessionChecksEnabled: false,
+// 	// begin: richiesto perche' il documento non e' completamente conforme
+// 	strictDiscoveryDocumentValidation: false,
+// 	skipIssuerCheck: true,
+// 	// end: richiesto perche' il documento non e' completamente conforme
+// 	requireHttps: false,
+// 	showDebugInformation: true,
+// 	//disablePKCE: false,
+// 	useHttpBasicAuth: true,
+// 	timeoutFactor: 0.5
+// };
 
 const authConfig: AuthConfig = environment.iamConfig;
 
@@ -330,6 +367,10 @@ export class AuthService extends BaseAuthService {
 	}
 	public login() : void { // (2)
 		console.log("login");
+		if (!environment.production) {
+			alert(`mcampelli: mcampelli - campelli: Password@1 - arossi: ytrewq`);
+		}
+		
 		this.oauthService.initLoginFlow();
 	}
 	public override logout() { // (3)

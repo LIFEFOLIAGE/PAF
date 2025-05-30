@@ -105,7 +105,7 @@ public class FlussoSchede {
 								}
 								catch (Exception e) {
 									exception.setAt0(e);
-									e.printStackTrace();
+									log.error(FoliageException.GetExceptionStackTrace(e));
 									return null;
 								}
 							}

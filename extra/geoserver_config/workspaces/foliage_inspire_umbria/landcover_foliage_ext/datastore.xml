@@ -1,0 +1,17 @@
+<dataStore>
+  <id>DataStoreInfoImpl--5cc7c6df:196b4376cb6:-78b2</id>
+  <name>landcover_foliage_ext</name>
+  <type>Application Schema DataAccess</type>
+  <enabled>true</enabled>
+  <workspace>
+    <id>WorkspaceInfoImpl--5cc7c6df:196b4376cb6:-78b3</id>
+  </workspace>
+  <connectionParameters>
+    <entry key="dbtype">app-schema</entry>
+    <entry key="namespace">http://10.206.228.166/foliage/inspire</entry>
+    <entry key="url">file:/opt/tomcat/apache-tomcat-9.0.104/webapps/geoserver/data/data/foliage_inspire_umbria/landcover_foliage_ext/landcover_foliage_ext.appschema</entry>
+  </connectionParameters>
+  <__default>false</__default>
+  <dateCreated>2025-05-14 16:19:32.315 UTC</dateCreated>
+  <disableOnConnFailure>false</disableOnConnFailure>
+</dataStore>

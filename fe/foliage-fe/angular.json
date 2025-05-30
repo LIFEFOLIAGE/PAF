@@ -32,6 +32,106 @@
             "scripts": []
           },
           "configurations": {
+            "lazio": {
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                     "minify": true,
+                     "inlineCritical": false
+                     },
+                "fonts": true
+              },
+              "sourceMap": false,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "10mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kb",
+                  "maximumError": "8kb"
+                }
+              ],
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.lazio.ts"
+                }
+              ],
+              "index": {
+                "input": "src/index.lazio.html",
+                "output": "index.html"
+              }
+            },
+            "lazio-dev": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "20mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "40kb",
+                  "maximumError": "80kb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.lazio-dev.ts"
+                }
+              ],
+              "index": {
+                "input": "src/index.lazio.html",
+                "output": "index.html"
+              }
+            },
+            "lazio-dev-mock": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "20mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "40kb",
+                  "maximumError": "80kb"
+                }
+              ],
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.lazio-dev-mock.ts"
+                }
+              ],
+              "index": {
+                "input": "src/index.lazio.html",
+                "output": "index.html"
+              }
+            },
             "umbria": {
               "optimization": {
                 "scripts": true,
@@ -71,52 +171,86 @@
                 "output": "index.html"
               }
             },
-            "production": {
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "500kb",
-                  "maximumError": "10mb"
-                },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "4kb",
-                  "maximumError": "8kb"
-                }
-              ],
-              "outputHashing": "all"
-            },
-            "development": {
+            "umbria-dev": {
               "buildOptimizer": false,
               "optimization": false,
               "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "20mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "40kb",
+                  "maximumError": "80kb"
+                }
+              ],
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.development.ts"
+                  "with": "src/environments/environment.umbria-dev.ts"
                 }
-              ]
+              ],
+              "index": {
+                "input": "src/index.umbria.html",
+                "output": "index.html"
+              }
+            },
+            "umbria-dev-mock": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "20mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "40kb",
+                  "maximumError": "80kb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.umbria-dev-mock.ts"
+                }
+              ],
+              "index": {
+                "input": "src/index.umbria.html",
+                "output": "index.html"
+              }
             }
           },
-          "defaultConfiguration": "production"
+          "defaultConfiguration": "umbria-dev-mock"
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
-            "production": {
-              "buildTarget": "foliage-fe:build:production"
+            "umbria-dev": {
+              "buildTarget": "foliage-fe:build:umbria-dev"
             },
-            "development": {
-              "buildTarget": "foliage-fe:build:development"
+            "umbria-dev-mock": {
+              "buildTarget": "foliage-fe:build:umbria-dev-mock"
             },
-            "umbria": {
-              "buildTarget": "foliage-fe:build:umbria"
+            "lazio-dev": {
+              "buildTarget": "foliage-fe:build:lazio-dev"
+            },
+            "lazio-dev-mock": {
+              "buildTarget": "foliage-fe:build:lazio-dev-mock"
             }
           },
-          "defaultConfiguration": "development"
+          "defaultConfiguration": "umbria-dev-mock"
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
@@ -144,8 +278,5 @@
         }
       }
     }
-  },
-  "cli": {
-    "analytics": false
   }
 }

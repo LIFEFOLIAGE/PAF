@@ -1,4 +1,4 @@
-import { apiOrigin, apiServerPath, regione, mapMaxZoom } from "./defs/pars";
+import { apiOrigin, apiUrl, regione, mapMaxZoom, baseHRef, urlPrifApk } from "./defs/pars";
 import { iamConfig} from "./iam/iam";
 import { layersUmbria, srids, mapsSrid } from "./layers/layers-umbria";
 import { layerUtente } from "./layers/layers-utente";
@@ -9,18 +9,25 @@ import { wizardNuovaDomandaUmbria as wizardNuovaDomanda } from "./wizard-tipo-is
 
 const layers = {...layersUmbria, ...layerUtente};
 
+const decimaliEttari = 4;
+const coeffEttari = Math.pow(10, decimaliEttari);
+
 export const environment = {
+	baseHRef,
 	production: true,
 	useMock: false,
+    regione,
 	apiOrigin,
-	apiServerPath,
-	regione,
-	mockUsers,
+	apiUrl,
 	iamConfig,
+	mockUsers,
 	wizardNuovaDomanda,
-	layers,
 	srids,
 	mapsSrid,
 	mapMaxZoom,
-	tavole
+	layers,
+	tavole,
+	decimaliEttari,
+	coeffEttari,
+	urlPrifApk
 };

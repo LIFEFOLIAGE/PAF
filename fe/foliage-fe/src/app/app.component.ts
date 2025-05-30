@@ -4,6 +4,7 @@ import { LoggingService, LogLevel } from './services/logging.service';
 import { Router } from '@angular/router';
 import { RequestService } from './services/request.service';
 import { TitleService } from './services/title.service';
+import { environment } from 'src/environments/environment';
 
 enum AuthState {
 	NotAuthenticated = "notAuthenticated",
@@ -19,6 +20,8 @@ enum AuthState {
 export class AppComponent implements OnInit {
 	title = 'foliage-fe';
 	concurringRequests: number = 0;
+	regione: string = environment.regione;
+	environment = environment;
 	// isAuthenticated: boolean = false;
 	// hasPrivacy: boolean = false;
 

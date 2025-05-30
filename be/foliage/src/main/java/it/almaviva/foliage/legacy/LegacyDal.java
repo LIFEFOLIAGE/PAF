@@ -7,9 +7,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.javatuples.Unit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -19,11 +25,15 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import it.almaviva.foliage.FoliageAuthorizationException;
 import it.almaviva.foliage.FoliageException;
+import it.almaviva.foliage.authentication.FoliageAuthenticationException;
 import it.almaviva.foliage.bean.AbilitazioniIstanza;
 import it.almaviva.foliage.bean.DatiIstanza;
 import it.almaviva.foliage.bean.EntitaGeometrica;
 import it.almaviva.foliage.bean.FileIstanzaApp;
+import it.almaviva.foliage.enums.TipoAuthScope;
+import it.almaviva.foliage.enums.TipoAuthority;
 import it.almaviva.foliage.function.Function;
 import it.almaviva.foliage.istanze.db.CampoSelect;
 import it.almaviva.foliage.istanze.db.CondizioneEq;
@@ -38,8 +48,10 @@ import it.almaviva.foliage.legacy.bean.Regione;
 import it.almaviva.foliage.legacy.bean.Rilevamenti;
 import it.almaviva.foliage.legacy.bean.Utente;
 import it.almaviva.foliage.services.WebDal;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
+@Slf4j
 public class LegacyDal extends WebDal {
 
 	@Value("${foliage.geometry_srid}")
@@ -67,7 +79,6 @@ public class LegacyDal extends WebDal {
 	}
 
 	public Utente getLoginUtente(String username) {
-
 		HashMap<String, Object> mapParam = new HashMap<String, Object>();
 		mapParam.put("user", username);
 		String sql = """
@@ -156,6 +167,9 @@ where pfpc.id_pfor = :idPfor
 
 
 	public AbilitazioniIstanza getAbilitazioniIdIstanza(Integer idUtente, String codFiscaleUtente, Integer idIstanza, String authority, String authScope) throws Exception {
+		if (authority == null || authScope == null) {
+			throw new FoliageAuthorizationException("Manca l'indicazione del profilo con cui si esegue la richiesta");
+		}
 		HashMap<String, Object> parameters = new HashMap<>();
 		parameters.put("idIstanza", idIstanza);
 		parameters.put("idUtente", idUtente);
@@ -536,7 +550,7 @@ where id_ista = :idIsta""";
 		template.update(sql,params);
 		
 	}
-
+	
 	public void inserisciRilevamenti(
 		Integer idIsta,
 		List<Rilevamenti> rilevamenti,
@@ -544,140 +558,13 @@ where id_ista = :idIsta""";
 		String authority,
 		String authScope
 	) throws Exception{
-
+		
 		DefaultTransactionDefinition paramTransactionDefinition = new DefaultTransactionDefinition();
 		TransactionStatus status = platformTransactionManager.getTransaction(paramTransactionDefinition );
 		
 		try {
+			inserisciRilevamentiNotrans(idIsta, rilevamenti, idUtente, authority, authScope);
 
-			String delFotoSql = """
-delete
-from foliage2.flgfoto_tab
-where id_rile in (
-		select id_rile
-		from foliage2.flgrile_tab r
-		where r.id_ista = :idIsta
-			and r.id_utente = :idUtente
-			and r.tipo_auth = :authority
-			and r.tipo_ambito = :authScope
-			and id_rile in (
-				select id
-				from unnest(:arrRileId) as T(id)
-			)
-	)
-""";
-			String delRileSql = """
-delete
-from foliage2.flgrile_tab r
-where r.id_ista = :idIsta
-	and r.id_utente = :idUtente
-	and r.tipo_auth = :authority
-	and r.tipo_ambito = :authScope
-	and id_rile in (
-		select id
-		from unnest(:arrRileId) as T(id)
-	)
-""";
-			Long[] arrRileId = rilevamenti.stream().map(r->r.getIdRile()).toArray(Long[]::new);
-			Array arrRile = connection.createArrayOf("numeric", arrRileId);
-			Map<String,Object> delPars = new HashMap<String,Object>();
-			delPars.put("idIsta", idIsta);
-			delPars.put("idUtente", idUtente);
-			delPars.put("authority", authority);
-			delPars.put("authScope", authScope);
-			delPars.put("arrRileId", arrRile);
-			
-			
-			int nDelFoto = update(delFotoSql, delPars);
-			int nDelRile = update(delRileSql, delPars);
-
-			String insRileSql = """
-insert into foliage2.flgrile_tab (
-		id_rile, tipo_rilevamento,id_ista, nome, note, id_clay,
-		id_utente, tipo_auth, tipo_ambito,
-		shape, flag_valido, data_ins
-	) values(
-		:idRile, :tipoRile, :idIsta, :nome, :note, :idClay,
-		:idUtente, :authority, :authScope,
-		st_geomfromtext(:wktGeom) , 1, current_date
-	)
-""";
-			String insFotoSql = """
-insert into foliage2.flgfoto_tab (
-		id_foto, id_rile, nome, file
-	)
-	values(
-		NEXTVAL('foliage2.flgfoto_seq'), :idRile, :nome, :file
-	)
-""";
-			Map<String,Object> insRilePars = new HashMap<String,Object>();
-			insRilePars.put("idIsta", idIsta);
-			insRilePars.put("idUtente", idUtente);
-			insRilePars.put("authority", authority);
-			insRilePars.put("authScope", authScope);
-
-			Map<String,Object> insFotoPars = new HashMap<String,Object>();
-
-			for (Rilevamenti rilevamento : rilevamenti) {
-				Long idRile = rilevamento.getIdRile();
-				insRilePars.put("idRile", idRile);
-				insRilePars.put("tipoRile", rilevamento.getTipoRile());
-				insRilePars.put("nome", rilevamento.getNome());
-				insRilePars.put("note", rilevamento.getNote());
-				insRilePars.put("idClay", rilevamento.getIdClay());
-				insRilePars.put("wktGeom", rilevamento.getGeometry());
-				int nInsRile = update(insRileSql, insRilePars);
-				List<FotoRilevamento> listFoto = rilevamento.getFoto();
-				if (listFoto != null) {
-					insFotoPars.put("idRile", idRile);
-					for (FotoRilevamento foto : listFoto) {
-						insFotoPars.put("nome", foto.getNome());
-						insFotoPars.put("file", foto.getFile());
-						int nInsFoto = update(insFotoSql, insFotoPars);
-					}
-				}
-			}
-
-			// for (Rilevamenti rilevamento : rilevamenti) {
-			// 	//Integer id = (idIsta == null) ? 
-			// 	// if (idIsta != null) {
-			// 	// 	rilevamento.setIdIsta(idIsta);
-			// 	// }
-			// 	Long idRile = rilevamento.getIdRile();
-			// 	Map<String,Object> mapParam1 = new HashMap<String,Object>();
-			// 	mapParam1.put("idIsta", idIsta);
-			// 	mapParam1.put("idRile", idRile);
-			// 	mapParam1.put("idUtente", idUtente);
-			// 	mapParam1.put("authority", authority);
-			// 	mapParam1.put("authScope", authScope);
-	   
-			// 	StringBuilder sb = new StringBuilder("");
-			// 	sb.append(" SELECT max(id_Ista) FROM  foliage2.flgrile_tab a  " );
-			// 	sb.append(" WHERE a.id_rile=:idRile and id_utente = :idUtente and tipo_auth = :authority and tipo_ambito = :authScope");
-				
-			// 	Integer idIstaEff  = queryForObject(
-			// 		sb.toString(),
-			// 		mapParam1, 
-			// 		(rs, rn) -> {
-			// 			Integer outVal = Integer.valueOf(rs.getInt(1));
-			// 			if (rs.wasNull()) {
-			// 				outVal = null;
-			// 			}
-			// 			return outVal;
-			// 		}
-			// 	);
-			// 	if(idIstaEff == null) {
-			// 		inserisciRilevamento_TRANS(rilevamento, idUtente, authority, authScope);
-			// 	} else {
-			// 		if (idIstaEff == rilevamento.getIdIsta()) {
-			// 			updateRilevamento_TRANS(rilevamento, idUtente, authority, authScope);
-			// 		}
-			// 		else {
-			// 			throw new FoliageException(String.format("Il rilevamento (%d) non appartiene all'istanza %d", idRile, idIsta));
-			// 		}
-			// 	}
-
-			// }
 			platformTransactionManager.commit(status);
 		}
 		catch (Exception e) {
@@ -685,6 +572,103 @@ insert into foliage2.flgfoto_tab (
 			throw e;
 		}
 	}
+
+	public void inserisciRilevamentiNotrans(
+		Integer idIsta,
+		List<Rilevamenti> rilevamenti,
+		Integer idUtente,
+		String authority,
+		String authScope
+	) throws Exception{
+		String delFotoSql = """
+delete
+from foliage2.flgfoto_tab
+where id_rile in (
+	select id_rile
+	from foliage2.flgrile_tab r
+	where r.id_ista = :idIsta
+		and r.id_utente = :idUtente
+		and r.tipo_auth = :authority
+		and r.tipo_ambito = :authScope
+		and id_rile in (
+			select id
+			from unnest(:arrRileId) as T(id)
+		)
+)
+""";
+		String delRileSql = """
+delete
+from foliage2.flgrile_tab r
+where r.id_ista = :idIsta
+and r.id_utente = :idUtente
+and r.tipo_auth = :authority
+and r.tipo_ambito = :authScope
+and id_rile in (
+	select id
+	from unnest(:arrRileId) as T(id)
+)
+""";
+		Long[] arrRileId = rilevamenti.stream().map(r->r.getIdRile()).toArray(Long[]::new);
+		Array arrRile = connection.createArrayOf("numeric", arrRileId);
+		Map<String,Object> delPars = new HashMap<String,Object>();
+		delPars.put("idIsta", idIsta);
+		delPars.put("idUtente", idUtente);
+		delPars.put("authority", authority);
+		delPars.put("authScope", authScope);
+		delPars.put("arrRileId", arrRile);
+		
+		
+		int nDelFoto = update(delFotoSql, delPars);
+		int nDelRile = update(delRileSql, delPars);
+
+		String insRileSql = """
+insert into foliage2.flgrile_tab (
+	id_rile, tipo_rilevamento,id_ista, nome, note, id_clay,
+	id_utente, tipo_auth, tipo_ambito,
+	shape, flag_valido, data_ins
+) values(
+	:idRile, :tipoRile, :idIsta, :nome, :note, :idClay,
+	:idUtente, :authority, :authScope,
+	st_geomfromtext(:wktGeom) , 1, current_date
+)
+""";
+		String insFotoSql = """
+insert into foliage2.flgfoto_tab (
+	id_foto, id_rile, nome, file
+)
+values(
+	NEXTVAL('foliage2.flgfoto_seq'), :idRile, :nome, :file
+)
+""";
+		Map<String,Object> insRilePars = new HashMap<String,Object>();
+		insRilePars.put("idIsta", idIsta);
+		insRilePars.put("idUtente", idUtente);
+		insRilePars.put("authority", authority);
+		insRilePars.put("authScope", authScope);
+
+		Map<String,Object> insFotoPars = new HashMap<String,Object>();
+
+		for (Rilevamenti rilevamento : rilevamenti) {
+			Long idRile = rilevamento.getIdRile();
+			insRilePars.put("idRile", idRile);
+			insRilePars.put("tipoRile", rilevamento.getTipoRile());
+			insRilePars.put("nome", rilevamento.getNome());
+			insRilePars.put("note", rilevamento.getNote());
+			insRilePars.put("idClay", rilevamento.getIdClay());
+			insRilePars.put("wktGeom", rilevamento.getGeometry());
+			int nInsRile = update(insRileSql, insRilePars);
+			List<FotoRilevamento> listFoto = rilevamento.getFoto();
+			if (listFoto != null) {
+				insFotoPars.put("idRile", idRile);
+				for (FotoRilevamento foto : listFoto) {
+					insFotoPars.put("nome", foto.getNome());
+					insFotoPars.put("file", foto.getFile());
+					int nInsFoto = update(insFotoSql, insFotoPars);
+				}
+			}
+		}
+	}
+
 	public void inserisciRilevamenti(
 		List<Rilevamenti> rilevamenti,
 		Integer idUtente,
@@ -1074,6 +1058,90 @@ where id_rile = :idRile
 		catch (Exception e) {
 			platformTransactionManager.rollback(status);
 			throw e;
+		}
+	}
+
+	public String inserisciAllRilevamentiNew(Integer idUtente, String codFiscaleUtente, List<Rilevamenti> rilev) {
+		Map<Integer, List<Rilevamenti>> groups = rilev.stream().collect(Collectors.groupingBy(Rilevamenti::getIdIsta));
+				
+		boolean ab = groups.keySet().stream().map(
+				(Integer id) -> {
+					try {
+						int realId = id/100;
+						int suff = id%100;
+						int idAuthority = suff/10;
+						int idScope = suff%10;
+						TipoAuthority auth = TipoAuthority.fromInt(idAuthority);
+						TipoAuthScope scope = TipoAuthScope.fromInt(idScope);
+						//return dal.getAbilitazioniIdIstanza(idUtente, codFiscaleUtente, id, authority, authScope);
+						return getAbilitazioniIdIstanza(idUtente, codFiscaleUtente, realId, auth.name(), scope.name());
+					}
+					catch (Exception e){
+						return new AbilitazioniIstanza();
+					}
+				}
+			).allMatch(
+				(AbilitazioniIstanza abil) -> abil.compilazione || abil.consultazione
+			);
+		
+		if (ab) {
+			Unit<Exception> opt = new Unit<>(null);
+			String message = null;
+			HttpStatusCode code = HttpStatus.OK;
+
+			
+			DefaultTransactionDefinition paramTransactionDefinition = new DefaultTransactionDefinition();
+			TransactionStatus status = platformTransactionManager.getTransaction(paramTransactionDefinition );
+	
+			try {
+				
+				Optional<Exception> res = groups.entrySet().stream()
+					.map(
+						(Map.Entry<Integer, List<Rilevamenti>> entry) -> {
+							Integer id = entry.getKey();
+							int realId = id/100;
+							int suff = id%100;
+							int idAuthority = suff/10;
+							int idScope = suff%10;
+							TipoAuthority auth = TipoAuthority.fromInt(idAuthority);
+							TipoAuthScope scope = TipoAuthScope.fromInt(idScope);
+							try {
+								inserisciRilevamentiNotrans(realId, entry.getValue(), idUtente, auth.name(), scope.name());
+								return null;
+							} catch (Exception e1) {
+								log.error(
+									String.format(
+										"Rilevato errore nel caricamento dei rilevamenti per l'istanza %d",
+										realId
+									)
+								);
+								return e1;
+							}
+						}
+					).filter(
+						(Exception ex) -> {
+							return ex != null;
+						}
+					).findFirst();
+				
+				if (res.isPresent()) {
+					Exception e = res.get();
+					throw new FoliageException("Rilevato errore nel caricamento dei rilevamenti", e);
+				}
+				else {
+					message = "OK";
+				}
+
+				platformTransactionManager.commit(status);
+			}
+			catch (Exception e) {
+				platformTransactionManager.rollback(status);
+				throw e;
+			}
+			return message;
+		}
+		else {
+			throw new FoliageAuthorizationException("Non hai accesso a tutte le istanze indicate");
 		}
 	}
 }

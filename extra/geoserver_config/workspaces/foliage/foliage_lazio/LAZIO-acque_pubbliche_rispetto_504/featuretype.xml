@@ -1,0 +1,59 @@
+<featureType>
+  <id>FeatureTypeInfoImpl-38d2ee29:18c61c4c18b:-783f</id>
+  <name>LAZIO-acque_pubbliche_rispetto_504</name>
+  <nativeName>acque_pubbliche_rispetto_504</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl-7cd53224:17ff4993504:-7ffe</id>
+  </namespace>
+  <title>acque_pubbliche_rispetto_504</title>
+  <keywords>
+    <string>acque_pubbliche_rispetto_504</string>
+    <string>features</string>
+  </keywords>
+  <nativeCRS class="projected">PROJCS[&quot;ETRS89 / UTM zone 33N&quot;, 
+  GEOGCS[&quot;ETRS89&quot;, 
+    DATUM[&quot;European Terrestrial Reference System 1989&quot;, 
+      SPHEROID[&quot;GRS 1980&quot;, 6378137.0, 298.257222101, AUTHORITY[&quot;EPSG&quot;,&quot;7019&quot;]], 
+      TOWGS84[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 
+      AUTHORITY[&quot;EPSG&quot;,&quot;6258&quot;]], 
+    PRIMEM[&quot;Greenwich&quot;, 0.0, AUTHORITY[&quot;EPSG&quot;,&quot;8901&quot;]], 
+    UNIT[&quot;degree&quot;, 0.017453292519943295], 
+    AXIS[&quot;Geodetic longitude&quot;, EAST], 
+    AXIS[&quot;Geodetic latitude&quot;, NORTH], 
+    AUTHORITY[&quot;EPSG&quot;,&quot;4258&quot;]], 
+  PROJECTION[&quot;Transverse_Mercator&quot;, AUTHORITY[&quot;EPSG&quot;,&quot;9807&quot;]], 
+  PARAMETER[&quot;central_meridian&quot;, 15.0], 
+  PARAMETER[&quot;latitude_of_origin&quot;, 0.0], 
+  PARAMETER[&quot;scale_factor&quot;, 0.9996], 
+  PARAMETER[&quot;false_easting&quot;, 500000.0], 
+  PARAMETER[&quot;false_northing&quot;, 0.0], 
+  UNIT[&quot;m&quot;, 1.0], 
+  AXIS[&quot;Easting&quot;, EAST], 
+  AXIS[&quot;Northing&quot;, NORTH], 
+  AUTHORITY[&quot;EPSG&quot;,&quot;25833&quot;]]</nativeCRS>
+  <srs>EPSG:25833</srs>
+  <nativeBoundingBox>
+    <minx>269387.69437747943</minx>
+    <maxx>731380.9792889762</maxx>
+    <miny>5138491.809334871</miny>
+    <maxy>9330126.130139956</maxy>
+    <crs class="projected">EPSG:25833</crs>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>-4.085949011044434</minx>
+    <maxx>34.14495685755674</maxx>
+    <miny>46.36042617475603</miny>
+    <maxy>84.01820354661633</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <store class="dataStore">
+    <id>DataStoreInfoImpl-190bc922:18c009977e7:-7bfc</id>
+  </store>
+  <maxFeatures>0</maxFeatures>
+  <numDecimals>0</numDecimals>
+  <overridingServiceSRS>false</overridingServiceSRS>
+  <skipNumberMatched>false</skipNumberMatched>
+  <circularArcPresent>false</circularArcPresent>
+</featureType>

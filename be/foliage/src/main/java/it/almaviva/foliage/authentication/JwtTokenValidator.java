@@ -14,6 +14,9 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+
+import it.almaviva.foliage.FoliageException;
+
 import java.nio.charset.StandardCharsets;
 import java.security.interfaces.RSAPublicKey;
 import java.time.Instant;
@@ -138,6 +141,7 @@ public class JwtTokenValidator {
 			}
 			log.debug("Token's header is correct");
 		} catch (IllegalArgumentException ex) {
+			log.error(FoliageException.GetExceptionStackTrace(ex));
 			throw new FoliageAuthenticationException("Token is not JWT type", ex);
 		}
 	}
@@ -146,11 +150,12 @@ public class JwtTokenValidator {
 		try {
 			String keyId = decodedJWT.getKeyId();
 			Jwk jwk = jwkProvider.get(keyId);
-			Algorithm algorithm = Algorithm.RSA256((RSAPublicKey) jwk.getPublicKey(), null);
+			RSAPublicKey publicKey = (RSAPublicKey) jwk.getPublicKey();
+			Algorithm algorithm = Algorithm.RSA256(publicKey, null);
 			algorithm.verify(decodedJWT);
 			log.debug("Token's signature is correct");
 		} catch (JwkException | SignatureVerificationException ex) {
-			log.error(ex.toString());
+			log.error(FoliageException.GetExceptionStackTrace(ex));
 			throw new FoliageAuthenticationException("Token has invalid signature", ex);
 		}
 	}
@@ -180,6 +185,7 @@ public class JwtTokenValidator {
 					new String(Base64.getDecoder().decode(payloadAsString), StandardCharsets.UTF_8),
 					JsonObject.class);
 		}   catch (RuntimeException exception){
+			log.error(FoliageException.GetExceptionStackTrace(exception));
 			throw new FoliageAuthenticationException("Invalid JWT or JSON format of each of the jwt parts", exception);
 		}
 	}
@@ -193,6 +199,7 @@ public class JwtTokenValidator {
 		try {
 			return Instant.ofEpochSecond(payloadAsJson.get("exp").getAsLong());
 		} catch (NullPointerException ex) {
+			log.error(FoliageException.GetExceptionStackTrace(ex));
 			throw new FoliageAuthenticationException("There is no 'exp' claim in the token payload");
 		}
 	}
@@ -214,6 +221,7 @@ public class JwtTokenValidator {
 			//return authorizationHeader;
 			return authorizationHeader.substring(AccessToken.BEARER.length());
 		} catch (Exception ex) {
+			log.error(FoliageException.GetExceptionStackTrace(ex));
 			throw new FoliageAuthenticationException("There is no AccessToken in a request header");
 		}
 	}

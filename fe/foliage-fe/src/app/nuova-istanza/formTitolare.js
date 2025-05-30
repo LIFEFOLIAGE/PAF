@@ -1,7 +1,7 @@
 import { environment } from "src/environments/environment";
 
 const tipoAllegati = "application/pdf, image/*, .p7m";
-const apiUrl = `${environment.apiOrigin??window.origin}${environment.apiServerPath}`;
+const apiUrl = `${environment.apiOrigin??window.origin}${environment.apiUrl}`;
 
 const pannelloAnagrafico = {
 	"title": "Anagrafica",
@@ -220,7 +220,7 @@ const pannelloDomicilio = {
 								"headers": [
 									{
 										"key": "Authorization",
-										"value": "{{submission.metadata.getAccessToken()}}"
+										"value": "{{window.getAccessToken()}}"
 									}
 								]
 							},
@@ -233,8 +233,7 @@ const pannelloDomicilio = {
 							  "required": true
 							},
 							"input": true,
-							"disableLimit": false,
-							"noRefreshOnScroll": false
+							"disableLimit": false
 						}
 					],
 					"width": 6,
@@ -252,11 +251,11 @@ const pannelloDomicilio = {
 							"tableView": true,
 							"dataSrc": "url",
 							"data": {
-								"url": `${environment.apiServerPath}/comuni/{{data.provincia}}`,
+								"url": `${apiUrl}/comuni/{{data.provincia}}`,
 								"headers": [
 									{
 										"key": "Authorization",
-										"value": "{{submission.metadata.getAccessToken()}}"
+										"value": "{{window.getAccessToken()}}"
 									}
 								]
 							},

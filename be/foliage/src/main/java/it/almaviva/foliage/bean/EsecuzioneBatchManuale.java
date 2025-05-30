@@ -71,7 +71,7 @@ where eb.id_batch = bd.id_batch
 	};
 	public static EsecuzioneBatchManuale caricaMonitoraggio(AbstractDal dal, LocalDateTime dataRife) {
 		String sql = """
-select id_batch_ondemand, bd.data_inserimento, bd.data_avvio as data_avvio_pianificata,
+select id_batch_ondemand, bd.data_inserimento, data_avvio_pianificata,
 	eb.id_exec_batch, eb.data_submission, eb.data_avvio, eb.data_termine
 from foliage2.flgexecuted_batch_tab eb
 	join foliage2.flgbatch_ondemand_tab bd using (id_batch, data_rife)
@@ -94,7 +94,7 @@ where eb.data_rife = :dataRife
 
 	public static EsecuzioneBatchManuale carica(AbstractDal dal, Integer idBatch, LocalDate dataRife) {
 		String sql = """
-select id_batch_ondemand, bd.data_inserimento, bd.data_avvio as data_avvio_pianificata,
+select id_batch_ondemand, bd.data_inserimento, data_avvio_pianificata,
 	eb.id_exec_batch, eb.data_submission, eb.data_avvio, eb.data_termine
 from foliage2.flgexecuted_batch_tab eb
 	join foliage2.flgbatch_ondemand_tab bd using (id_batch, data_rife)

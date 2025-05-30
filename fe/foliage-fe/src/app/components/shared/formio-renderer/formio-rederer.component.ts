@@ -319,7 +319,13 @@ export class FormioRendererComponent implements OnChanges, OnInit, IstanzaCompon
 	drawForm() {
 		console.log("drawForm");
 		this.nonCumChanges = {};
-
+		{
+			const win: any = window;
+			if (win.getAccessToken == undefined) {
+				win.getAccessToken = this.getAccessTokenBuond;
+			}
+		}
+		
 		const options: any = {...opts, readOnly: this.isReadOnly};
 		this.profiloProm.then(
 			(prof: any) => {

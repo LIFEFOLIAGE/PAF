@@ -35,10 +35,11 @@ public class FoliageJwkProvider implements JwkProvider {
 	private final URI uri;
 	private final ObjectReader reader;
 
-	public FoliageJwkProvider(String jwksUrl) {
+	public FoliageJwkProvider(String jwkProviderUrl) {
 		try {
-			this.uri = new URI(jwksUrl).normalize();
+			this.uri = new URI(jwkProviderUrl).normalize();
 		} catch (URISyntaxException e) {
+			log.error(FoliageException.GetExceptionStackTrace(e));
 			throw new IllegalArgumentException("Invalid jwks uri", e);
 		}
 		this.reader = new ObjectMapper().readerFor(Map.class);
@@ -46,6 +47,7 @@ public class FoliageJwkProvider implements JwkProvider {
 
 	@Override
 	public Jwk get(String keyId) throws JwkException {
+		log.trace(String.format("Cerco chiave %s",  keyId));
 		final List<Jwk> jwks = getAll();
 		if (keyId == null && jwks.size() == 1) {
 			return jwks.get(0);
@@ -53,6 +55,7 @@ public class FoliageJwkProvider implements JwkProvider {
 		if (keyId != null) {
 			for (Jwk jwk : jwks) {
 				String id = jwk.getId();
+				log.trace(String.format("Confronto con %s", id));
 				if (keyId.equals(id)) {
 					return jwk;
 				}
@@ -72,6 +75,7 @@ public class FoliageJwkProvider implements JwkProvider {
 				jwks.add(Jwk.fromValues(values));
 			}
 		} catch (IllegalArgumentException e) {
+			log.error(FoliageException.GetExceptionStackTrace(e));
 			throw new SigningKeyNotFoundException("Failed to parse jwk from json", e);
 		}
 		return jwks;
@@ -88,12 +92,12 @@ public class FoliageJwkProvider implements JwkProvider {
 					.build();
 
 			HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-			log.debug(String.format("Connessione a %s riscita", this.uri));
+			log.debug(String.format("Connessione a %s riuscita", this.uri));
 
 			return reader.readValue(response.body());
 
 		} catch (IOException | InterruptedException e) {
-			log.error(e.toString());
+			log.error(FoliageException.GetExceptionStackTrace(e));
 			throw new NetworkException("Cannot obtain jwks from url " + uri.toString(), e);
 		}
 	}

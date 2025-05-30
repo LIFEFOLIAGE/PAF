@@ -33,7 +33,7 @@ export class BackendError extends Error {
 	}
 };
 
-const apiUrl = `${environment.apiOrigin??window.origin}${environment.apiServerPath}`;
+const apiUrl = `${environment.apiOrigin??window.origin}${environment.apiUrl}`;
 
 let globErrNo = 1;
 export function backendRequest(api: string, opts?: any): Promise<any> {

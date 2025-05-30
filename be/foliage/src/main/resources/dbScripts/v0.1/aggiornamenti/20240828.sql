@@ -1,6 +1,3 @@
-
-alter table foliage2.flgbatch_ondemand_tab add data_avvio timestamp without time zone;
-
 update foliage2.flgbatch_ondemand_tab 
 set data_avvio = data_rife;
 

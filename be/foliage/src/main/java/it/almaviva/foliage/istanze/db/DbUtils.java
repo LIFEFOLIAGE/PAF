@@ -105,75 +105,22 @@ public class DbUtils {
 			return vOut;
 		};
 	}
-	
-	public static LocalDateTime GetLocalDateTime(
-		java.sql.ResultSet rs,
-		Integer rn,
-		String colName
-	) throws SQLException {
-		Timestamp value = rs.getTimestamp(colName);
-		return (rs.wasNull()) ? ((LocalDateTime)null) : value.toLocalDateTime();
-	}
 
-	public static LocalDateTime GetLocalDateTime(
-		SqlRowSet rs,
-		Integer rn,
-		String colName
-	) throws SQLException {
-		Timestamp value = rs.getTimestamp(colName);
-		return (rs.wasNull()) ? ((LocalDateTime)null) : value.toLocalDateTime();
-	}
+	public static PeriodDuration GetInterval(PGInterval pgi) {
+		final int years = pgi.getYears();
+		final int months = pgi.getMonths();
+		final int days = pgi.getDays();
+		final int hours = pgi.getHours();
+		final int mins = pgi.getMinutes();
+		final int secs = (int)Math.floor(pgi.getSeconds());
+		Period p = Period.of(years, months, days);
+		Duration d = Duration.ofSeconds(
+			secs
+			+ (mins * 60)
+			+ (hours * 60 * 60)
+		);
 
-	public static LocalDate GetLocalDate(
-		java.sql.ResultSet rs,
-		Integer rn,
-		String colName
-	) throws SQLException {
-		Date value = rs.getDate(colName);
-		return (rs.wasNull()) ? ((LocalDate)null) : value.toLocalDate();
-	}
-
-	public static LocalDate GetLocalDate(
-		SqlRowSet rs,
-		Integer rn,
-		String colName
-	) throws SQLException {
-		Date value = rs.getDate(colName);
-		return (rs.wasNull()) ? ((LocalDate)null) : value.toLocalDate();
-	}
-
-	public static Boolean GetBoolean(
-		java.sql.ResultSet rs,
-		Integer rn,
-		String colName
-	) throws SQLException {
-		Boolean value = rs.getBoolean(colName);
-		return (rs.wasNull()) ? ((Boolean)null) : value;
-	}
-
-	public static Boolean GetBoolean(
-		SqlRowSet rs,
-		Integer rn,
-		String colName
-	) throws SQLException {
-		Boolean value = rs.getBoolean(colName);
-		return (rs.wasNull()) ? ((Boolean)null) : value;
-	}
-
-	public static Object GetObject(
-		java.sql.ResultSet rs,
-		Integer rn,
-		String colName
-	) throws SQLException {
-		return rs.getObject(colName);
-	}
-
-	public static Object GetObject(
-		SqlRowSet rs,
-		Integer rn,
-		String colName
-	) throws SQLException {
-		return rs.getObject(colName);
+		return PeriodDuration.of(p, d);
 	}
 
 	public static PGInterval GetPgInterval(PeriodDuration pd) {
@@ -186,13 +133,82 @@ public class DbUtils {
 		return outVal;
 	}
 
-
 	public static PGInterval GetPgInterval(Duration d) {
 		PGInterval outVal = new PGInterval(
 			0, 0, 0, 
 			d.toHoursPart(), d.toMinutesPart(), d.toSecondsPart()
 		);
 		return outVal;
+	}
+
+	public static LocalDateTime GetLocalDateTime(
+		java.sql.ResultSet rs,
+		Integer rn,
+		String colName
+	) throws SQLException {
+		Timestamp value = rs.getTimestamp(colName);
+		return (rs.wasNull()) ? ((LocalDateTime)null) : value.toLocalDateTime();
+	}
+
+	public static LocalDateTime GetLocalDateTime(
+		SqlRowSet rs,
+		Integer rn,
+		String colName
+	) throws SQLException {
+		Timestamp value = rs.getTimestamp(colName);
+		return (rs.wasNull()) ? ((LocalDateTime)null) : value.toLocalDateTime();
+	}
+
+	public static LocalDate GetLocalDate(
+		java.sql.ResultSet rs,
+		Integer rn,
+		String colName
+	) throws SQLException {
+		Date value = rs.getDate(colName);
+		return (rs.wasNull()) ? ((LocalDate)null) : value.toLocalDate();
+	}
+
+	public static LocalDate GetLocalDate(
+		SqlRowSet rs,
+		Integer rn,
+		String colName
+	) throws SQLException {
+		Date value = rs.getDate(colName);
+		return (rs.wasNull()) ? ((LocalDate)null) : value.toLocalDate();
+	}
+
+	public static Boolean GetBoolean(
+		java.sql.ResultSet rs,
+		Integer rn,
+		String colName
+	) throws SQLException {
+		Boolean value = rs.getBoolean(colName);
+		return (rs.wasNull()) ? ((Boolean)null) : value;
+	}
+
+	public static Boolean GetBoolean(
+		SqlRowSet rs,
+		Integer rn,
+		String colName
+	) throws SQLException {
+		Boolean value = rs.getBoolean(colName);
+		return (rs.wasNull()) ? ((Boolean)null) : value;
+	}
+
+	public static Object GetObject(
+		java.sql.ResultSet rs,
+		Integer rn,
+		String colName
+	) throws SQLException {
+		return rs.getObject(colName);
+	}
+
+	public static Object GetObject(
+		SqlRowSet rs,
+		Integer rn,
+		String colName
+	) throws SQLException {
+		return rs.getObject(colName);
 	}
 
 	public static PeriodDuration GetInterval(
@@ -205,20 +221,7 @@ public class DbUtils {
 			return null;
 		}
 		else {
-			final int years = pgi.getYears();
-			final int months = pgi.getMonths();
-			final int days = pgi.getDays();
-			final int hours = pgi.getHours();
-			final int mins = pgi.getMinutes();
-			final int secs = (int)Math.floor(pgi.getSeconds());
-			Period p = Period.of(years, months, days);
-			Duration d = Duration.ofSeconds(
-				secs
-				+ (mins * 60)
-				+ (hours * 60 * 60)
-			);
-
-			return PeriodDuration.of(p, d);
+			return GetInterval(pgi);
 		}
 	}
 
@@ -302,6 +305,172 @@ public class DbUtils {
 			return JsonParser.parseString(jsonString);
 		}
 	}
+
+	public static LocalDateTime GetLocalDateTime(
+		java.sql.ResultSet rs,
+		Integer rn,
+		int position
+	) throws SQLException {
+		Timestamp value = rs.getTimestamp(position);
+		return (rs.wasNull()) ? ((LocalDateTime)null) : value.toLocalDateTime();
+	}
+
+	public static LocalDateTime GetLocalDateTime(
+		SqlRowSet rs,
+		Integer rn,
+		int position
+	) throws SQLException {
+		Timestamp value = rs.getTimestamp(position);
+		return (rs.wasNull()) ? ((LocalDateTime)null) : value.toLocalDateTime();
+	}
+
+	public static LocalDate GetLocalDate(
+		java.sql.ResultSet rs,
+		Integer rn,
+		int position
+	) throws SQLException {
+		Date value = rs.getDate(position);
+		return (rs.wasNull()) ? ((LocalDate)null) : value.toLocalDate();
+	}
+
+	public static LocalDate GetLocalDate(
+		SqlRowSet rs,
+		Integer rn,
+		int position
+	) throws SQLException {
+		Date value = rs.getDate(position);
+		return (rs.wasNull()) ? ((LocalDate)null) : value.toLocalDate();
+	}
+
+	public static Boolean GetBoolean(
+		java.sql.ResultSet rs,
+		Integer rn,
+		int position
+	) throws SQLException {
+		Boolean value = rs.getBoolean(position);
+		return (rs.wasNull()) ? ((Boolean)null) : value;
+	}
+
+	public static Boolean GetBoolean(
+		SqlRowSet rs,
+		Integer rn,
+		int position
+	) throws SQLException {
+		Boolean value = rs.getBoolean(position);
+		return (rs.wasNull()) ? ((Boolean)null) : value;
+	}
+
+	public static Object GetObject(
+		java.sql.ResultSet rs,
+		Integer rn,
+		int position
+	) throws SQLException {
+		return rs.getObject(position);
+	}
+
+	public static Object GetObject(
+		SqlRowSet rs,
+		Integer rn,
+		int position
+	) throws SQLException {
+		return rs.getObject(position);
+	}
+
+	public static PeriodDuration GetInterval(
+		java.sql.ResultSet rs,
+		Integer rn,
+		int position
+	) throws SQLException {
+		final PGInterval pgi = (PGInterval) rs.getObject(position);
+		if (rs.wasNull()) {
+			return null;
+		}
+		else {
+			return GetInterval(pgi);
+		}
+	}
+
+	public static Integer GetInteger(
+		java.sql.ResultSet rs,
+		Integer rn,
+		int position
+	) throws SQLException {
+		Integer value = rs.getInt(position);
+		return (rs.wasNull()) ? ((Integer)null) : value;
+	}
+
+	public static Integer GetInteger(
+		SqlRowSet rs,
+		Integer rn,
+		int position
+	) throws SQLException {
+		Integer value = rs.getInt(position);
+		return (rs.wasNull()) ? ((Integer)null) : value;
+	}
+
+	public static Long GetLong(
+		java.sql.ResultSet rs,
+		Integer rn,
+		int position
+	) throws SQLException {
+		Long value = rs.getLong(position);
+		return (rs.wasNull()) ? ((Long)null) : value;
+	}
+	
+	public static Long GetLong(
+		SqlRowSet rs,
+		Integer rn,
+		int position
+	) throws SQLException {
+		Long value = rs.getLong(position);
+		return (rs.wasNull()) ? ((Long)null) : value;
+	}
+
+	public static BigDecimal GetDecimal(
+		java.sql.ResultSet rs,
+		Integer rn,
+		int position
+	) throws SQLException {
+		BigDecimal value = rs.getBigDecimal(position);
+		return (rs.wasNull()) ? ((BigDecimal)null) : value;
+	}
+
+	public static BigDecimal GetDecimal(
+		SqlRowSet rs,
+		Integer rn,
+		int position
+	) throws SQLException {
+		BigDecimal value = rs.getBigDecimal(position);
+		return (rs.wasNull()) ? ((BigDecimal)null) : value;
+	}
+
+	public static JsonElement GetJsonElement(
+		java.sql.ResultSet rs,
+		Integer rn,
+		int position
+	) throws SQLException {
+		String jsonString = rs.getString(position);
+		if (jsonString == null) {
+			return null;
+		}
+		else {
+			return JsonParser.parseString(jsonString);
+		}
+	}
+	public static JsonElement GetJsonElement(
+		SqlRowSet rs,
+		Integer rn,
+		int position
+	) throws SQLException {
+		String jsonString = rs.getString(position);
+		if (jsonString == null) {
+			return null;
+		}
+		else {
+			return JsonParser.parseString(jsonString);
+		}
+	}
+
 
 	public static final GetFromResultSet GetInteger = (java.sql.ResultSet rs, Integer rn, String colName) -> {
 		// Integer value = rs.getInt(colName);
@@ -403,9 +572,13 @@ insert into FOLIAGE2.FLGBASE64_FORMIO_FILE_TAB(ID_FILE, PROG_FILE, FILE_NAME, OR
 				mapParamFile.put("hash", file.getHash());
 				mapParamFile.put("data", file.getUrl().getBytes());
 				//log.debug(sqlInsFile);
+				// dal.update(
+				// 	sqlInsFile,
+				// 	new MapSqlParameterSource(mapParamFile)
+				// );
 				dal.update(
 					sqlInsFile,
-					new MapSqlParameterSource(mapParamFile)
+					mapParamFile
 				);
 			}
 			return idFile;

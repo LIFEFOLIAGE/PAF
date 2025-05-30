@@ -190,3 +190,23 @@ table {
 	border-color:var(--bs-btn-disabled-border-color);
 	opacity:var(--bs-btn-disabled-opacity)
   }
+
+/*
+.responsive {
+  overflow: auto;
+  animation: scrolling forwards;
+  animation-timeline: scroll(x self);
+}
+@keyframes scrolling {
+  0%,to{
+    border-color: red;
+    background: lightblue;
+  }
+}
+
+.responsive {
+  border: 1px solid;
+  padding: 15px;
+  resize: both;
+}
+*/

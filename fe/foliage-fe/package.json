@@ -3,11 +3,21 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --configuration development --proxy-config proxy.conf.js",
-    "start_umbria": "ng serve --configuration umbria --proxy-config proxy.conf.js --serve-path=/foliage/umbria/",
-    "build_umbria": "ng build --configuration umbria --output-path dist/foliageUmbria --delete-output-path",
-    "build": "ng build --output-path dist/foliage --delete-output-path",
-    "watch": "ng build --watch --configuration development",
+    "exe_umbria": "ng serve --configuration umbria-dev --proxy-config proxy.conf.js --serve-path=/foliage/umbria/",
+    "exe_lazio": "ng serve --configuration lazio-dev --proxy-config proxy.conf.js --serve-path=/foliage/lazio/",
+    "exe_umbria_mock": "ng serve --configuration umbria-dev-mock --proxy-config proxy.conf.js --serve-path=/foliage/umbria/",
+    "exe_lazio_mock": "ng serve --configuration lazio-dev-mock --proxy-config proxy.conf.js --serve-path=/foliage/lazio/",
+
+    "build_umbria_dev": "ng build --configuration umbria-dev --output-path dist/foliageUmbriaDev --delete-output-path",
+    "build_lazio_dev": "ng build --configuration lazio-dev --output-path dist/foliageLazioDev --delete-output-path",
+    "build_umbria_dev_mock": "ng build --configuration umbria-dev-mock --output-path dist/foliageUmbriaDevMock --delete-output-path",
+    "build_lazio_dev_mock": "ng build --configuration lazio-dev-mock --output-path dist/foliageLazioDevMock --delete-output-path",
+
+    "build_umbria_prod": "ng build --configuration umbria --output-path dist/foliageUmbriaProd --delete-output-path",
+    "build_lazio_prod": "ng build --configuration lazio --output-path dist/foliageLazioProd --delete-output-path",
+
+    "watch_umbria": "ng build --watch --configuration umbria-dev-mock",
+    "watch_lazio": "ng build --watch --configuration lazio-dev-mock",
     "test": "ng test"
   },
   "browser": {

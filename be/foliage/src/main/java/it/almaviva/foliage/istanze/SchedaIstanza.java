@@ -1568,6 +1568,17 @@ from (
 					join foliage2.FLGVINCOLI_TAB V using (ID_VINCOLO)
 					join foliage_extra.aree_protette_106 hab on (ST_Intersects(pfor.shape, hab.geom))
 				where V.cod_vincolo = 'AREE_PROTETTE'
+
+				union all
+				select ID_VINCOLO, ID_ISTA, row_number() over() as PROG, ATTO, COMUNE||' ('||LOCALITA||')',
+					ST_Transform(st_intersection(pfor.shape, hab.geom), :sridGeometrie) as SHAPE_INTE
+				from (
+						select ID_ISTA, ID_VINCOLO, st_setsrid(ST_Transform(shape, 3004), 3004) as shape
+						from PFOR
+					) as pfor
+					join foliage2.FLGVINCOLI_TAB V using (ID_VINCOLO)
+					join foliage_extra.aree_paesaggistiche_215 hab on (ST_Intersects(pfor.shape, hab.geom))
+				where V.cod_vincolo = 'AREE_PAESAGGISTICHE'
 			) as T1
 	) as T2""", 
 					new CampoSet[] {

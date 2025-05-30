@@ -3,31 +3,14 @@ package it.almaviva.foliage.istanze.db;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.math.BigDecimal;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
 
-import org.apache.poi.sl.draw.geom.GuideIf.Op;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTSheetDimension;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 
-import com.itextpdf.io.font.constants.StandardFonts;
-import com.itextpdf.kernel.font.PdfFont;
-import com.itextpdf.kernel.font.PdfFontFactory;
-import com.itextpdf.kernel.geom.PageSize;
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.UnitValue;
@@ -37,7 +20,9 @@ import it.almaviva.foliage.controllers.WebController;
 import it.almaviva.foliage.function.Function;
 import it.almaviva.foliage.services.AbstractDal;
 import it.almaviva.foliage.services.WebDal;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class ReportBuiler {
 	private SqlRowSet rowSet;
 	private ReportBuiler(
@@ -88,9 +73,15 @@ public class ReportBuiler {
 	private float pdfFontSize = 5;
 	private Function<Integer, Object[]> sheetChooser;
 	private Integer availableSheets = null;
+	private HashMap<Integer, String> sheetsNames = new HashMap<>();
 
 	public ReportBuiler withPdfFontSize(float pdfFontSize) {
 		this.pdfFontSize = pdfFontSize;
+		return this;
+	}
+
+	public ReportBuiler withSheetName(Integer idx, String name) {
+		this.sheetsNames.put(idx, name);
 		return this;
 	}
 
@@ -98,7 +89,6 @@ public class ReportBuiler {
 		this.availableSheets = availableSheets;
 		return this;
 	}
-
 	public ReportBuiler withSheetChooser(Function<Integer, Object[]> sheetChooser) {
 		this.sheetChooser = sheetChooser;
 		return this;
@@ -140,6 +130,16 @@ public class ReportBuiler {
 		// document.close();
 		// pdfDoc.close();
 	}
+	private XSSFSheet createSheet(XSSFWorkbook wb, int sheetIdx) {
+
+		if (this.sheetsNames.containsKey(sheetIdx)) {
+			String sheetName = this.sheetsNames.get(sheetIdx);
+			return wb.createSheet(sheetName);
+		}
+		else {
+			return wb.createSheet();
+		}
+	}
 
 	public XSSFWorkbook getXlsxReport(XSSFWorkbook startWorkbook) throws Exception {
 		if (rowSet == null) {
@@ -153,7 +153,7 @@ public class ReportBuiler {
 				wb = (startWorkbook == null) ? new XSSFWorkbook() : startWorkbook;
 				
 				if (availableSheets == null) {
-					sheet = wb.createSheet();
+					sheet = createSheet(wb, 0);
 					Row r = sheet.createRow(0);
 					for (int i = 0; i < nColumns; i++) {
 						Cell cell = r.createCell(i);
@@ -162,7 +162,7 @@ public class ReportBuiler {
 				}
 				else {
 					for (int i = 0; i < availableSheets; i++) {
-						sheet = wb.createSheet();
+						sheet = createSheet(wb, i);
 						Row r = sheet.createRow(0);
 						for (int j = 0; j < nColumns; j++) {
 							Cell cell = r.createCell(j);
@@ -195,7 +195,18 @@ public class ReportBuiler {
 			Integer[] currRows = (availableSheets == null) ? new Integer[] { 0 } : new Integer[availableSheets];
 			while (rowSet.next()) {
 				for (int i = 0; i < nColumns; i++) {
-					rowVals[i] = fields[i].fetcher.get(rowSet, rn, fields[i].columnName);
+					try {
+						rowVals[i] = fields[i].fetcher.get(rowSet, rn, fields[i].columnName);
+					}
+					catch (Exception e) {
+						log.error(
+							String.format(
+								"Rilevato errore in colonna %s",
+								fields[i].columnName
+							)
+						);
+						throw e;
+					}
 				}
 				Integer currSheetIdx = (sheetChooser == null) ? null : sheetChooser.get(rowVals);
 				XSSFSheet currSheet = (currSheetIdx == null) ? sheet : wb.getSheetAt(currSheetIdx);
@@ -611,14 +622,26 @@ where r.data_rife = :dataRife
 				and ep.id_utente = :idUtente
 		)""";
 	public static final ReportBuiler ReportP1Resp = new ReportBuiler(
-		campiReportP1,
-		queryReportP1Resp
-	).withSheetChooser(ReportP1SheetChooser).withAvaliableSheets(4);
+			campiReportP1,
+			queryReportP1Resp
+		)
+		.withSheetChooser(ReportP1SheetChooser)
+		.withAvaliableSheets(4)
+		.withSheetName(0, "Istanza sotto soglia")
+		.withSheetName(1, "Istanza sopra soglia")
+		.withSheetName(2, "Istanza di progetti in attuazione dei piano di gestione forestali")
+		.withSheetName(3, "Istanza di progetti in deroga");
 	
 	public static ReportBuiler ReportP1Ammi = new ReportBuiler(
-		campiReportP1,
-		queryReportP1Ammi
-	).withSheetChooser(ReportP1SheetChooser).withAvaliableSheets(4);
+			campiReportP1,
+			queryReportP1Ammi
+		)
+		.withSheetChooser(ReportP1SheetChooser)
+		.withAvaliableSheets(4)
+		.withSheetName(0, "Istanza sotto soglia")
+		.withSheetName(1, "Istanza sopra soglia")
+		.withSheetName(2, "Istanza di progetti in attuazione dei piano di gestione forestali")
+		.withSheetName(3, "Istanza di progetti in deroga");
 
 
 	public static final RowSetFieldFetch[] campiReportP1Agg = new RowSetFieldFetch[] {
@@ -720,14 +743,21 @@ from (
 group by tipologia, regione, provincia, comune, tratt_uo""";
 
 	public static ReportBuiler ReportP1AmmiAgg = new ReportBuiler(
-		campiReportP1Agg,
-		queryReportP1AmmiAgg
-	);
+			campiReportP1Agg,
+			queryReportP1AmmiAgg
+		)
+		.withSheetName(0, "Aggregazione");
 	
 	public static String queryReportP2Ammi = """
 select json_build_object(
 		'type', 'FeatureCollection',
-		'features', json_agg(ST_AsGeoJSON(t.*)::json)
+		'crs', json_build_object(
+			'type', 'name',
+			'properties', json_build_object(
+				'name', 'urn:ogc:def:crs:EPSG::3035'
+			)
+		),
+		'features', coalesce(json_agg(ST_AsGeoJSON(t.*)::json), '[]'::json)
 	) as res
 from (
 		select r.id, r.tipologia, r.data,
@@ -743,7 +773,13 @@ from (
 	public static String queryReportP2Resp = """
 select json_build_object(
 		'type', 'FeatureCollection',
-		'features', json_agg(ST_AsGeoJSON(t.*)::json)
+		'crs', json_build_object(
+			'type', 'name',
+			'properties', json_build_object(
+				'name', 'urn:ogc:def:crs:EPSG::3035'
+			)
+		),
+		'features', coalesce(json_agg(ST_AsGeoJSON(t.*)::json), '[]'::json)
 	) as res
 from (
 		select r.id, r.tipologia, r.data,
@@ -777,7 +813,13 @@ from (
 	public static String queryReportP3Nat1GeoJson = """
 select json_build_object(
 		'type', 'FeatureCollection',
-		'features', json_agg(ST_AsGeoJSON(t.*)::json)
+		'crs', json_build_object(
+			'type', 'name',
+			'properties', json_build_object(
+				'name', 'urn:ogc:def:crs:EPSG::3035'
+			)
+		),
+		'features', coalesce(json_agg(ST_AsGeoJSON(t.*)::json), '[]'::json)
 	) as res --srid3035
 from (
 		select codice as id_sito, sp.denominazi as nome_sito,
@@ -830,33 +872,12 @@ where r3.data_rife = :dataRife""";
 	);
 
 	public static String queryReportP3Nat2 = """
-select codice as id_sito, denominazi as nome_sito,
-	--shape,
-	(area_disturbo/area_tot)*100 as perc_dist,
-	(area_disturbo_ok/area_tot)*100 as perc_tagl
-from (
-		select n2.codice, n2.denominazi,
-			--n2.geom as shape,
-			st_area(ST_Transform(n2.geom, :sridGeometrie)) as area_tot,
-			st_area(ST_UnaryUnion(ST_Collect(r3_ok.shape_vinc, r3_ko.shape_vinc))) as area_disturbo,
-			st_area(r3_ok.shape_vinc) as area_disturbo_ok
-		from foliage_extra.sitiprotetti_natura_2000 as n2
-			left join lateral (
-				select st_union(r3.shape_vinc) as shape_vinc
-				from foliage2.flgreport_p3_tab as r3
-				where r3.codice = n2.codice
-					and r3.data_rife = :dataRife
-					and r3.esito_valutazione
-			) as r3_ok on (true)
-			left join lateral (
-				select st_union(r3.shape_vinc) as shape_vinc
-				from foliage2.flgreport_p3_tab as r3
-				where r3.codice = n2.codice
-					and r3.data_rife = :dataRife
-					and (r3.esito_valutazione = false or r3.esito_valutazione is null)
-			) as r3_ko on (true)
-	) as t
-where area_disturbo > 0""";
+select id_sito, nome_sito, sup_sito, sup_boschiva, indice_biodiv,
+	shape,
+	perc_dist,
+	perc_tagli as perc_tagl
+from FOLIAGE2.FLGNAT2000_MONITORAGGIO_TAB
+where data_rife = :dataRife""";
 
 	public static ReportBuiler ReportP3Nat2 = new ReportBuiler(
 		new RowSetFieldFetch[] {
@@ -869,11 +890,23 @@ where area_disturbo > 0""";
 				DbUtils::GetObject
 			),
 			new RowSetFieldFetch(
-				"perc_dist", "perc_dist",
+				"sup_sito", "Superficie del sito natura 2000 (ha)",
 				DbUtils::GetDecimal
 			),
 			new RowSetFieldFetch(
-				"perc_tagl", "perc_tagli",
+				"sup_boschiva", "Superficie boschiva nel sito Natura2000 (ha)",
+				DbUtils::GetDecimal
+			),
+			new RowSetFieldFetch(
+				"perc_dist", "Percentuale di superficie boschiva interessata dai disturbi all’ecosistema forestale",
+				DbUtils::GetDecimal
+			),
+			new RowSetFieldFetch(
+				"perc_tagl", "Percentuale di superficie boschiva interessata dai tagli boschivi autorizzati",
+				DbUtils::GetDecimal
+			),
+			new RowSetFieldFetch(
+				"indice_biodiv", "Rao’s Q diversity index del 2023 (mean)",
 				DbUtils::GetDecimal
 			)
 		},
@@ -885,36 +918,15 @@ where area_disturbo > 0""";
 	public static String queryReportP3Nat2GeoJson = """
 select json_build_object(
 		'type', 'FeatureCollection',
-		'features', json_agg(ST_AsGeoJSON(t.*)::json)
+		'features', coalesce(json_agg(ST_AsGeoJSON(t.*)::json), '[]'::json)
 	) as res --srid3035
 from (
-		select codice as id_sito, denominazi as nome_sito,
+		select id_sito, nome_sito, sup_sito, sup_boschiva, indice_biodiv,
 			shape,
-			(area_disturbo/area_tot)*100 as perc_dist,
-			(area_disturbo_ok/area_tot)*100 as perc_tagl
-		from (
-				select n2.codice, n2.denominazi,
-					ST_Transform(n2.geom, :sridGeometrie) as shape,
-					st_area(ST_Transform(n2.geom, :sridGeometrie)) as area_tot,
-					st_area(ST_UnaryUnion(ST_Collect(r3_ok.shape_vinc, r3_ko.shape_vinc))) as area_disturbo,
-					st_area(r3_ok.shape_vinc) as area_disturbo_ok
-				from foliage_extra.sitiprotetti_natura_2000 as n2
-					left join lateral (
-						select st_union(r3.shape_vinc) as shape_vinc
-						from foliage2.flgreport_p3_tab as r3
-						where r3.codice = n2.codice
-							and r3.data_rife = :dataRife
-							and r3.esito_valutazione
-					) as r3_ok on (true)
-					left join lateral (
-						select st_union(r3.shape_vinc) as shape_vinc
-						from foliage2.flgreport_p3_tab as r3
-						where r3.codice = n2.codice
-							and r3.data_rife = :dataRife
-							and (r3.esito_valutazione = false or r3.esito_valutazione is null)
-					) as r3_ko on (true)
-			) as t
-		where area_disturbo > 0
+			perc_dist,
+			perc_tagli as perc_tagl
+		from FOLIAGE2.FLGNAT2000_MONITORAGGIO_TAB
+		where data_rife = :dataRife
 	) as t""";
 
 	public static ReportBuiler ReportP3Nat2GeoJson = new ReportBuiler(
@@ -1144,4 +1156,74 @@ FROM foliage2.flgreport_p4_tab
 where data_rife = :dataRife"""
 		).withPdfFontSize(2);
 	}
+
+
+
+
+	
+	// public static ReportBuiler ReportAlert = new ReportBuiler(
+	// 	new RowSetFieldFetch[] {
+	// 		new RowSetFieldFetch(
+	// 			"id_eop", "Id eop",
+	// 			DbUtils::GetInteger
+	// 		),
+	// 		new RowSetFieldFetch(
+	// 			"area_eop", "Area eop",
+	// 			DbUtils::GetDecimal
+	// 		),
+	// 		new RowSetFieldFetch(
+	// 			"id_fmp", "Id Fmp",
+	// 			DbUtils::GetObject
+	// 		),
+	// 		new RowSetFieldFetch(
+	// 			"area_tot_declared", "Area Tot. Declared",
+	// 			DbUtils::GetDecimal
+	// 		),
+	// 		new RowSetFieldFetch(
+	// 			"area_tot_intersect", "Area Tot. Intersect",
+	// 			DbUtils::GetDecimal
+	// 		),
+	// 		new RowSetFieldFetch(
+	// 			"area_tot_requested", "Area Tot. Requested",
+	// 			DbUtils::GetDecimal
+	// 		),
+	// 		new RowSetFieldFetch(
+	// 			"amm_type", "Amm. Type",
+	// 			DbUtils::GetObject
+	// 		),
+	// 		new RowSetFieldFetch(
+	// 			"alert", "Alert",
+	// 			DbUtils::GetObject
+	// 		)
+	// 	},
+	// 	queryReportP3Nat2
+	// );
+
+
+
+	public static String queryReportAlertGeoJson = """
+select json_build_object(
+		'type', 'FeatureCollection',
+		'crs', json_build_object(
+			'type', 'name',
+			'properties', json_build_object(
+				'name', 'urn:ogc:def:crs:EPSG::3035'
+			)
+		),
+		'features', coalesce(json_agg(ST_AsGeoJSON(t.*)::json), '[]'::json)
+	) as res --srid3035
+from (
+		select id_eop, area_eop, id_fmp,
+			area_tot_declared, area_tot_intersect, area_tot_requested,
+			amm_type, alert, 
+			shape
+		from FOLIAGE2.FLGALERT_MONITORAGGIO_TAB
+		where data_rife = :dataRife
+	) as t""";
+
+	public static ReportBuiler ReportAlertGeoJson = new ReportBuiler(
+		queryReportAlertGeoJson,
+		"res"
+	);
+	
 }

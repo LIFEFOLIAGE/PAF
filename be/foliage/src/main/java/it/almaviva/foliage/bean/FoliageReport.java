@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.springframework.jdbc.core.RowMapper;
+import org.threeten.extra.PeriodDuration;
 
 import it.almaviva.foliage.istanze.db.DbUtils;
 import it.almaviva.foliage.services.AbstractDal;
@@ -20,9 +21,13 @@ public class FoliageReport {
 	public String formatoDataFile;
 	public String formatoDataDesc;
 	public List<FoliagePeriodicTaskExecution> listaEsecuzioni;
+	public String codBatch;
+	public PeriodDuration durata;
 	public static String queryForReportDisponibili = """
-select id_batch, cod_report, desc_report, report_name, formato_files, formato_data_file, formato_data_desc
+select id_batch, b.cod_batch, r.cod_report, r.desc_report, r.report_name, r.formato_files, r.formato_data_file, r.formato_data_desc, s.intervallo_frequenza
 from foliage2.flgconf_batch_report_tab r
+	join foliage2.flgconf_batch_tab b using (id_batch)
+	left join foliage2.flgbatch_scheduling_tab s using (id_batch)
 where not exists (
 		select *
 		from foliage2.flgprofili_report_tab pr
@@ -36,22 +41,26 @@ where not exists (
 			and p.tipo_auth = :authority
 			and p.tipo_ambito = :authScope
 	)
-order by cod_report""";
+order by r.cod_report""";
 
 
 	public static String queryForReportFromIdBatch = """
-select id_batch, cod_report, desc_report, report_name, formato_files, formato_data_file, formato_data_desc
+select id_batch, b.cod_batch, r.cod_report, r.desc_report, r.report_name, r.formato_files, r.formato_data_file, r.formato_data_desc, s.intervallo_frequenza
 from foliage2.flgconf_batch_report_tab r
+	join foliage2.flgconf_batch_tab b using (id_batch)
+	left join foliage2.flgbatch_scheduling_tab s using (id_batch)
 where r.id_batch = :idBatch
 order by cod_report""";
 	public static RowMapper<FoliageReport> RowMapper = (rs, rn) -> {
 		FoliageReport outVal = new FoliageReport();
 		outVal.idBatch = DbUtils.GetInteger(rs, rn, "id_batch");
+		outVal.codBatch = rs.getString("cod_batch");
 		outVal.codice = rs.getString("cod_report");
 		outVal.descrizione = rs.getString("desc_report");
 		outVal.nomeFile = rs.getString("report_name");
 		outVal.formatoDataFile = rs.getString("formato_data_file");
 		outVal.formatoDataDesc = rs.getString("formato_data_desc");
+		outVal.durata = DbUtils.GetInterval(rs, rn, "intervallo_frequenza");
 		
 		{
 			Array formatoFile = rs.getArray("formato_files");
@@ -61,7 +70,7 @@ order by cod_report""";
 				outVal.formatoFiles.add(rs1.getString(2));
 			}	
 		}
-
+		
 		return outVal;
 	};
 

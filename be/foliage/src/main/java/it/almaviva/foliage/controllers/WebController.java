@@ -269,6 +269,7 @@ public class WebController {
 				);
 			}
 			catch(FoliageAuthorizationException ae) {
+				log.error(FoliageException.GetExceptionStackTrace(ae));
 				return new ResponseEntity<>(
 					ae.toString(),
 					HttpStatus.FORBIDDEN
@@ -330,7 +331,8 @@ public class WebController {
 			dal.ricercaInstanze(
 				authority, authScope,
 				idUtente, codFiscaleUtente,
-				parametri
+				parametri,
+				false
 			),
 			HttpStatus.OK
 		);
@@ -640,8 +642,10 @@ public class WebController {
 
 	@GetMapping("/corrente")
 	public Object readCurrent() throws Exception {
+		
 		Authentication a = SecurityContextHolder.getContext().getAuthentication();
 		JwtAuthentication jwtAuth = (JwtAuthentication)a;
+		//dal.checkAccettazionePrivacy(jwtAuth.getAccessToken());
 		return this.dal.getInfoUtente(jwtAuth.getUsername());
 	}
 
@@ -695,7 +699,7 @@ public class WebController {
 	public Object accettazionePrivacy() throws Exception {
 		Authentication a = SecurityContextHolder.getContext().getAuthentication();
 		JwtAuthentication jwtAuth = (JwtAuthentication)a;
-		return new ResponseEntity<>(dal.effettuaAccettazionePrivacy(jwtAuth.getUsername()), HttpStatus.OK);
+		return new ResponseEntity<>(dal.effettuaAccettazionePrivacy(jwtAuth.getAccessToken().getIdUtente()), HttpStatus.OK);
 	}
 
 	@PutMapping(path = "/corrente")
@@ -838,6 +842,7 @@ public class WebController {
 			return new ResponseEntity<>(dal.getRichiesteUtente(idUtente, authority, authScope, username), HttpStatus.OK);
 		}
 		catch (FoliageAuthorizationException e) {
+			log.error(FoliageException.GetExceptionStackTrace(e));
 			return new ResponseEntity<>("Accesso Negato", HttpStatus.FORBIDDEN);
 		}
 	}
@@ -905,6 +910,7 @@ public class WebController {
 				return this.dal.getRichiesta(idRichiesta, idUtente, authority, authScope);
 			}
 			catch (FoliageAuthorizationException e) {
+				log.error(FoliageException.GetExceptionStackTrace(e));
 				return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);	
 			}
 		}
@@ -1018,6 +1024,7 @@ public class WebController {
 			return new ResponseEntity<>(dal.valutaRichiestaProfilo(jwtAuth.getAccessToken().getIdUtente(), authority, authScope, idRichiesta, valutazione), HttpStatus.OK);
 		}
 		catch (FoliageAuthorizationException e) {
+			log.error(FoliageException.GetExceptionStackTrace(e));
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);	
 		}
 	}

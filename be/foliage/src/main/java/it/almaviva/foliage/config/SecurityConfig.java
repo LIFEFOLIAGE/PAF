@@ -10,6 +10,8 @@ import it.almaviva.foliage.authentication.FoliageAuthenticationProvider;
 import it.almaviva.foliage.authentication.AccessTokenFilter;
 import it.almaviva.foliage.authentication.AccessTokenAuthenticationFailureHandler;
 import it.almaviva.foliage.authentication.JwtTokenValidator;
+import it.almaviva.foliage.authentication.MonitoraggioFilter;
+import it.almaviva.foliage.authorization.PrivacyAuthorizationFilter;
 import it.almaviva.foliage.authorization.ProfileAuthorizationFilter;
 import it.almaviva.foliage.authentication.FoliageJwkProvider;
 import it.almaviva.foliage.authentication.JwtAuthenticationDal;
@@ -20,6 +22,7 @@ import jakarta.servlet.Filter;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,6 +30,7 @@ import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.apache.tomcat.websocket.BasicAuthenticator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -34,13 +38,24 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
+import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer.AuthorizationManagerRequestMatcherRegistry;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.User.UserBuilder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.util.matcher.RegexRequestMatcher;
 /**
@@ -56,8 +71,8 @@ import org.springframework.security.web.util.matcher.RegexRequestMatcher;
 @Slf4j
 public class SecurityConfig  {
 
-	@Value("${foliage.jwk-jwksurl}")
-	private String jwksUrl;
+	@Value("${foliage.jwk}")
+	private String jwkProviderUrl;
 
 
 	@Value("${foliage.jwt.username}")
@@ -109,21 +124,41 @@ public class SecurityConfig  {
 	@Value("${foliage.base-path}")
 	protected String basePath;
 
+	
+	@Value("${foliage.monitoraggio-host}")
+	protected String monitoraggioHost;
+	@Value("${foliage.monitoraggio-user}")
+	protected String monitoraggioUser;
+	@Value("${foliage.monitoraggio-password}")
+	protected String monitoraggioPassword;
+
+	@Value("#{${foliage.monitoraggio-hosts}}")
+	private Map<String,String> users;
+
 	@Autowired
 	private JwtAuthenticationDal authenticationDal;
+
+
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
+
+	@Bean
+	public UserDetailsService userDetailsService() {
+		UserBuilder builder = User.builder();
+		UserDetails userDetails = builder
+			.username("user")
+			.password("$2a$10$.fk8dD4MBlzKNbihXWe08u0T1zcW6Eiq51QcHpz4r5jpEp4VnR00O")
+			.build();
+
+		return new InMemoryUserDetailsManager(userDetails);
+	}
 
 	@Bean
 	@Order(1)
 	public SecurityFilterChain basicFilterChainMonitoraggio(HttpSecurity http)  throws Exception {
-		// JwtTokenValidator tokValidator = jwtTokenValidator(foliageJwkProvider());
-		// AuthenticationManager authManager = http.getSharedObject(AuthenticationManager.class);
-		// AccessTokenFilter filter = new AccessTokenFilter(
-		// 	tokValidator,
-		// 	authManager,
-		// 	authenticationFailureHandler(),
-		// 	authenticationDal
-		// );
-		// ProfileAuthorizationFilter authProfFilter = new ProfileAuthorizationFilter();
+		MonitoraggioFilter filter = new MonitoraggioFilter(monitoraggioHost, monitoraggioUser, monitoraggioPassword);
 
 		String monitoraggioRegex = String.format(
 			"^%sapi/monitoraggio/.*",
@@ -138,6 +173,7 @@ public class SecurityConfig  {
 		// log.info(String.format("Il pattern delle altre richieste è: %s", othersRegex));
 
 		HttpSecurity lev1 = http.csrf(AbstractHttpConfigurer::disable);
+
 		
 		// HttpSecurity underMonitoraggio = lev1.authorizeHttpRequests(
 		// 	(auth) -> {
@@ -148,16 +184,17 @@ public class SecurityConfig  {
 			RegexRequestMatcher.regexMatcher(monitoraggioRegex)
 		);
 		
-		
-		// underOthers.
-		// 	addFilterBefore(
-		// 		filter,
-		// 		BasicAuthenticationFilter.class
-		// 	).
-		// 	addFilterAfter(
-		// 		authProfFilter,
-		// 		BasicAuthenticationFilter.class
-		// 	);
+		BasicAuthenticationEntryPoint entryPoint = new BasicAuthenticationEntryPoint();
+		entryPoint.setRealmName("lifefoliage");
+		underMonitoraggio.httpBasic(
+				httpSecurityHttpBasicConfigurer -> httpSecurityHttpBasicConfigurer.authenticationEntryPoint(entryPoint)
+			);
+
+		underMonitoraggio.
+			addFilterBefore(
+				filter,
+				BasicAuthenticationFilter.class
+			).authorizeRequests().anyRequest().authenticated();
 		return underMonitoraggio.build();
 	}
 
@@ -174,7 +211,7 @@ public class SecurityConfig  {
 			authenticationDal
 		);
 		ProfileAuthorizationFilter authProfFilter = new ProfileAuthorizationFilter();
-
+		PrivacyAuthorizationFilter authPrivFilter = new PrivacyAuthorizationFilter(basePath);
 		// String monitoraggioRegex = String.format(
 		// 	"^%sapi/monitoraggio/.*",
 		// 	basePath
@@ -207,6 +244,10 @@ public class SecurityConfig  {
 		underOthers.
 			addFilterBefore(
 				filter,
+				BasicAuthenticationFilter.class
+			).
+			addFilterAfter(
+				authPrivFilter,
 				BasicAuthenticationFilter.class
 			).
 			addFilterAfter(
@@ -314,7 +355,7 @@ public class SecurityConfig  {
 
 	@Bean
 	public JwkProvider foliageJwkProvider() {
-		return new FoliageJwkProvider(jwksUrl);
+		return new FoliageJwkProvider(jwkProviderUrl);
 	}
 
 	@Bean

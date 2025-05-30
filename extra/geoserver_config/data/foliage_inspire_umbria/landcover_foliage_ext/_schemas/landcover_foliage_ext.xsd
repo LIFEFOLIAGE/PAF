@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ext="http://10.206.228.166/foliage/inspire" xmlns:lc="http://inspire.ec.europa.eu/schemas/lcv/4.0" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://10.206.228.166/foliage/inspire">
+	<!-- Importa lo schema INSPIRE Land Cover -->
+	<xs:import namespace="http://inspire.ec.europa.eu/schemas/lcv/4.0" schemaLocation="0/LandCoverVector.xsd"/> 
+	<!-- Estensione del tipo LandCoverUnit -->
+	<xs:complexType name="ExtendedLandCoverUnitType">
+		<xs:complexContent>
+			<xs:extension base="lc:LandCoverUnitType">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="totalArea" type="xs:double"/>
+					<xs:element minOccurs="0" name="authorizedArea" type="xs:double"/>
+					<xs:element minOccurs="0" name="applicationType" type="ext:InstanceType"/>
+					<xs:element minOccurs="0" name="dominantSpecies" type="ext:ForestryType"/>
+					<xs:element minOccurs="0" name="secondarySpecies" type="ext:ForestryType"/>
+					<xs:element minOccurs="0" name="forestStructure" type="ext:GovernanceType"/>
+					<xs:element minOccurs="0" name="forestSubCategory" type="ext:ForestSubCategoryType"/>					
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- Elemento root opzionale -->
+	<xs:element name="ExtendedLandCoverUnit" type="ext:ExtendedLandCoverUnitType"/>
+
+ <!-- Definizione dei tipi specifici -->
+  <xs:simpleType name="InstanceType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Istanza sopra soglia"/>
+      <xs:enumeration value="Istanza sotto soglia"/>
+	  <xs:enumeration value="Istanza di progetti in deroga"/>
+	  <xs:enumeration value="Istanza di progetti in attuazione dei piano di gestione forestali"/>	  
+    </xs:restriction>
+  </xs:simpleType>
+  
+  
+   <xs:simpleType name="ForestSubCategoryType">
+    <xs:restriction base="xs:string">
+		<xs:enumeration value="Larici-cembreto"/>
+			<xs:enumeration value="Larici isolati nella brughiera subalpina"/>
+			<xs:enumeration value="Lariceto in fustaia chiusa"/>
+			<xs:enumeration value="Altre formazioni di larice e cembro"/>
+			<xs:enumeration value="Pecceta subalpina"/>
+			<xs:enumeration value="Pecceta montana"/>
+			<xs:enumeration value="Altre formazioni con prevalenza di peccio"/>
+			<xs:enumeration value="Altre formazioni di abete bianco"/>
+			<xs:enumeration value="Abetina e abeti-faggeta a Vaccinium e Maianthemum"/>
+			<xs:enumeration value="Abetina a Cardamine"/>
+			<xs:enumeration value="Abetina a Campanula"/>
+			<xs:enumeration value="Pineta di pino montano"/>
+			<xs:enumeration value="Pineta (pino silveste) a roverella e citiso a foglie sessili"/>
+			<xs:enumeration value="Pineta (pino silveste) a farnia e molinia"/>
+			<xs:enumeration value="Pineta (pino silveste) a erica"/>
+			<xs:enumeration value="Pineta (pino silveste) a carice oppure astragali"/>
+			<xs:enumeration value="Altre formazioni a pino silvestre e pino montano"/>
+			<xs:enumeration value="Pineta a pino nero a pino loricato (Pinus leucodermis)"/>
+			<xs:enumeration value="Pineta a pino nero a pino laricio (Pinus laricio)"/>
+			<xs:enumeration value="Pineta a pino nero a erica e orniello"/>
+			<xs:enumeration value="Pineta a pino nero a citiso e ginestra"/>
+			<xs:enumeration value="Altre formazioni a pino nero e pino loricato"/>
+			<xs:enumeration value="Pinete a Pinus pinea"/>
+			<xs:enumeration value="Pinete a Pinus pinaster"/>
+			<xs:enumeration value="Pinete a Pinus halepensis"/>
+			<xs:enumeration value="Formazioni a cipresso"/>
+			<xs:enumeration value="Altre formazioni a conifere"/>
+			<xs:enumeration value="Faggete termofile a Cephalanthera"/>
+			<xs:enumeration value="Faggete mesofile"/>
+			<xs:enumeration value="Faggete acidofile a Luzula"/>
+			<xs:enumeration value="Faggete a agrifoglio, felci e campanula"/>
+			<xs:enumeration value="Altre formazioni di faggio"/>
+			<xs:enumeration value="Boschi di roverella"/>
+			<xs:enumeration value="Boschi di rovere"/>
+			<xs:enumeration value="Boschi di farnia"/>
+			<xs:enumeration value="Altre formazioni di rovere, roverella e farnia"/>
+			<xs:enumeration value="Cerrete di pianura"/>
+			<xs:enumeration value="Cerrete collinari e montane"/>
+			<xs:enumeration value="Boschi di fragno e nuclei di vallonea"/>
+			<xs:enumeration value="Boschi di farnetto"/>
+			<xs:enumeration value="Altre formazioni di cerro, farnetto, fragno o vallonea"/>
+			<xs:enumeration value="Castagneti da legno"/>
+			<xs:enumeration value="Castagneti da frutto, selve castanili"/>
+			<xs:enumeration value="Boschi di carpino nero e orniello"/>
+			<xs:enumeration value="Boschi di carpino bianco"/>
+			<xs:enumeration value="Boscaglia a carpino orientale"/>
+			<xs:enumeration value="Saliceti ripariali"/>
+			<xs:enumeration value="Plataneto"/>
+			<xs:enumeration value="Pioppeti naturali"/>
+			<xs:enumeration value="Boschi a ontano nero"/>
+			<xs:enumeration value="Boschi a ontano bianco"/>
+			<xs:enumeration value="Boschi a frassino ossifillo e olmo"/>
+			<xs:enumeration value="Altre formazioni forestali in ambienti umidi"/>
+			<xs:enumeration value="Robineti e ailanteti"/>
+			<xs:enumeration value="Boschi di ontano napoletano"/>
+			<xs:enumeration value="Boscaglie di Cercis"/>
+			<xs:enumeration value="Betuleti, boschi montani pioneri"/>
+			<xs:enumeration value="Altre formazioni caducifoglie"/>
+			<xs:enumeration value="Acero-tilieti di monte e boschi di frassino ecc."/>
+			<xs:enumeration value="Acereti appenninici"/>
+			<xs:enumeration value="Lecceta termofila costiera"/>
+			<xs:enumeration value="Lecceta rupicola"/>
+			<xs:enumeration value="Bosco misto di leccio e orniello"/>
+			<xs:enumeration value="Boscaglia di leccio"/>
+			<xs:enumeration value="Sugherete mediterranee"/>
+			<xs:enumeration value="Pascolo arborato di sughera"/>
+			<xs:enumeration value="Boschi sempreverdi di ambienti umidi"/>
+			<xs:enumeration value="Boscaglie termo-mediterranee"/>
+			<xs:enumeration value="Pioppeti artificiali"/>
+			<xs:enumeration value="Piantagioni di latifoglie"/>
+			<xs:enumeration value="Piantagioni di eucalipti"/>
+			<xs:enumeration value="Pseudotsuga menziesii"/>
+			<xs:enumeration value="Pinus radiata"/>
+			<xs:enumeration value="Piantagioni di conifere indigene"/>
+			<xs:enumeration value="Altre piantagioni di conifere esotiche"/>
+			<xs:enumeration value="Saliceti alpini"/>
+			<xs:enumeration value="Mughete"/>
+			<xs:enumeration value="Formazione ad ontano verde"/>
+			<xs:enumeration value="Brughiera subalpina"/>
+			<xs:enumeration value="Altri arbusteti subalpini di aghifoglie"/>
+			<xs:enumeration value="Pruneti e corileti"/>
+			<xs:enumeration value="Arbusteti a ginestra dell'Etna (Genista aetnensis)"/>
+			<xs:enumeration value="Arbusteti a ginestra (Spartium junceum)"/>
+			<xs:enumeration value="Arbusteti a ginepro"/>
+			<xs:enumeration value="Altri arbusteti di clima temperato"/>
+			<xs:enumeration value="Altre formazioni a ginestre"/>
+			<xs:enumeration value="Macchia litorale"/>
+			<xs:enumeration value="Macchia a lentisco"/>
+			<xs:enumeration value="Formazioni a ginepri sul litorale"/>
+			<xs:enumeration value="Cisteti"/>
+			<xs:enumeration value="Altri arbusteti sempreverdi"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="ForestryType">
+    <xs:restriction base="xs:string">
+			<xs:enumeration value="Acero campestre"/>
+			<xs:enumeration value="Acero di monte"/>
+			<xs:enumeration value="Acero d'Ungheria"/>
+			<xs:enumeration value="Betulla"/>
+			<xs:enumeration value="Carpino bianco"/>
+			<xs:enumeration value="Carpino nero"/>
+			<xs:enumeration value="Castagno"/>
+			<xs:enumeration value="Cerro"/>
+			<xs:enumeration value="Ciliegio selvatico"/>
+			<xs:enumeration value="Cipresso"/>
+			<xs:enumeration value="Corbezzolo"/>
+			<xs:enumeration value="Eucalipto spp"/>
+			<xs:enumeration value="Faggio"/>
+			<xs:enumeration value="Farnetto"/>
+			<xs:enumeration value="Farnia"/>
+			<xs:enumeration value="Fragno"/>
+			<xs:enumeration value="Frassino maggiore"/>
+			<xs:enumeration value="Ilatro comune"/>
+			<xs:enumeration value="Leccio"/>
+			<xs:enumeration value="Nocciolo"/>
+			<xs:enumeration value="Olmo comune"/>
+			<xs:enumeration value="Ontano napoletano"/>
+			<xs:enumeration value="Ontano nero"/>
+			<xs:enumeration value="Orniello"/>
+			<xs:enumeration value="Pino domestico"/>
+			<xs:enumeration value="Pino d'Aleppo"/>
+			<xs:enumeration value="Pino laricio"/>
+			<xs:enumeration value="Pino marittimo"/>
+			<xs:enumeration value="Pino nero"/>
+			<xs:enumeration value="Pioppo nero"/>
+			<xs:enumeration value="Pioppo tremulo"/>
+			<xs:enumeration value="Robinia"/>
+			<xs:enumeration value="Roverella"/>
+			<xs:enumeration value="Rovere"/>
+			<xs:enumeration value="Salicone"/>
+			<xs:enumeration value="Tiglio selvatico"/>
+			<xs:enumeration value="Sughera"/>
+			<xs:enumeration value=""/>
+			</xs:restriction>	
+  </xs:simpleType>
+  
+  <xs:simpleType name="GovernanceType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Fustaia"/>
+      <xs:enumeration value="Ceduo"/>
+      <xs:enumeration value="Misto"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>

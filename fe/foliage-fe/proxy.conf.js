@@ -13,14 +13,14 @@ function logProvider() { //(2)
 
 var PROXY_CONF = {
 	"/UmbriaBE": {
-		"target": "http://localhost:8080",
+		"target": "http://localhost:8082",
 		"secure": false,
 		"logLevel": "debug",
 		logProvider: logProvider, // (3)
 		cookiePathRewrite: '/local/'
 	},
 	"/LazioBE": {
-		"target": "http://localhost:8080",
+		"target": "http://localhost:8081",
 		"secure": false,
 		"logLevel": "debug",
 		logProvider: logProvider, // (3)

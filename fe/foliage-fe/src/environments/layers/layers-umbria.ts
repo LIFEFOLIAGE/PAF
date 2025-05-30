@@ -1,3 +1,5 @@
+import { effOrigin } from "../defs/pars";
+
 export const srids = {
 	"EPSG:3004": "+proj=tmerc +lat_0=0 +lon_0=15 +k=0.9996 +x_0=2520000 +y_0=0 +ellps=intl +towgs84=-104.1,-49.1,-9.9,0.971,-2.917,0.714,-11.68 +units=m +no_defs",
 	"EPSG:3003": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=1500000 +y_0=0 +ellps=intl +towgs84=-104.1,-49.1,-9.9,0.971,-2.917,0.714,-11.68 +units=m +no_defs",
@@ -16,7 +18,7 @@ export const srids = {
 
 export const mapsSrid = "EPSG:3035";
 
-const geoserverUrl = '<url-geoserver>';
+const geoserverUrl = `${effOrigin}/geoserver`;
 
 export const layersUmbria = {
 	crt: {

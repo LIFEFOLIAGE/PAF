@@ -75,6 +75,7 @@ public class ScheduledTasks extends AbstractDal {
 					String.format("Impossibile avviare attività %s per %s", taskExec.task.codice, taskExec.batchTime.format(DateTimeFormatter.ISO_LOCAL_TIME)),
 					e
 				);
+				log.error(FoliageException.GetExceptionStackTrace(e));
 			}
 		}
 
@@ -105,7 +106,6 @@ public class ScheduledTasks extends AbstractDal {
 						this.registerTaskError(taskExec);
 					}
 				}
-
 			}
 			catch (Exception e) {
 				throw e;
@@ -125,6 +125,7 @@ public class ScheduledTasks extends AbstractDal {
 				this.registerPendingTask(taskExec);
 			}
 			catch (Exception e) {
+				log.error(FoliageException.GetExceptionStackTrace(e));
 				log.error(
 					String.format("Impossibile avviare attività %s per %s", taskExec.task.codice, taskExec.batchTime.format(DateTimeFormatter.ISO_LOCAL_TIME)),
 					e
@@ -168,10 +169,10 @@ public class ScheduledTasks extends AbstractDal {
 	}
 	public List<FoliageRequestedTaskExecution> generateRequestedPendingTasksExecutions(HashMap<Integer, FoliageTask> tasksMap) {
 		String sql = """
-select id_batch, id_batch_ondemand, data_avvio, data_rife, parametri, id_utente
+select id_batch, id_batch_ondemand, data_avvio_pianificata, data_rife, parametri, id_utente
 from foliage2.flgbatch_ondemand_tab bd
 	join foliage2.flgconf_batch_tab b using (id_batch)
-where bd.data_avvio <= localtimestamp
+where bd.data_avvio_pianificata <= localtimestamp
 	and b.cod_batch != 'MONITORAGGIO_SAT'
 	and bd.data_rife != all (
 		select eb.data_rife
@@ -579,7 +580,8 @@ insert into FOLIAGE2.FLGNOTIFICHE_TAB(ID_UTENTE, TESTO, LINK, DATA_NOTIFICA)
 
 			int res = template.update(sql, parameters);
 			return res;
-		}catch (Exception e) {
+		}
+		catch (Exception e) {
 			throw e;
 		}
 		finally {
@@ -634,8 +636,8 @@ from foliage_extra.sitiprotetti_natura_2000 as sn2
 	) as v on (true)
 where ti.cod_tipo_istanza_specifico in ('SOPRA_SOGLIA', 'IN_DEROGA', 'ATTUAZIONE_PIANI')
 	and (
-		inv.data_invio < :dataRife
-		and inv.data_invio >= :dataRife - '1years'::interval
+		val.data_valutazione < :dataRife
+		and val.data_valutazione >= :dataRife - '1years'::interval
 	)
 	and val.esito_valutazione""";
 		int nRows = this.update(sql, pars);
@@ -705,7 +707,7 @@ select :dataRife as data_rife,
 from (
 		select i.id_ente_terr, i.id_ista, prog_uog, cod_categoria,
 			case when cod_tipo_istanza_specifico in ('SOPRA_SOGLIA', 'IN_DEROGA') then 'A' else 'B' end as INDICATORE,
-			coalesce(v.esito_valutazione, false) as esito,
+			coalesce(val.esito_valutazione, false) as esito,
 			--pf.superficie_pfor as supe,
 			supe_uo as supe,
 			case when n.desc_nprp = 'P.Privata' then supe_uo end as supe_privata,
@@ -808,8 +810,8 @@ from (
 		--where id_ente_terr = :idEnte
 		where cod_tipo_istanza_specifico in ('SOPRA_SOGLIA', 'IN_DEROGA', 'TAGLIO_BOSCHIVO', 'ATTUAZIONE_PIANI')
 			and (
-				inv.data_invio < :dataRife
-				and inv.data_invio >= :dataRife - '1years'::interval
+				val.data_valutazione < :dataRife
+				and val.data_valutazione >= :dataRife - '1years'::interval
 			)
 	) as T
 group by INDICATORE""";
@@ -882,8 +884,8 @@ from foliage2.flgista_tab i
 --where id_ente_terr = :idEnte
 where cod_tipo_istanza_specifico in ('SOPRA_SOGLIA', 'IN_DEROGA', 'TAGLIO_BOSCHIVO', 'ATTUAZIONE_PIANI')
 	and (
-		inv.data_invio < :dataRife
-		and inv.data_invio >= :dataRife - :interval
+		val.data_valutazione < :dataRife
+		and val.data_valutazione >= :dataRife - :interval
 	)""";
 		int nRows = this.update(sql, pars);
 		return nRows;

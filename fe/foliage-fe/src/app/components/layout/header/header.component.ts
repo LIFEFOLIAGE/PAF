@@ -26,6 +26,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 	notificheNonLette: number = 0;
 	numNotifiche: number = 0;
 	userLogin: any = undefined;
+	hasProfili: boolean = false;
 
 	docClick = this.documentClick.bind(this);
 	static longDf = DateTimeFormatter.ofPattern('dd/MM/yyyy HH:mm:ss');
@@ -73,18 +74,19 @@ export class HeaderComponent implements OnInit, OnDestroy {
 		this.router.events.pipe(
 			filter((e: Event_1 | RouterEvent): e is RouterEvent => e instanceof NavigationEnd)
 		).subscribe((e: RouterEvent) => {
-			this.isAuthenticated = this.authService.isAuthenticated();
-			if (this.isAuthenticated) {
-				this.sessionManager.updateProfiliUtente().then(
-					(res: any[]) => {
-						this.listaProfili = res;
-					},
-					() => {
-						this.reload();
-					}
-				);
-				this.leggiNotifiche();
-			}
+			// this.isAuthenticated = this.authService.isAuthenticated();
+			// if (this.isAuthenticated) {
+			// 	this.sessionManager.updateProfiliUtente().then(
+			// 		(res: any[]) => {
+			// 			this.listaProfili = res;
+			// 		},
+			// 		() => {
+			// 			this.reload();
+			// 		}
+			// 	);
+			// 	this.leggiNotifiche();
+			// }
+			this.reload();
 		});
 		this.reload();
 	}
@@ -105,24 +107,41 @@ export class HeaderComponent implements OnInit, OnDestroy {
 						nome: res.nome,
 						cognome: res.cognome
 					};
-					//console.log({userLogin: this.userLogin});
-					this.sessionManager.getCurrProfilo().then(
-						(res: any) => {
-							this.profiloSelezionato = res;
-						}
-					);
-					
+					if (res.flagAccettazione) {
+						return this.sessionManager.getCurrProfilo().then(
+								(res: any) => {
+									this.profiloSelezionato = res;
+								}
+							).then(
+								() => {
+									this.sessionManager.updateProfiliUtente().then(
+										(res: any[]) => {
+											this.listaProfili = res;
+											this.hasProfili = res.length > 0;
+										}/*,
+										(e) => {
+											this.reload();
+										}*/
+									);	
+								}
+							);
+					}
+					else {
+						this.hasProfili = false;
+						return Promise.resolve();
+					}
 				}
 			);
-			const prom2 = this.sessionManager.updateProfiliUtente().then(
-				(res: any[]) => {
-					this.listaProfili = res;
-				},
-				(e) => {
-					this.reload();
-				}
-			);
-			return Promise.all([prom1, prom2]);
+			return prom1;
+			// const prom2 = this.sessionManager.updateProfiliUtente().then(
+			// 	(res: any[]) => {
+			// 		this.listaProfili = res;
+			// 	},
+			// 	(e) => {
+			// 		this.reload();
+			// 	}
+			// );
+			// return Promise.all([prom1, prom2]);
 		}
 		else {
 			return Promise.reject();

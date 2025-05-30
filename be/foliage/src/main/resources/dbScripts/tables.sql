@@ -3967,6 +3967,23 @@ delete from foliage2.flgista_tab;
 delete from foliage2.flgtitolare_istanza_tab;
 
 
+/*
+
+raster2pgsql -s 4326 -t 2700x2700 -d -I -C dem_lazio.tif foliage_extra.lazio_dem > import_lazio_dem.sql
+raster2pgsql -s 4326 -t 2700x2700 -d -I -C dem_umbria.tif foliage_extra.umbria_dem > import_umbria_dem.sql
+
+raster2pgsql -s 4326 -t 2700x2700 -d -I -C slope_lazio.tif foliage_extra.lazio_slope > import_lazio_slope.sql
+raster2pgsql -s 4326 -t 2700x2700 -d -I -C slope_umbria.tif foliage_extra.umbria_slope > import_umbria_slope.sql
+
+
+psql -U foliage -d foliageumbria --host=unioneeuropea-foliage-svil.cs5b2t1vzg63.eu-west-1.rds.amazonaws.com -f import_umbria_dem.sql
+psql -U foliage -d foliageumbria --host=unioneeuropea-foliage-svil.cs5b2t1vzg63.eu-west-1.rds.amazonaws.com -f import_umbria_slope.sql
+
+psql -U foliage -d foliagelazio --host=unioneeuropea-foliage-svil.cs5b2t1vzg63.eu-west-1.rds.amazonaws.com -f import_lazio_dem.sql
+psql -U foliage -d foliagelazio --host=unioneeuropea-foliage-svil.cs5b2t1vzg63.eu-west-1.rds.amazonaws.com -f import_lazio_slope.sql
+
+ */
+
 alter table foliage2.flgparticella_forestale_tab add column slope_raster raster;
 alter table foliage2.flgparticella_forestale_tab add column dem_raster raster;
 
@@ -4462,7 +4479,6 @@ CREATE TRIGGER POST_DEL_id_file_doc_identita
    FOR EACH row
    EXECUTE FUNCTION foliage2.flgdelete_base64_formio_file('id_file_doc_identita');
 
---- eseguire da qui in produzione
 
 create table FOLIAGE2.FLGESECUZIONI_MONITORAGGIO_TAB (
 	id_batch_ondemand int not null,
@@ -4506,8 +4522,6 @@ INSERT INTO foliage2.flgconf_batch_tab (
 
 alter table foliage2.flgserver_requests_tab add column headers varchar;
 
---- eseguire da qui in locale
---- eseguire da qui in test
 
 alter table FOLIAGE2.FLGDATI_PRE_MONITORAGGIO_TAB add column cod_tipo_istanza varchar;
 
@@ -4521,3 +4535,262 @@ set cod_tipo_istanza = (
 	);
 
 alter table FOLIAGE2.FLGDATI_PRE_MONITORAGGIO_TAB alter column cod_tipo_istanza set not null;
+
+
+create table FOLIAGE2.FLGALERT_MONITORAGGIO_TAB (
+	data_rife date not null,
+	id numeric not null,
+	id_eop numeric not null,
+	area_eop numeric not null,
+	id_fmp varchar,
+	area_tot_declared numeric not null,
+	area_tot_intersect numeric not null,
+	area_tot_requested numeric not null,
+	amm_type varchar not null,
+	alert varchar not null,
+	shape geometry not null,
+	constraint FLGALERT_MONITORAGGIO_PK
+		primary key (data_rife, id)
+);
+
+create table FOLIAGE2.FLGNAT2000_MONITORAGGIO_TAB (
+	data_rife date not null,
+	id numeric not null,
+	id_sito varchar not null,
+	nome_sito varchar not null,
+	sup_sito numeric not null,
+	sup_boschiva numeric not null,
+	perc_dist numeric,
+	perc_tagli numeric,
+	indice_biodiv numeric,
+	shape geometry not null,
+	constraint FLGNAT2000_MONITORAGGIO_PK
+		primary key (data_rife, id)
+);
+
+create table FOLIAGE2.FLGPRIVACY_POLICY_TAB (
+	id_privacy_policy int not null GENERATED ALWAYS AS identity,
+	cod_privacy_policy varchar not null,
+	data_rilascio date not null,
+	testo varchar,
+	is_current boolean,
+	constraint FLGPRIVACY_POLICY_PK
+		primary key(id_privacy_policy),
+	constraint FLGPRIVACY_POLICY_UNQ_COD
+		unique(cod_privacy_policy),
+	constraint FLGPRIVACY_POLICY_UNQ_CURRENT
+		unique (is_current),
+	constraint FLGPRIVACY_POLICY_CK_CURRENT
+		check (is_current is null or is_current)
+);
+
+create table FOLIAGE2.FLGUTEN_PRIVACY_POLICY_TAB (
+	id_utente int not null,
+	id_privacy_policy int not null,
+	data_visione timestamp without time zone not null,
+	constraint FLGUTEN_PRIVACY_POLICY_PK
+		primary key (id_utente, id_privacy_policy),
+	constraint FLGUTEN_PRIVACY_POLICY_FK_POLICY
+		foreign key (id_privacy_policy)
+		references FOLIAGE2.FLGPRIVACY_POLICY_TAB,
+	constraint FLGUTEN_PRIVACY_POLICY_FK_UTENTE
+		foreign key (id_utente)
+		references FOLIAGE2.FLGUTEN_TAB
+);
+
+
+insert into FOLIAGE2.FLGPRIVACY_POLICY_TAB(cod_privacy_policy, data_rilascio)
+	values ('V1', date'2024-11-01');
+
+-- insert into FOLIAGE2.FLGPRIVACY_POLICY_TAB(cod_privacy_policy, data_rilascio)
+-- 	values ('V2', date'2025-02-01');
+
+update FOLIAGE2.FLGPRIVACY_POLICY_TAB
+set is_current = true
+where cod_privacy_policy = 'V1';
+
+insert into FOLIAGE2.FLGUTEN_PRIVACY_POLICY_TAB(id_utente, id_privacy_policy, data_visione)
+select ID_UTEN, id_privacy_policy, localtimestamp
+from FOLIAGE2.flguten_tab u
+	cross join FOLIAGE2.FLGPRIVACY_POLICY_TAB p
+where u.flag_accettazione
+	AND p.is_current;
+
+
+insert into foliage2.flgprofili_report_tab(id_report, id_profilo)
+select id_report, id_profilo
+from (
+		values (
+				'P3_NAT1', '{Carabiniere forestale}'::varchar[]
+			), (
+				'P3_NAT2', '{Carabiniere forestale}'::varchar[]
+			)
+	) as t1(cod_report, arr_profili)
+	join foliage2.flgconf_batch_report_tab using (cod_report)
+	cross join lateral (
+		select desc_profilo
+		from unnest(t1.arr_profili) as t(desc_profilo)
+	) as t2(desc_profilo)
+	join foliage2.flgprof_tab p on (p.descrizione = t2.desc_profilo);
+
+
+INSERT INTO foliage2.flgconf_batch_report_tab(
+		id_batch, cod_report, desc_report,
+		report_name, formato_data_desc, formato_files,
+		formato_data_file
+	)
+select id_batch, cod_report, desc_report,
+	report_name, formato_data_desc, formato_files,
+	formato_data_file
+from (
+		values(
+				'MONITORAGGIO_SAT', 'ALERT', 'Report di monitoraggio per i tagli boschivi potenzialmente illegali',
+				'AlertMonitoraggio', 'yyyy', '{ GeoJSON }'::varchar[], 'yyyy'
+			)
+	) as t(cod_batch, cod_report, desc_report, report_name, formato_data_desc, formato_files, formato_data_file)
+	join foliage2.flgconf_batch_tab b using (cod_batch);
+
+
+insert into foliage2.flgprofili_report_tab(id_report, id_profilo)
+select id_report, id_profilo
+from (
+		values (
+				'ALERT', '{Carabiniere forestale, Responsabile del Servizio}'::varchar[]
+			)
+	) as t1(cod_report, arr_profili)
+	join foliage2.flgconf_batch_report_tab using (cod_report)
+	cross join lateral (
+		select desc_profilo
+		from unnest(t1.arr_profili) as t(desc_profilo)
+	) as t2(desc_profilo)
+	join foliage2.flgprof_tab p on (p.descrizione = t2.desc_profilo);
+
+
+update foliage2.flgconf_batch_report_tab
+set id_batch = (
+		select x.id_batch
+		from foliage2.flgconf_batch_tab as x
+		where x.cod_batch = 'MONITORAGGIO_SAT'
+	)
+where cod_report = 'P3_NAT2';
+
+alter table foliage2.flgbatch_ondemand_tab rename column data_avvio to data_avvio_pianificata;
+
+
+insert into FOLIAGE2.FLGPRIVACY_POLICY_TAB(cod_privacy_policy, data_rilascio)
+	values ('V2', date'2025-04-10');
+
+update FOLIAGE2.FLGPRIVACY_POLICY_TAB
+set is_current = null;
+
+update FOLIAGE2.FLGPRIVACY_POLICY_TAB
+set is_current = true
+where cod_privacy_policy = 'V2';
+
+
+
+CREATE SEQUENCE foliage2.flgfoto_seq INCREMENT BY 1 START 1 CACHE 1 NO CYCLE;
+
+delete from foliage2.flgconf_batch_report_tab where cod_report = 'AUTO_ACCETTAZIONE';
+
+update foliage2.FLGSCHEDE_INTERVENTO_LIMITAZIONE_VINCA_TAB
+set LINK_PDF_SCHEDA = replace(LINK_PDF_SCHEDA, '/documenti/', '');
+
+
+update foliage2.flgconf_batch_report_tab
+set desc_report = replace(desc_report, 'SRID: EPSG:3857', 'SRID: EPSG:3035');
+
+update foliage2.flgconf_batch_report_tab
+set desc_report = 'Report di monitoraggio per i tagli boschivi potenzialmente illegali (SRID: EPSG:3035)'
+where cod_report = 'ALERT';
+
+create view foliage2.flginspire_1_viw as
+select i.id_ista * 1000 + t.prog_uog as id, cti.desc_cist as tipo_di_istanza,
+	v.data_valutazione as data_approvazione,
+	t.superficie as superficie_totale,
+	t.supe_uo as superficie_autorizzata,
+	s.nome_sottocategoria as sottocategoria_forestale,
+	t.nome_specie1 as specie_forestale_1,
+	t.nome_specie2 as specie_forestale_2,
+	t.desc_gove as forma_di_governo,
+	st_setsrid(shape, 3035) as geom
+from foliage2.flgista_tab i
+	join foliage2.flgtipo_istanza_tab ti on (ti.id_tipo_istanza = i.id_tipo_istanza)
+	join foliage2.flgcist_tab cti on (cti.id_cist = ti.id_cist)
+	join foliage2.flgvalutazione_istanza_tab v using (id_ista)
+	cross join lateral (
+		select uo.prog_uog, round(uo.superficie/10000, 4) as superficie,
+			round((superficie_utile/10000), 4) as supe_uo, uo.id_sottocategoria,
+			s1.nome_specie1, s1.nome_specie2, coalesce(uo.desc_gove, 'Misto') as desc_gove,
+			uo.shape
+		from foliage2.flgunita_omogenee_tab uo
+			cross join lateral (
+				select max(case when suo.prog_specie_uog = 0 then s.nome_specie end) as nome_specie1,
+					max(case when suo.prog_specie_uog = 1 then s.nome_specie end) as nome_specie2
+				from foliage2.flgspeci_uog_tab suo
+					join foliage2.flgspecie_tab s using (id_specie)
+				where suo.id_ista = uo.id_ista
+					and suo.prog_uog = uo.prog_uog
+			) s1
+		where uo.id_ista = i.id_ista
+		union all
+		select 0 as prog_uog, round((st_area(pf.shape)/10000)::numeric, 2) as superficie,
+			round((itb.superficie_intervento/10000), 2) as supe_uo, null::int as id_sottocategoria,
+			s2.nome_specie1, s2.nome_specie2, coalesce(itb.desc_gove, 'Misto') as desc_gove,
+			pf.shape
+		from foliage2.flgista_taglio_boschivo_tab itb
+			cross join lateral (
+				select st_union(pf.shape) as shape
+				from foliage2.flgparticella_forestale_shape_tab pf
+				where id_ista = itb.id_ista
+			) as pf
+			cross join lateral (
+				select max(case when si.prog = 0 then s.nome_specie end) as nome_specie1,
+					max(case when si.prog = 1 then s.nome_specie end) as nome_specie2
+				from foliage2.flgspeci_ista_tab si
+					join foliage2.flgspecie_tab s using (id_specie)
+				where si.id_ista = itb.id_ista
+			) s2
+		where itb.id_ista = i.id_ista
+	) t
+	left join foliage2.flgsottocategorie_tab s using (id_sottocategoria)
+where v.esito_valutazione;
+
+--- eseguire da qui in produzione:umbria
+--- NOVERO-eseguire da qui in produzione:lazio
+
+
+ALTER TABLE foliage2.flgparticella_forestale_tab drop CONSTRAINT flgparticella_forestale_fk_ista;
+ALTER TABLE foliage2.flgparticella_forestale_tab ADD CONSTRAINT flgparticella_forestale_fk_ista FOREIGN KEY (id_ista) REFERENCES foliage2.flgista_tab(id_ista) on delete cascade;
+
+--- eseguire da qui in test:lazio
+--- eseguire da qui in locale:umbria
+--- eseguire da qui in test:umbria
+--- eseguire da qui in locale:lazio
+
+
+-- create table FOLIAGE2.FLGFASI_MONITORAGGIO_TAB(
+-- 	id_batch_ondemand int not null,
+-- 	prog_fase int not null,
+-- 	ora_inizio timestamp without time zone not null,
+-- 	durata interval,
+-- 	constraint FLGFASI_MONITORAGGIO_PK
+-- 		primary key(id_batch_ondemand, prog_fase),
+-- 	constraint FLGFASI_MONITORAGGIO_FK_BACTH_ONDEMAND
+-- 		foreign key (id_batch_ondemand)
+-- 		references FLGBATCH_ONDEMAND_TAB
+-- 		on delete cascade
+-- );
+
+-- create table FOLIAGE2.FLGERRORI_MONITORAGGIO_TAB(
+-- 	id_batch_ondemand int not null,
+-- 	prog_fase int not null,
+-- 	errore varchar not null,
+-- 	constraint FLGERRORI_MONITORAGGIO_PK
+-- 		primary key(id_batch_ondemand),
+-- 	constraint FLGERRORI_MONITORAGGIO_FK_FASI
+-- 		foreign key (id_batch_ondemand, prog_fase)
+-- 		references FOLIAGE2.FLGFASI_MONITORAGGIO_TAB
+-- 		on delete cascade
+-- );
+

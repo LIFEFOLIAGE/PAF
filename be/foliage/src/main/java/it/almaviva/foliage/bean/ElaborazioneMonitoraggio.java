@@ -24,7 +24,7 @@ public class ElaborazioneMonitoraggio {
 		ElaborazioneMonitoraggio em = new ElaborazioneMonitoraggio();
 		em.idRichiesta = idRichiesta;
 		em.datiSchedulazione = SchedulazioneMonitoraggio.carica(dal, idRichiesta);
-		em.datiEsecuzione = EsecuzioneBatchManuale.caricaMonitoraggio(dal, em.datiSchedulazione.dataAvvioRichiesta);
+		em.datiEsecuzione = EsecuzioneBatchManuale.caricaMonitoraggio(dal, em.datiSchedulazione.dataRife.atStartOfDay());
 		return em;
 	}
 	

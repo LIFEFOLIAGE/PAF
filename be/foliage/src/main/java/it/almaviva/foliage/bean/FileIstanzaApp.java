@@ -3,12 +3,14 @@ package it.almaviva.foliage.bean;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
-
+import it.almaviva.foliage.FoliageException;
 import it.almaviva.foliage.istanze.db.DbUtils;
 import it.almaviva.foliage.services.WebDal;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class FileIstanzaApp {
 	@Getter
 	@Setter
@@ -41,8 +43,7 @@ public class FileIstanzaApp {
 					try {
 						outVal = new FormioFile(x);
 					} catch (UnsupportedEncodingException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						log.error(FoliageException.GetExceptionStackTrace(e));
 					}
 					return outVal;
 				}

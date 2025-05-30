@@ -4,7 +4,7 @@
 		class="row formio-component formio-component-columns formio-component-columns  formio-component-label-hidden"
 		style="margin-bottom: 0px!important;">
 		<div
-			[class.d-none]="componentOptions && componentOptions['embedSoprasuoloInMapPopup']"
+			[class.d-none]="(componentOptions?.embedSoprasuoloInMapPopup)??false"
 			ref="column-ev4em8q"
 			class="col">
 			<div ref="component"

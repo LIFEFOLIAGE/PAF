@@ -103,7 +103,8 @@ public class CampoSelect implements ISqlRecuperoCommandPart {
 					value = null;
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				///TODO: capire
+				log.error(FoliageException.GetExceptionStackTrace(e));
 			}
 			return new Pair<String, Object>(nomeProprietaContesto, value);
 		};
@@ -142,7 +143,8 @@ returning %s"""
 					try {
 						return cr.rowMapper().mapRow(rs, rn);
 					} catch (SQLException e) {
-						e.printStackTrace();
+						///TODO: capire
+						log.error(FoliageException.GetExceptionStackTrace(e));
 					}
 					return outVal1;
 				}

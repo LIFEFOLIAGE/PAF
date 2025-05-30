@@ -42,4 +42,3 @@ CREATE TRIGGER POST_DEL_id_file_doc_identita
    REFERENCING OLD TABLE AS oldtab
    FOR EACH row
    EXECUTE FUNCTION foliage2.flgdelete_base64_formio_file('id_file_doc_identita');
-

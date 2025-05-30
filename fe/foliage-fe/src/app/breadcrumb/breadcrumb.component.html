@@ -1,20 +1,24 @@
-<div style="display: flex; font-size: small; background-color: azure;" *ngIf="this.model">
-	<div *ngFor="let node of this.model.nodes">
-		<button class="btn pulsante" style="font-size: small; padding: 5px; font-weight: bold" (click)="this.goTo(node.url)" [title]="node.title??''">
-			@if (node.icon) {
-				<i [class]="node.icon"></i>
-			}
-			@if (node.label) {
-				{{node.label}}
-			}
-		</button>{{"/"}}
-	</div>
-	<div style="padding: 5px;">
-		<div>
-			@if (this.model.icon) {
-				<i [class]="this.model.icon"></i>
-			}
-			{{this.model.label}}
+@if (this.model) {
+	<div style="display: flex; font-size: small; background-color: azure;">
+		@for (node of this.model.nodes; track $index) {
+			<div>
+				<button class="btn pulsante" style="font-size: small; padding: 5px; font-weight: bold" (click)="this.goTo(node.url)" [title]="node.title??''">
+					@if (node.icon) {
+						<i [class]="node.icon"></i>
+					}
+					@if (node.label) {
+						{{node.label}}
+					}
+				</button>{{"/"}}
+			</div>
+		}
+		<div style="padding: 5px;">
+			<div>
+				@if (this.model.icon) {
+					<i [class]="this.model.icon"></i>
+				}
+				{{this.model.label}}
+			</div>
 		</div>
 	</div>
-</div>
+}

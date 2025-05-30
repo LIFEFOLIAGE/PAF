@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { BaseAuthService } from '../services/auth.service';
 import { SessionManagerService } from '../services/session-manager.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
 	selector: 'app-login',
@@ -10,6 +11,7 @@ import { SessionManagerService } from '../services/session-manager.service';
 })
 export class LoginComponent implements OnInit{
 	authenticated: boolean = false;
+	regione: string = environment.regione;
 	constructor(
 		private router : Router,
 		private sessionManager: SessionManagerService,

@@ -35,7 +35,7 @@ export class NuovaIstanzaComponent implements OnInit {
 	openWizardDialog: boolean = false;
 
 	private _istanzaComponentInterface?: IstanzaComponentInterface;
-
+	contesto: any = {};
 	onDataTitolareChanged(data: any) {
 		console.log({ data });
 		this.datiTitolare = data;
@@ -243,6 +243,33 @@ export class NuovaIstanzaComponent implements OnInit {
 			}
 		);
 		
+		// const breadcrumbModel = new BreadcrumbModel(
+		// 	[
+		// 		{
+		// 			icon: 'bi bi-house',
+		// 			url: ['/']
+		// 		},
+		// 		{
+		// 			label: 'Istanze',
+		// 			url: ['istanze']
+		// 		}
+		// 	],
+		// 	"Nuova"
+		// );
+		// this.breadcrumbService.breadcrumb = breadcrumbModel;
+		// this.titleService.title = "Crea Nuova Istanza";
+	}
+
+	ngOnInit(): void {
+		const idxNull = Object.entries(this.userData).findIndex(([k, v]) => (v == null || v == undefined || v == "")) 
+		if (idxNull >= 0) {
+			if (confirm("Non è possibile creare una nuova istanza poiché, i dati del tuo account non sono completi! Vuoi inserirli adesso?")) {
+				this.router.navigate(['account']);
+			}
+			else {
+				this.router.navigate(['istanze']);
+			}
+		}
 		const breadcrumbModel = new BreadcrumbModel(
 			[
 				{
@@ -258,19 +285,6 @@ export class NuovaIstanzaComponent implements OnInit {
 		);
 		this.breadcrumbService.breadcrumb = breadcrumbModel;
 		this.titleService.title = "Crea Nuova Istanza";
-	}
-
-	ngOnInit(): void {
-		const idxNull = Object.entries(this.userData).findIndex(([k, v]) => (v == null || v == undefined || v == "")) 
-		if (idxNull >= 0) {
-			if (confirm("Non è possibile creare una nuova istanza poiché, i dati del tuo account non sono completi! Vuoi inserirli adesso?")) {
-				this.router.navigate(['account']);
-			}
-			else {
-				this.router.navigate(['istanze']);
-			}
-		}
-
 		this.authService.authFetch(
 			'/istanze/lista-tipi-istanza'
 		).then(

@@ -26,3 +26,4 @@ update foliage2.flgbatch_scheduling_tab
 	else
 		date'2024-09-01'
 	end;
+	

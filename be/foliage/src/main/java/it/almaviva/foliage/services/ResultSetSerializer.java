@@ -103,133 +103,135 @@ public class ResultSetSerializer extends StdSerializer<ResultSet>{
 			jgen.writeFieldName(columnNames[i]);
 			switch (columnTypes[i]) {
 
-			case Types.INTEGER:
-				l = rs.getInt(i + 1);
-				if (rs.wasNull()) {
-					jgen.writeNull();
-				} else {
-					jgen.writeNumber(l);
-				}
-				break;
+				case Types.INTEGER: {
+					l = rs.getInt(i + 1);
+					if (rs.wasNull()) {
+						jgen.writeNull();
+					} else {
+						jgen.writeNumber(l);
+					}
+				}; break;
 
-			case Types.BIGINT:
-				l = rs.getLong(i + 1);
-				if (rs.wasNull()) {
-					jgen.writeNull();
-				} else {
-					jgen.writeNumber(l);
-				}
-				break;
+				case Types.BIGINT: {
+					l = rs.getLong(i + 1);
+					if (rs.wasNull()) {
+						jgen.writeNull();
+					} else {
+						jgen.writeNumber(l);
+					}
+				}; break;
 
-			case Types.DECIMAL:
-			case Types.NUMERIC:
-				jgen.writeNumber(rs.getBigDecimal(i + 1));
-				break;
+				case Types.DECIMAL:
+				case Types.NUMERIC: {
+					jgen.writeNumber(rs.getBigDecimal(i + 1));
+				}; break;
 
-			case Types.FLOAT:
-			case Types.REAL:
-			case Types.DOUBLE:
-				d = rs.getDouble(i + 1);
-				if (rs.wasNull()) {
-					jgen.writeNull();
-				} else {
-					jgen.writeNumber(d);
-				}
-				break;
+				case Types.FLOAT:
+				case Types.REAL:
+				case Types.DOUBLE: {
+					d = rs.getDouble(i + 1);
+					if (rs.wasNull()) {
+						jgen.writeNull();
+					} else {
+						jgen.writeNumber(d);
+					}
+				}; break;
 
-			case Types.NVARCHAR:
-			case Types.VARCHAR:
-			case Types.LONGNVARCHAR:
-			case Types.LONGVARCHAR:
-				jgen.writeString(rs.getString(i + 1));
-				break;
+				case Types.NVARCHAR:
+				case Types.VARCHAR:
+				case Types.LONGNVARCHAR:
+				case Types.LONGVARCHAR: {
+					jgen.writeString(rs.getString(i + 1));
+				}; break;
 
-			case Types.BOOLEAN:
-			case Types.BIT:
-				b = rs.getBoolean(i + 1);
-				if (rs.wasNull()) {
-					jgen.writeNull();
-				} else {
-					jgen.writeBoolean(b);
-				}
-				break;
+				case Types.BOOLEAN:
+				case Types.BIT: {
+					b = rs.getBoolean(i + 1);
+					if (rs.wasNull()) {
+						jgen.writeNull();
+					} else {
+						jgen.writeBoolean(b);
+					}
+				}; break;
 
-			case Types.BINARY:
-			case Types.VARBINARY:
-			case Types.LONGVARBINARY:
-				jgen.writeBinary(rs.getBytes(i + 1));
-				break;
+				case Types.BINARY:
+				case Types.VARBINARY:
+				case Types.LONGVARBINARY: {
+					jgen.writeBinary(rs.getBytes(i + 1));
+				}; break;
 
-			case Types.TINYINT:
-			case Types.SMALLINT:
-				l = rs.getShort(i + 1);
-				if (rs.wasNull()) {
-					jgen.writeNull();
-				} else {
-					jgen.writeNumber(l);
-				}
-				break;
+				case Types.TINYINT:
+				case Types.SMALLINT:{
+					l = rs.getShort(i + 1);
+					if (rs.wasNull()) {
+						jgen.writeNull();
+					} else {
+						jgen.writeNumber(l);
+					}
+				}; break;
 
-			case Types.DATE:
-				java.sql.Date date = rs.getDate(i + 1);
-				if (rs.wasNull()) {
-					jgen.writeNull();
-				}
-				else {
-					jgen.writeString(date.toLocalDate().toString());
-					//provider.defaultSerializeDateValue(date.toLocalDate(), jgen);   
-				}
-				break;
+				case Types.DATE: {
+					java.sql.Date date = rs.getDate(i + 1);
+					if (rs.wasNull()) {
+						jgen.writeNull();
+					}
+					else {
+						jgen.writeString(date.toLocalDate().toString());
+						//provider.defaultSerializeDateValue(date.toLocalDate(), jgen);   
+					}
+				}; break;
 
-			case Types.TIMESTAMP:
-				java.sql.Timestamp timeStamp = rs.getTimestamp(i + 1);
-				if (rs.wasNull()) {
-					jgen.writeNull();
-				}
-				else {
-					LocalDateTime dt = timeStamp.toLocalDateTime();
-					LocalDate dat = dt.toLocalDate();
-					LocalTime tim = dt.toLocalTime();
-					int hour = tim.getHour();
-					int min = tim.getMinute();
-					int sec = tim.getSecond();
-					int nanos = timeStamp.getNanos();
-					int millis = nanos/1000000;
-					String s = String.format("%sT%02d:%02d:%02d.%03d+00:00", dat.toString(), hour, min, sec, millis);
-					jgen.writeString(s);
-					//jgen.writeString(timeStamp.toString());
-					//provider.defaultSerializeDateValue(timeStamp, jgen);
-				}
-				break;
+				case Types.TIMESTAMP: {
+					java.sql.Timestamp timeStamp = rs.getTimestamp(i + 1);
+					if (rs.wasNull()) {
+						jgen.writeNull();
+					}
+					else {
+						LocalDateTime dt = timeStamp.toLocalDateTime();
+						LocalDate dat = dt.toLocalDate();
+						LocalTime tim = dt.toLocalTime();
+						int hour = tim.getHour();
+						int min = tim.getMinute();
+						int sec = tim.getSecond();
+						int nanos = timeStamp.getNanos();
+						int millis = nanos/1000000;
+						String s = String.format("%sT%02d:%02d:%02d.%03d+00:00", dat.toString(), hour, min, sec, millis);
+						jgen.writeString(s);
+						//jgen.writeString(timeStamp.toString());
+						//provider.defaultSerializeDateValue(timeStamp, jgen);
+					}
+				}; break;
 
-			case Types.BLOB:
-				Blob blob = rs.getBlob(i);
-				provider.defaultSerializeValue(blob.getBinaryStream(), jgen);
-				blob.free();
-				break;
+				case Types.BLOB: {
+					Blob blob = rs.getBlob(i);
+					provider.defaultSerializeValue(blob.getBinaryStream(), jgen);
+					blob.free();
+				} break;
 
-			case Types.CLOB:
-				Clob clob = rs.getClob(i);
-				provider.defaultSerializeValue(clob.getCharacterStream(), jgen);
-				clob.free();
-				break;
+				case Types.CLOB: {
+					Clob clob = rs.getClob(i);
+					provider.defaultSerializeValue(clob.getCharacterStream(), jgen);
+					clob.free();
+				}; break;
 
-			case Types.ARRAY:
-				throw new RuntimeException("ResultSetSerializer not yet implemented for SQL type ARRAY");
+				case Types.ARRAY:
+					throw new RuntimeException("ResultSetSerializer not yet implemented for SQL type ARRAY");
 
-			case Types.STRUCT:
-				throw new RuntimeException("ResultSetSerializer not yet implemented for SQL type STRUCT");
+				case Types.STRUCT:
+					throw new RuntimeException("ResultSetSerializer not yet implemented for SQL type STRUCT");
 
-			case Types.DISTINCT:
-				throw new RuntimeException("ResultSetSerializer not yet implemented for SQL type DISTINCT");
+				case Types.DISTINCT:
+					throw new RuntimeException("ResultSetSerializer not yet implemented for SQL type DISTINCT");
 
-			case Types.REF:
-				throw new RuntimeException("ResultSetSerializer not yet implemented for SQL type REF");
+				case Types.REF:
+					throw new RuntimeException("ResultSetSerializer not yet implemented for SQL type REF");
 
-			case Types.JAVA_OBJECT:
-			default:
-				provider.defaultSerializeValue(rs.getObject(i + 1), jgen);
-				break;
+				case Types.JAVA_OBJECT:
+				default: {
+					Object obj = rs.getObject(i + 1);
+					obj = ClassConverer.tryConvert(ClassConverer.SqlConversions, obj);
+					provider.defaultSerializeValue(obj, jgen);
+				}; break;
 			}
 		}
 		jgen.writeEndObject();

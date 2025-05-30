@@ -38,7 +38,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   refreshEnabledSchede() {
     this.enabledSchede = AllDashboardSchede.filter(scheda => {
-      return scheda.ruoliAbilitati.includes(this._currentProfilo.authority) // TODO: verificare se includes si puo usare
+      return scheda.ruoliAbilitati == undefined ||  scheda.ruoliAbilitati.includes(this._currentProfilo.authority) // TODO: verificare se includes si puo usare
     });
     console.log(this.enabledSchede)
   }

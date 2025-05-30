@@ -60,19 +60,6 @@ public class AccessTokenFilter extends AbstractAuthenticationProcessingFilter {
 	}
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
-
-		String threadName = Thread.currentThread().getName();
-		log.info("threadName = {}", threadName);
-
-		Map<String, String> context = ThreadContext.getContext();
-		if (context != null) {
-			Iterator<Map.Entry<String, String>> i = context.entrySet().iterator();
-			while (i.hasNext()) {
-				Map.Entry<String, String> e = i.next();
-				log.info("{} = {}", e.getKey(), e.getValue());
-			}
-		}
-
 		log.info("Attempting to authenticate JWT for request {}", request.getRequestURI());
 
 		String authorizationHeader = extractAuthorizationHeaderAsString(request);
@@ -81,18 +68,12 @@ public class AccessTokenFilter extends AbstractAuthenticationProcessingFilter {
 			authenticationDal.censimentoUtente(accessToken);
 		}
 		catch (SQLException e) {
-			//e.printStackTrace();
-			//error = new FoliageException("Non è stato possibile censire l'utente");
-			StringWriter sw = new StringWriter();
-			PrintWriter pw = new PrintWriter(sw);
-			e.printStackTrace(pw);
-			String sStackTrace = sw.toString(); // stack trace as a string
-			
-			log.error(sStackTrace);
+			log.error(FoliageException.GetExceptionStackTrace(e));
 
 			throw new FoliageAuthenticationException("Non è stato possibile censire l'utente", e);
 		}
 		catch (FoliageException fe) {
+			log.error(FoliageException.GetExceptionStackTrace(fe));
 			throw new FoliageAuthenticationException(fe.getMessage(), fe);
 		}
 		AuthenticationManager m = this.getAuthenticationManager();

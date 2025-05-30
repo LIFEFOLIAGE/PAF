@@ -40,6 +40,9 @@ import { ContactsComponent } from './info/contacts/contacts.component';
 import { RichiesteGovernanceComponent } from './governance/richieste-governance/richieste-governance.components';
 import { ModificaRichiestaGovernanceComponent } from './governance/modifica-richiesta-governance/modifica-richiesta-governance.component';
 import { GestioneRichiestaGovernanceComponent } from './governance/gestione-richiesta-governance/gestione-richiesta-governance.component';
+import { NoteLegaliPrifComponent } from './info/note-legali-prif/note-legali-prif.component';
+import { CreditsPrifComponent } from './info/credits-prif/credits-prif.component';
+import { DownloadApkPrifComponent } from './download-apk-prif/download-apk-prif.component';
 //import { AllegaModuloFirmato } from './allega-modulo-firmato/allega-modulo-firmato.component';
 //import { authGuardCittadino } from './guard/auth.guard';
 
@@ -281,7 +284,7 @@ const authGuardVigilanza = (route: ActivatedRouteSnapshot, state: RouterStateSna
 };
 
 
-const profiliGovernance = ['AMMI', 'RESP'];
+const profiliGovernance = ['AMMI', 'RESP', 'SORV'];
 const authGuardGovernance = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
 	const sessionManager: SessionManagerService = inject(SessionManagerService);
 	const authService = inject(BaseAuthService);
@@ -436,13 +439,35 @@ const routes: Routes = [
 			},
 			{
 				path: 'note-legali',
-				component: NoteLegaliComponent,
-				pathMatch: 'prefix'
+				pathMatch: 'prefix',
+				children: [
+					{
+						path: 'paf',
+						component: NoteLegaliComponent,
+						pathMatch: 'prefix'
+					},
+					{
+						path: 'prif',
+						component: NoteLegaliPrifComponent,
+						pathMatch: 'prefix'
+					}
+				]
 			},
 			{
 				path: 'credits',
-				component: CreditsComponent,
-				pathMatch: 'prefix'
+				pathMatch: 'prefix',
+				children: [
+					{
+						path: 'paf',
+						component: CreditsComponent,
+						pathMatch: 'prefix'
+					},
+					{
+						path: 'prif',
+						component: CreditsPrifComponent,
+						pathMatch: 'prefix'
+					}
+				]
 			},
 			{
 				path: 'contatti',
@@ -704,6 +729,10 @@ const routes: Routes = [
 				]
 			}
 		]
+	},
+	{
+		path: "rilievi",
+		component: DownloadApkPrifComponent
 	}
 ];
 

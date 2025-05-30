@@ -24,7 +24,10 @@ import { BaseIstanzaComponent, IstanzaComponentInterface } from 'src/app/compone
 import { TipoDatiScheda } from 'src/app/components/shared/editor-scheda/editor-scheda.component';
 import { BaseAuthService } from 'src/app/services/auth.service';
 import { deepClone } from 'src/app/services/utils';
+import { environment } from 'src/environments/environment';
 
+const decimaliEttari = environment.decimaliEttari;
+const coeffEttari = environment.coeffEttari;
 
 @Component({
 	selector: 'app-page-button',
@@ -402,6 +405,7 @@ export type TableTotal = {
 	startVal: any,
 	formula: (prevValue: any, currValue: {data: any, idx: number}) => any,
 	formatValue?: (v: any) => string,
+	dataFormat?: DataFormat,
 	alignment?: string
 }
 
@@ -412,6 +416,24 @@ export type TableTemplateContext = {
 	row: RowData,
 	idxRow: number
 };
+
+
+/*
+@Directive({
+	selector: '[tableElement]'
+})
+export class TableElementDirective implements AfterViewInit {
+	domElement!: HTMLElement;
+
+	constructor(private elementRef: ElementRef) {
+	}
+
+	ngAfterViewInit() {
+		this.domElement = this.elementRef.nativeElement;
+	}
+}
+*/
+
 
 const hidden = {display: "none"};
 @Component({
@@ -451,7 +473,7 @@ export class TableComponent implements OnChanges, OnInit, OnDestroy, BaseIstanza
 		},
 		Decimal: (x: any) => {
 			const num = Number.parseFloat(x);
-			const dec = num.toFixed(2);
+			const dec = num.toFixed(2).toString().replace('.', ',');
 			return dec;
 		},
 		Integer: (x: any) => {
@@ -460,8 +482,13 @@ export class TableComponent implements OnChanges, OnInit, OnDestroy, BaseIstanza
 			return dec;
 		},
 		Ettari: (x: any) => {
-			const ettari = (x ?? 0) / 10000;
-			return Number(ettari.toFixed(2));
+			if (x != undefined) {
+				const ettari = (x ?? 0) / coeffEttari;
+				return ettari.toFixed(decimaliEttari).replace('.', ',');
+			}
+			else {
+				return undefined;
+			}
 		},
 		Default: (x: any) => {
 			return x;
@@ -494,7 +521,9 @@ export class TableComponent implements OnChanges, OnInit, OnDestroy, BaseIstanza
 			tot.formula,
 			tot.startVal
 		);
-		return tot.formatValue ? tot.formatValue(res) : res;
+		const value = tot.formatValue ? tot.formatValue(res) : res;
+		const formattedValue = tot.dataFormat ? TableComponent.dataFormats[tot.dataFormat](value) : value;
+		return formattedValue;
 	}
 
 	@Input() menuOptions?: TableMenuOptions;
@@ -1321,5 +1350,8 @@ export class TableComponent implements OnChanges, OnInit, OnDestroy, BaseIstanza
 
 	protected readonly Object = Object;
 
+	public onResize(event: any) {
+		console.log(event);
+	}
 	
 }

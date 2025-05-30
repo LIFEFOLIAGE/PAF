@@ -56,7 +56,10 @@
 							<!-- <td class="px-2">{{intervento.idSchedaIntervento}}</td> -->
 							<td class="px-2" style="padding-top: 10px; vertical-align: middle;">{{intervento.tipoIntervento}}</td>
 							<td class=" px-2 text-center" style="vertical-align: middle;">
-								<a [routerLink]="intervento.urlFilePdf" target="_blank">
+								<!-- <a [routerLink]="intervento.urlFilePdf+'.pdf'" target="_blank">
+									<img height="20" width="20" id="iconaPrivacy" src="assets/images/icona-pdf.png">
+								</a> -->
+								<a [href]="'/foliage/download/' + intervento.urlFilePdf+'.pdf'" target="_blank">
 									<img height="20" width="20" id="iconaPrivacy" src="assets/images/icona-pdf.png">
 								</a>
 							</td>

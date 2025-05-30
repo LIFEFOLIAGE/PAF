@@ -63,7 +63,7 @@ public class FoliageTrackingInterceptor implements HandlerInterceptor {
 					}
 				).collect(Collectors.joining("\n"));
 
-
+					
 		foliageRequest = new FoliageRequest();
 		foliageRequest.setOraInizio(oraInizio);
 		foliageRequest.setIpAddress(request.getRemoteAddr());

@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -25,8 +26,10 @@ import org.springframework.transaction.support.TransactionTemplate;
 import it.almaviva.foliage.FoliageException;
 import it.almaviva.foliage.istanze.db.DbUtils;
 import it.almaviva.foliage.services.AbstractDal;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
+@Slf4j
 public class JwtAuthenticationDal extends AbstractDal {
 	@Autowired
 	public JwtAuthenticationDal(
@@ -73,7 +76,7 @@ select exists (
 				}
 			}
 			catch (Exception e) {
-				e.printStackTrace();
+				log.error(FoliageException.GetExceptionStackTrace(e));
 				if (e.getClass() == FoliageException.class) {
 					throw e;
 				}
@@ -86,21 +89,69 @@ select exists (
 		TransactionStatus status = platformTransactionManager.getTransaction(paramTransactionDefinition );
 
 		try {
-			ResultSet result = this.GetResult(
-				(conn) -> {
-					PreparedStatement statement = conn.prepareStatement("""
-SELECT a.id_uten,
+			String queryRicerca = """
+with priv as (
+		select *
+		from FOLIAGE2.FLGPRIVACY_POLICY_TAB p
+		where p.is_current
+	)
+SELECT id_uten,
 	data_ins, user_name, 
 	nome, cognome, codi_fisc, 
 	data_nascita, luogo_nascita, sesso, 
-	indirizzo, citta, cap
-FROM foliage2.flguten_tab a
-WHERE a.user_name= ?"""
-						);
-					statement.setString(1, token.getUsername());
-					return statement.executeQuery();
-				}
-			);
+	indirizzo, citta, cap,
+	case when not exists (
+			select *
+			from priv
+		) then
+			null
+		else
+			exists (
+				select *
+				from FOLIAGE2.FLGUTEN_PRIVACY_POLICY_TAB up
+					join priv p using (id_privacy_policy)
+				where up.id_utente = u.id_uten
+					and p.is_current
+			)
+	end as flag_accettazione
+FROM foliage2.flguten_tab u
+WHERE u.user_name = :username""";
+			HashMap<String, Object> parsMap = new HashMap<>();
+			parsMap.put("username", token.getUsername());
+			SqlRowSet result = queryForRowSet(queryRicerca, parsMap);
+
+
+// 			ResultSet result = this.GetResult(
+// 				(conn) -> {
+// 					PreparedStatement statement = conn.prepareStatement("""
+// with priv as (
+// 		select *
+// 		from FOLIAGE2.FLGPRIVACY_POLICY_TAB p
+// 		where p.is_current
+// 	)
+// SELECT id_uten,
+// 	data_ins, user_name, 
+// 	nome, cognome, codi_fisc, 
+// 	data_nascita, luogo_nascita, sesso, 
+// 	indirizzo, citta, cap,
+// 	not exists (
+// 		select *
+// 		from priv
+// 	)
+// 	or exists (
+// 		select *
+// 		from FOLIAGE2.FLGUTEN_PRIVACY_POLICY_TAB up
+// 			join priv p using (id_privacy_policy)
+// 		where up.id_utente = u.id_uten
+// 			and p.is_current
+// 	) as flag_accettazione
+// FROM foliage2.flguten_tab u
+// WHERE u.user_name = ?"""
+// 						);
+// 					statement.setString(1, token.getUsername());
+// 					return statement.executeQuery();
+// 				}
+// 			);
 			if (result.next()) {
 				int idUten = result.getInt(1);
 				String nome = result.getString(4);
@@ -113,11 +164,13 @@ WHERE a.user_name= ?"""
 				String indirizzo = result.getString(10);
 				String citta = result.getString(11);
 				String cap = result.getString(12);
+				Boolean flagAccettazione = DbUtils.GetBoolean(result, 1, 13);
+				// result.getBoolean(13);
 				// String telefono = result.getString(13);
 				// String email = result.getString(14);
 				// String pec = result.getString(15);
 
-				result.close();
+				// result.close();
 				token.setIdUtente(idUten);
 				token.setName(nome);
 				token.setSurname(cognome);
@@ -128,6 +181,7 @@ WHERE a.user_name= ?"""
 				token.setAddress(indirizzo);
 				token.setCity(citta);
 				token.setCap(cap);
+				token.setFlagAccettazione(flagAccettazione);
 				// token.setPhoneNumber(telefono);
 				// token.setEmail(email);
 				// token.setPec(pec);

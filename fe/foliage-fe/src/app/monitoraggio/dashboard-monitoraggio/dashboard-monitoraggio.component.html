@@ -16,11 +16,12 @@
 			
 			<columns>
 				<column headerText="Data di Esecuzione Richiesta" dataField="data_di_esecuzione_richiesta" [dataFormat]="DataFormat.LongDate" [sortEnabled]="true"></column>
-				<column headerText="Utente Sotttomissione" dataField="utente_sottomissione" [sortEnabled]="true"></column>
+				<column headerText="Utente Sottomissione" dataField="utente_sottomissione" [sortEnabled]="true"></column>
 				<column headerText="Data Sottomissione" dataField="data_inserimento" [dataFormat]="DataFormat.LongDate" [sortEnabled]="true"></column>
+				<column headerText="Annualità" dataField="annualita" [sortEnabled]="true" [dataFormat]="DataFormat.Integer"></column> 
 				<column headerText="Data Avvio" dataField="data_avvio" [dataFormat]="DataFormat.LongDate" [sortEnabled]="true"></column>
-				<column headerText="Data Fine" dataField="data_termine" [dataFormat]="DataFormat.LongDate" [sortEnabled]="true"></column>
-				<column headerText="Tentativi Falliti" dataField="cnt_err" [dataFormat]="DataFormat.Integer" [sortEnabled]="true" colHeadSpan="1"></column>
+				<column headerText="Data Fine" dataField="data_termine" [dataFormat]="DataFormat.LongDate" [sortEnabled]="true"></column> 
+				<!-- <column headerText="Tentativi Falliti" dataField="cnt_err" [dataFormat]="DataFormat.Integer" [sortEnabled]="true" colHeadSpan="1"></column> -->
 				<column [cellTemplate]="buttonCellTemplate" colHeadSpan="1"></column>
 			</columns>
 		</app-table>

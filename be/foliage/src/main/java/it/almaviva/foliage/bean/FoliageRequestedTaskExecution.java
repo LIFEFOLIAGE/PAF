@@ -30,13 +30,8 @@ public class FoliageRequestedTaskExecution extends FoliageTaskExecution<FoliageT
 			if (parElement != null) {
 				outVal.parametri = parElement.getAsJsonObject();
 			}
-			// Timestamp t = rs.getTimestamp("data_batch");
-			// if (t != null) {
-			// 	outVal.batchTime = t.toLocalDateTime();
-			// }
-
 			outVal.rifeTime = DbUtils.GetLocalDateTime(rs, rn, "data_rife");
-			outVal.batchTime = DbUtils.GetLocalDateTime(rs, rn, "data_avvio");
+			outVal.batchTime = DbUtils.GetLocalDateTime(rs, rn, "data_avvio_pianificata");
 
 			
 

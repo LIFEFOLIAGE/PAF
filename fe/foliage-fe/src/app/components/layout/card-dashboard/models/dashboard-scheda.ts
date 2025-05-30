@@ -6,7 +6,7 @@ export interface DashboardScheda {
 	link: string;
 	iconaCssClass: string;
 	colore: string;
-	ruoliAbilitati: UserRuolo[];
+	ruoliAbilitati?: UserRuolo[];
 }
 
 export type UserRuolo = 'PROP' | 'PROF' | 'ISTR' | 'DIRI' | 'SORV' | 'RESP' | 'AMMI' | undefined
@@ -59,12 +59,11 @@ export const AllDashboardSchede: DashboardScheda[] = [
 	},
 	{
 		titolo: "Rilievi sul campo",
-		descrizione: "Permette la registrazione e la consultazione delle attivita nel campo.",
+		descrizione: "Download applicazione Android per l'inserimento dei rilievi in campo.",
 		colore: "orange",
 		iconaCssClass: "bi bi-bandaid-fill",
-		link: "/asdasd5",
-		ruoliAbilitati: ["AMMI", "PROP", "PROF", "SORV"],
-
+		link: "/rilievi",
+		//ruoliAbilitati: ["AMMI", "PROP", "PROF", "SORV"]
 	},
 	{
 		titolo: "Supporto governance",
@@ -72,6 +71,6 @@ export const AllDashboardSchede: DashboardScheda[] = [
 		colore: "purple",
 		iconaCssClass: "bi bi-boombox-fill",
 		link: "/governance",
-		ruoliAbilitati: ["AMMI", "RESP"],
+		ruoliAbilitati: ["AMMI", "RESP", "SORV"],
 	},
 ]

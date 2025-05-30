@@ -39,7 +39,7 @@ export class PannelloAmministratoreComponent implements OnInit {
 			"Amministrazione"
 		);
 		this.breadcrumbService.breadcrumb = breadcrumbModel;
-		this.titleService._title = "Pannello Amministratore";
+		this.titleService.title = "Pannello Amministratore";
 		this.sessionManager.getCurrProfilo().then(
 			(prof: any) => {
 				console.log(prof);

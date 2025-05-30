@@ -1,10 +1,10 @@
 # LifeFoliage - PAF: Installazione e Avvio
 
-## Requisiti
+## <a id="requisiti"> Requisiti </a>
 
 *	7zip e unzip
 *	Apache 2 (con moduli rewrite, proxy e proxy_http)
-*	GeoServer 2.15 e Tomcat 9 su java 11
+*	GeoServer 2.52.2 (con il plugin app-schema) e Tomcat 9 su java 11
 *	Un Identity Manager Service compatibile con il protocollo oauth2
 *   Java 21 e Maven per il backend del pacchetto PAF
 *	PostgreSql v15 - Database
@@ -12,7 +12,7 @@
 *	NodeJs v22.13
 
 
-## Premessa
+## <a id="premessa"> Premessa </a>
 
 In questa guida si fa riferimento ai seguenti host:
 *	**host-sviluppo**: dove vengono scaricati e compilati i file sorgenti dell'applicativo PAF
@@ -23,9 +23,9 @@ In questa guida si fa riferimento ai seguenti host:
 Tali host non devono necessariamente esser diversi, ma è importante che i comandi forniti in questa guida vengano eseguiti sull'host a cui si fa riferimento nella sezione che li riporta.
 
 
-## Guida all'installazione dei principali requisiti
+## <a id="installazione"> Guida all'installazione dei principali requisiti </a>
 
-### <a id="installZip">Installazione 7zip e unzip</a>
+### <a id="installZip"> Installazione 7zip e unzip </a>
 
 Sugli host **host-sviluppo** e **host-geoserver** occorre:
 *	installare unzip per estrarre i file dei pacchetti per PAF, tomcat e geoserver
@@ -66,9 +66,9 @@ sudo apt install openjdk-11-jdk
 
 ```bash
 sudo useradd -m -U -d /opt/tomcat -s /bin/false tomcat
-wget http://mirror.nohup.it/apache/tomcat/tomcat-9/v9.0.37/bin/apache-tomcat-9.0.37.tar.gz -O apache-tomcat-9.0.37.tar.gz
-sudo tar -xf apache-tomcat-9.0.37.tar.gz -C /opt/tomcat/
-sudo ln -s /opt/tomcat/apache-tomcat-9.0.37 /opt/tomcat/latest
+wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.104/bin/apache-tomcat-9.0.104.tar.gz -O apache-tomcat-9.0.104.tar.gz
+sudo tar -xf apache-tomcat-9.0.104.tar.gz -C /opt/tomcat/
+sudo ln -s /opt/tomcat/apache-tomcat-9.0.104 /opt/tomcat/latest
 sudo chown -R tomcat: /opt/tomcat
 sudo sh -c 'chmod +x /opt/tomcat/latest/bin/*.sh'
 ```
@@ -123,19 +123,24 @@ sudo systemctl enable --now tomcat
 
 #### <a id="deployGeoserver">Pubblicazione GeoServer</a>
 
-Download ed estrazione geoserver
+Download ed estrazione geoserver e del plugin app-schema 
 
 ```bash
-mkdir Downloads 
-cd Downloads/
-wget http://sourceforge.net/projects/geoserver/files/GeoServer/2.17.1/geoserver-2.17.1-war.zip
-unzip geoserver-2.17.1-war.zip
+mkdir ~/Downloads 
+cd ~/Downloads/
+wget https://sourceforge.net/projects/geoserver/files/GeoServer/2.25.2/geoserver-2.25.2-war.zip
+wget https://sourceforge.net/projects/geoserver/files/GeoServer/2.25.2/extensions/geoserver-2.25.2-app-schema-plugin.zip
+mkdir geoserver
+unzip geoserver-2.25.2-war.zip -d geoserver
+mkdir app-schema
+unzip geoserver-2.25.2-app-schema-plugin.zip -d app-schema
 ```
 
 Spostare il pacchetto geoserver dentro tomcat
 
 ```bash
-sudo mv geoserver.war /opt/tomcat/apache-tomcat-9.0.37/webapps
+sudo cp ~/Downloads/geoserver/geoserver.war /opt/tomcat/apache-tomcat-9.0.104/webapps
+sudo chown tomcat: /opt/tomcat/apache-tomcat-9.0.104/webapps/geoserver.war
 ```
 
 Riavviare tomcat
@@ -143,6 +148,21 @@ Riavviare tomcat
 ```bash
 sudo systemctl restart tomcat
 ```
+
+Spostare i file del plugin app-schema nella directory di geoserver
+
+```bash
+sudo cp ~Download/app-schema/*.jar /opt/tomcat/apache-tomcat-9.0.104/webapps/geoserver/WEB-INF/lib/
+sudo chown tomcat: /opt/tomcat/apache-tomcat-9.0.104/webapps/*.jar
+```
+
+Riavviare nuovamente tomcat
+
+```bash
+sudo systemctl restart tomcat
+```
+
+
 
 ### <a id="installJdk21">Installazione Java 21 e Maven</a>
 
@@ -166,12 +186,13 @@ sudo apt install postgresql-client
 Sull'host **host-sviluppo** installare NodeJs attraverso nvm
 
 ```bash
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+wget https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh
+bash install.sh
 source ~/.bashrc
 nvm install v22.13.0
 ```
 
-## Predisposizione dei sorgenti per l'applicativo PAF
+## <a id="prepareSource"> Predisposizione dei sorgenti per l'applicativo PAF </a>
 
 Sull'host **host-sviluppo** viene scaricato ed estratto il pacchetto con i sorgenti del progetto PAF
 
@@ -194,7 +215,7 @@ mkdir -p $FOLIAGE_HOME
 
 ```bash
 cd $FOLIAGE_HOME
-curl -LO https://github.com/LIFEFOLIAGE/LIFEFOLIAGE/archive/refs/heads/main.zip
+wget https://github.com/LIFEFOLIAGE/PAF/archive/refs/heads/main.zip
 ```
 
 ### <a id="exctratSource">Estrazione dei file del progetto PAF</a>
@@ -206,13 +227,13 @@ unzip main.zip
 
 ## <a id="presetIms">Identity Manager Service</a>
 
-In questa guida si presuppone che un Identity Manager Service compatibile con oauth2 sia già disponibile, che sia già configurato per gestire l'autenticazione alla piattaforma PAF che si sta configurando e che sia accessibile dagli utilizzatori dell'appplicazione e dall'host **host-backend**.
+In questa guida si presuppone che un Identity Manager Service compatibile con oauth2 sia già disponibile, che sia già configurato per gestire l'autenticazione alla piattaforma PAF che si sta configurando e che sia raggiungibile dagli utilizzatori dell'applicazione e dall'host **host-backend**.
 
 ## <a id="presetDbServer">Predisposizione del database PAF</a>
 
 In questa guida si presuppone che il server postgres sia già disponibile con un'utenza amministrativa da poter usare per creare il database PAF.
 
-## <a id="initialConfig">Configurazione iniziale</a>
+## <a id="initialConfig">Configurazione iniziale del database</a>
 
 ### <a id="createDb">Creazione database, utenza applicativa, estensioni e schemi</a>
 
@@ -267,7 +288,9 @@ psql -U <nome-utenza-applicativa> -H <host-db-server> -d <nome-del-database-foli
 Le tabelle dello schema foliage_extra (che viene utilizzato per memorizzare i dati GIS esterni) possono essere recuperate dal file di dump che presente nella directory `PAF/extra/dump-foliage_extra`:
 * `foliage_extra_<regione>.dmp`: tabelle per l'ambiente della regione.
 
-A causa delle limitazioni sulle dimensioni dei file su GitHub, il dump con i dati GIS esterni è stato archiviato e scomposto in 6 file più piccoli, quindi prima di poter essere utilizzato va estratto con 7zip. Dall'host **host-sviluppo**
+A causa delle limitazioni sulle dimensioni dei file su GitHub, il dump con i dati GIS esterni è stato archiviato e scomposto in 6 file più piccoli, quindi prima di poter essere utilizzato va estratto con 7zip.
+
+Dall'host **host-sviluppo**
 
 ```bash
 cd $FOLIAGE_HOME/PAF/extra/dump-foliage_extra
@@ -277,9 +300,15 @@ pg_restore --host=<host-db-server> --username=<nome-utenza-applicativa> --dbname
 
 ## <a id="configGeoserver">Inizializzazione di GeoServer</a>
 
-La configurazione per geoserver può essere importata copiando i file presenti in **host-sviluppo** nella directory del progetto `$FOLIAGE_HOME/PAF/extra/geoserver_config` dove è registrata la definizione dei servizi WFS per i layer vettoriali associati ai dati caricati precedentemente nello schema foliage_extra del database e dei servizi WMS che fanno da proxy verso le mappe esterne utilizzate dall'applicativo. I file di configurazione vanno copiati in **host-geoserver** nella directory di configurazione di geoserver (`/opt/tomcat/apache-tomcat-9.0.37/webapps/geoserver/data/workspaces/`). Inoltre dopo aver copiato i file occorre modificare manualmente alcune impostazioni per poter procedere.
+La configurazione per geoserver può essere importata copiando i file presenti in **host-sviluppo** nella directory del progetto `$FOLIAGE_HOME/PAF/extra/geoserver_config` dove è registrata la definizione dei servizi WFS per i layer vettoriali associati ai dati caricati precedentemente nello schema foliage_extra del database e dei servizi WMS che fanno da proxy verso le mappe esterne utilizzate dall'applicativo. I file di configurazione vanno copiati in **host-geoserver** nella directory di data di geoserver (`/opt/tomcat/apache-tomcat-9.0.104/webapps/geoserver/data/`). Inoltre dopo aver copiato i file occorre modificare manualmente alcune impostazioni per poter procedere.
 
-In particolare occorre aprire il file del progetto `PAF/extra/geoserver_config/foliage/foliage_<nome_regione>/datastore.xml` che è riportato qui sotto e fare le seguenti sostituzioni:
+```bash
+cd $FOLIAGE_HOME/PAF/extra/geoserver_config
+sudo cp ./* /opt/tomcat/apache-tomcat-9.0.104/webapps/geoserver/data
+sudo chown -R tomcat: /opt/tomcat/apache-tomcat-9.0.104/webapps/geoserver/data
+```
+
+In particolare, tra i file appena copiati, occorre aprire `/opt/tomcat/apache-tomcat-9.0.104/webapps/geoserver/data/workspaces/foliage/foliage_<nome_regione>/datastore.xml` e `/opt/tomcat/apache-tomcat-9.0.104/webapps/geoserver/data/data/foliage_inspire_<nome_regione>/landcover_foliage_ext/landcover_foliage_ext.appschema` (riportati qui sotto) e fare le seguenti sostituzioni:
 *	Inserire il nome della regione al posto di `<nome_regione>`
 *	Inserire l'indirizzo del database al posto di `<host-db-server>`
 *	Inserire la porta di accesso al database al posto di `<porta-db-server>`
@@ -289,6 +318,7 @@ In particolare occorre aprire il file del progetto `PAF/extra/geoserver_config/f
 
 Per questi parametri vanno eseguite le stesse sostituzioni già effettuate per la [creazione del database](#createDb).
 
+*datastore.xml*
 ```xml
 <dataStore>
 	<id>DataStoreInfoImpl-4dd5f913:18c6c117e6a:-7d97</id>
@@ -328,6 +358,199 @@ Per questi parametri vanno eseguite le stesse sostituzioni già effettuate per l
 	</connectionParameters>
 	<__default>false</__default>
 </dataStore>
+```
+
+*landcover_foliage_ext.appschema*
+```xml
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns3:AppSchemaDataAccess xmlns:ns2="http://www.opengis.net/ogc" xmlns:ns3="http://www.geotools.org/app-schema">
+    <namespaces>
+        <Namespace>
+            <prefix>foliage_inspire_umbria</prefix>
+            <uri>https://portal.lifefoliage.eu/foliage/inspire</uri>
+        </Namespace>
+        <Namespace>
+            <prefix>lc</prefix>
+            <uri>http://inspire.ec.europa.eu/schemas/lcv/4.0</uri>
+        </Namespace>
+        <Namespace>
+            <prefix>gml</prefix>
+            <uri>http://www.opengis.net/gml/3.2</uri>
+        </Namespace>
+        <Namespace>
+            <prefix>base</prefix>
+            <uri>http://inspire.ec.europa.eu/schemas/base/3.3</uri>
+        </Namespace>
+        <Namespace>
+            <prefix>xsi</prefix>
+            <uri>http://www.w3.org/2001/XMLSchema-instance</uri>
+        </Namespace>
+    </namespaces>
+    <includedTypes/>
+    <sourceDataStores>
+        <DataStore>
+            <id>dataStore</id>
+            <parameters>
+                <Parameter>
+                    <name>host</name>
+                    <value><host-db-server></value>
+                </Parameter>
+                <Parameter>
+                    <name>port</name>
+                    <value><porta-db-server></value>
+                </Parameter>
+                <Parameter>
+                    <name>database</name>
+                    <value><nome-database-paf></value>
+                </Parameter>
+                <Parameter>
+                    <name>schema</name>
+                    <value>foliage2</value>
+                </Parameter>
+                <Parameter>
+                    <name>user</name>
+                    <value><nome-utenza-applicativa></value>
+                </Parameter>
+                <Parameter>
+                    <name>passwd</name>
+                    <value><password-utenza-applicativa></value>
+                </Parameter>
+                <Parameter>
+                    <name>Expose primary keys</name>
+                    <value>true</value>
+                </Parameter>
+                <Parameter>
+                    <name>dbtype</name>
+                    <value>postgis</value>
+                </Parameter>
+            </parameters>
+        </DataStore>
+    </sourceDataStores>
+    <targetTypes>
+        <FeatureType>
+            <schemaUri>_schemas/landcover_foliage_ext.xsd</schemaUri>
+        </FeatureType>
+    </targetTypes>
+    <typeMappings>
+        <FeatureTypeMapping>
+            <mappingName>ExtendedLandCoverUnit-5b1aa7b0-847b-4e62-a226-dbf09a05c2ae</mappingName>
+            <sourceDataStore>dataStore</sourceDataStore>
+            <sourceType>flginspire_1_viw</sourceType>
+            <targetElement>foliage_inspire_umbria:ExtendedLandCoverUnit</targetElement>
+            <defaultGeometry>lc:geometry</defaultGeometry>
+            <attributeMappings>
+                <AttributeMapping>
+                    <targetAttribute>foliage_inspire_umbria:applicationType</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>tipo_di_istanza</OCQL>
+                    </sourceExpression>
+                </AttributeMapping>
+                <AttributeMapping>
+                    <targetAttribute>foliage_inspire_umbria:authorizedArea</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>superficie_autorizzata</OCQL>
+                    </sourceExpression>
+                </AttributeMapping>
+                <AttributeMapping>
+                    <targetAttribute>lc:beginLifespanVersion</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>data_approvazione</OCQL>
+                    </sourceExpression>
+                    <ClientProperty>
+                        <name>xsi:nil</name>
+                        <value>if_then_else(isNull(data_approvazione), 'true', Expression.NIL)</value>
+                    </ClientProperty>
+                </AttributeMapping>
+                <AttributeMapping>
+                    <targetAttribute>foliage_inspire_umbria:dominantSpecies</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>specie_forestale_1</OCQL>
+                    </sourceExpression>
+                </AttributeMapping>
+                <AttributeMapping>
+                    <targetAttribute>foliage_inspire_umbria:forestStructure</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>forma_di_governo</OCQL>
+                    </sourceExpression>
+                </AttributeMapping>
+                <AttributeMapping>
+                    <targetAttribute>foliage_inspire_umbria:forestSubCategory</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>sottocategoria_forestale</OCQL>
+                    </sourceExpression>
+                </AttributeMapping>
+                <AttributeMapping>
+                    <targetAttribute>lc:geometry</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>geom</OCQL>
+                    </sourceExpression>
+                    <clientProperties>
+                        <property>
+                            <name>isDefaultGeometry</name>
+                            <value>true</value>
+                        </property>
+                    </clientProperties>
+                </AttributeMapping>
+                <AttributeMapping>
+                    <targetAttribute>foliage_inspire_umbria:ExtendedLandCoverUnit</targetAttribute>
+                    <idExpression>
+                        <OCQL>id</OCQL>
+                    </idExpression>
+                </AttributeMapping>
+                <AttributeMapping>
+                    <targetAttribute>lc:inspireId/base:Identifier/base:localId</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>id</OCQL>
+                    </sourceExpression>
+                </AttributeMapping>
+                <AttributeMapping>
+                    <targetAttribute>lc:inspireId/base:Identifier/base:namespace</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>'https://portal.lifefoliage.eu/foliage/inspire'</OCQL>
+                    </sourceExpression>
+                </AttributeMapping>
+                <AttributeMapping>
+                    <targetAttribute>lc:landCoverObservation/lc:LandCoverObservation/lc:mosaic/lc:LandCoverValue/lc:coveredPercentage</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>(superficie_autorizzata/superficie_totale)*100</OCQL>
+                    </sourceExpression>
+                    <ClientProperty>
+                        <name>xsi:nil</name>
+                        <value>if_then_else(isNull((superficie_autorizzata/superficie_totale)*100), 'true', Expression.NIL)</value>
+                    </ClientProperty>
+                </AttributeMapping>
+                <AttributeMapping>
+                    <targetAttribute>lc:landCoverObservation/lc:LandCoverObservation/lc:observationDate</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>data_approvazione</OCQL>
+                    </sourceExpression>
+                    <ClientProperty>
+                        <name>xsi:nil</name>
+                        <value>if_then_else(isNull(data_approvazione), 'true', Expression.NIL)</value>
+                    </ClientProperty>
+                </AttributeMapping>
+                <AttributeMapping>
+                    <targetAttribute>foliage_inspire_umbria:secondarySpecies</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>specie_forestale_2</OCQL>
+                    </sourceExpression>
+                </AttributeMapping>
+                <AttributeMapping>
+                    <targetAttribute>foliage_inspire_umbria:totalArea</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>superficie_totale</OCQL>
+                    </sourceExpression>
+                </AttributeMapping>
+            </attributeMappings>
+        </FeatureTypeMapping>
+    </typeMappings>
+</ns3:AppSchemaDataAccess>
+```
+
+Successivamente va riavviato un'altra volta tomcat
+
+```bash
+sudo systemctl restart tomcat
 ```
 
 ## <a id="configApache">Configurazione e avvio server web Apache 2</a>
@@ -375,14 +598,16 @@ Sull'host **host-pubblicazione**, la configurazione del server web apache 2 può
 Sull'host **host-sviluppo**, prima di avviare la compilazione del frontend occorre impostare alcune parametrizzazioni che vengono descritte qui di seguito in due file:
 *	`PAF/fe/foliage-fe/src/environments/defs/pars.ts`
 	riportato di seguito e dove occorre fare le seguenti sostituzioni:
-	*	l'url per raggiungere il reverse proxy del backend sul server web apache al posto di `<url-reverse-proxy-be>`
+	*	l'url da cui poter scaricare l'app mobile PRIF al posto di <url-download-prif>
 	*	il nome della regione in maiuscolo al posto di `<nome-regione-uppercase>`
 
 ```ts
+export const apiUrl = '/backend/api/web';
 export const regione = '<nome-regione-uppercase>';
-export const apiServerPath = '/backend/api/web';
 export const mapMaxZoom = 20;
 export const apiOrigin = undefined;
+export const baseHRef = undefined;
+export const urlPrifApk = '<url-download-prif>';
 ```
 
 *	`PAF/fe/foliage-fe/src/environments/iam/iam.ts`

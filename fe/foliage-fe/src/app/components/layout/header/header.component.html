@@ -43,20 +43,22 @@
 								</ul>
 							</div>
 						</div>
-						<div class="dropdown" style="margin-left: auto; display: flex; flex-direction: column; align-items: end;">
-							<div style="min-width: 300px; text-align: end;"> <!--Risolve bug scrollbar quando l'elemento selezionato è molto più stretto di quelli nella lista-->
-								<button class="btn dropdown-toggle" type="button" id="dropdownMenuRuolo" data-bs-toggle="dropdown" aria-expanded="false">
-									{{(profiloSelezionato ? profiloSelezionato.descrizione : "Seleziona un profilo...")}}
-								</button>
-								<ul class="dropdown-menu dropdown-menu-end w-auto" aria-labelledby="dropdownMenuRuolo">
-									<li *ngFor="let profilo of listaProfili">
-										<button class="dropdown-item" (click)="selezionaProfilo(profilo)">
-											{{profilo.descrizione}}
-										</button>
-									</li>
-								</ul>
+						@if (this.hasProfili) {
+							<div class="dropdown" style="margin-left: auto; display: flex; flex-direction: column; align-items: end;">
+								<div style="min-width: 300px; text-align: end;"> <!--Risolve bug scrollbar quando l'elemento selezionato è molto più stretto di quelli nella lista-->
+									<button class="btn dropdown-toggle" type="button" id="dropdownMenuRuolo" data-bs-toggle="dropdown" aria-expanded="false">
+										{{(profiloSelezionato ? profiloSelezionato.descrizione : "Seleziona un profilo...")}}
+									</button>
+									<ul class="dropdown-menu dropdown-menu-end w-auto" aria-labelledby="dropdownMenuRuolo">
+										<li *ngFor="let profilo of listaProfili">
+											<button class="dropdown-item" (click)="selezionaProfilo(profilo)">
+												{{profilo.descrizione}}
+											</button>
+										</li>
+									</ul>
+								</div>
 							</div>
-						</div>
+						}
 					</div>
 					<div style="position: relative; z-index: 10; margin-left: 10px; z-index: 10000;">
 						<button class="btn" title="Notifiche"

@@ -172,14 +172,47 @@
 	<profiles>
 		<profile>
 			<id>dev</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<properties>
 				<activatedProperties>dev</activatedProperties>
+			</properties>
+		</profile>
+		<profile>
+			<id>lazio</id>
+			<properties>
+				<activatedProperties>lazio</activatedProperties>
+			</properties>
+		</profile>
+		<profile>
+			<id>lazio-dev</id>
+			<properties>
+				<activatedProperties>lazio</activatedProperties>
+			</properties>
+		</profile>
+		<profile>
+			<id>lazio-loc</id>
+			<properties>
+				<activatedProperties>lazio</activatedProperties>
 			</properties>
 		</profile>
 		<profile>
 			<id>umbria</id>
 			<properties>
 				<activatedProperties>umbria</activatedProperties>
+			</properties>
+		</profile>
+		<profile>
+			<id>umbria-loc</id>
+			<properties>
+				<activatedProperties>umbria-loc</activatedProperties>
+			</properties>
+		</profile>
+		<profile>
+			<id>umbria-dev</id>
+			<properties>
+				<activatedProperties>umbria-dev</activatedProperties>
 			</properties>
 		</profile>
 	</profiles>

@@ -10,8 +10,6 @@ import org.springframework.jdbc.core.RowMapper;
 
 import it.almaviva.foliage.enums.TipoAuthScope;
 import it.almaviva.foliage.enums.TipoAuthority;
-import lombok.Getter;
-import lombok.Setter;
 
 public class RisultatoRicercaIstanza {
 /*

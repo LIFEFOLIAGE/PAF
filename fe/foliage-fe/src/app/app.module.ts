@@ -1,6 +1,6 @@
 import { APP_INITIALIZER, LOCALE_ID, NgModule } from '@angular/core';
 //import { BrowserModule } from '@angular/platform-browser';
-import { CommonModule, registerLocaleData } from '@angular/common';
+import { APP_BASE_HREF, CommonModule, registerLocaleData } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 // import { Compiler, COMPILER_OPTIONS, CompilerFactory } from '@angular/core';
@@ -151,13 +151,18 @@ import { DatiSchedulazioneMonitoraggioComponent } from './monitoraggio/dati-sche
 import { GestioneRichiestaMonitoraggioComponent } from './monitoraggio/gestione-richiesta-monitoraggio/gestione-richiesta-monitoraggio.component';
 import { PrivacyV1Component } from './info/accettazione-privacy/privacy-v1/privacy_v1.component';
 import { NoteLegaliComponent } from './info/note-legali/note-legali.component';
+import { NoteLegaliPrifComponent } from './info/note-legali-prif/note-legali-prif.component';
 import { CreditsComponent } from './info/credits/credits.component';
+import { CreditsPrifComponent } from './info/credits-prif/credits-prif.component';
 import { ContactsComponent } from './info/contacts/contacts.component';
 import { RichiesteGovernanceComponent } from './governance/richieste-governance/richieste-governance.components';
 import { ModificaRichiestaGovernanceComponent } from './governance/modifica-richiesta-governance/modifica-richiesta-governance.component';
 import { DatiSchedulazioneGovernanceComponent } from './governance/dati-schedulazione-governance/dati-schedulazione-governance.component';
 import { GestioneRichiestaGovernanceComponent } from './governance/gestione-richiesta-governance/gestione-richiesta-governance.component';
 import { ParticellaCatastaleComponent } from './components/renderer/components/particelle-catastali/particelle-catastali.component';
+import { PrivacyV2Component } from './info/accettazione-privacy/privacy-v2/privacy_v2.component';
+import { DownloadApkPrifComponent } from './download-apk-prif/download-apk-prif.component';
+import { PrivacyNoComponent } from './info/accettazione-privacy/privacy-no/privacy_no.component';
 //import { AllegaModuloFirmato } from './allega-modulo-firmato/allega-modulo-firmato.component';
 
 registerLocaleData(localeDeAt);
@@ -262,16 +267,20 @@ const authProvider = environment.useMock ? mockAuthProvider : realAuthProvider;
 		DichiarazioneAccessibilitaComponent,
 		LoginComponent,
 		HomeComponent,
+		DownloadApkPrifComponent,
 		MonitoraggioComponent, ModificaRichiestaMonitoraggioComponent, DatiSchedulazioneMonitoraggioComponent, GestioneRichiestaMonitoraggioComponent,
 		RichiesteGovernanceComponent, ModificaRichiestaGovernanceComponent, DatiSchedulazioneGovernanceComponent, GestioneRichiestaGovernanceComponent,
-		PrivacyV1Component, NoteLegaliComponent, CreditsComponent, ContactsComponent,
-		//AllegaModuloFirmato
+		PrivacyNoComponent, PrivacyV2Component, PrivacyV1Component, NoteLegaliComponent, NoteLegaliPrifComponent, CreditsComponent, CreditsPrifComponent, ContactsComponent
 	],
 	providers: [
 		...authProvider,
 		RouteChangeService,
 		SessionManagerService,
 		RequestService,
+		// {
+		// 	provide: APP_BASE_HREF,
+		// 	useValue: environment.baseHRef??'/'
+		// },
 		{
 			provide: LOCALE_ID,
 			useValue: "it-IT" 
@@ -289,6 +298,9 @@ const authProvider = environment.useMock ? mockAuthProvider : realAuthProvider;
 		HttpClientModule,
 		BrowserModule,
 		AppRoutingModule,
+		//BrowserAnimationsModule,
+		//, MatInputModule, MatFormFieldModule, MatDialogModule, MatSelectModule,
+		//TableModule,
 		FormsModule,
 		CommonModule,
 		ReactiveFormsModule,

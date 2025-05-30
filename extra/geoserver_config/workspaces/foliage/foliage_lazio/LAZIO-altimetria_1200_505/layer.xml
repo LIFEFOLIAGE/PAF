@@ -1,0 +1,15 @@
+<layer>
+  <name>LAZIO-altimetria_1200_505</name>
+  <id>LayerInfoImpl-38d2ee29:18c61c4c18b:-783c</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--570ae188:124761b8d78:-7fe0</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-38d2ee29:18c61c4c18b:-783d</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+</layer>

@@ -1,0 +1,2 @@
+ALTER TABLE foliage2.flgparticella_forestale_tab drop CONSTRAINT flgparticella_forestale_fk_ista;
+ALTER TABLE foliage2.flgparticella_forestale_tab ADD CONSTRAINT flgparticella_forestale_fk_ista FOREIGN KEY (id_ista) REFERENCES foliage2.flgista_tab(id_ista) on delete cascade;

@@ -20,6 +20,7 @@ import com.google.gson.JsonParser;
 
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import it.almaviva.foliage.bean.AttivitaMonitoraggioBean;
+import it.almaviva.foliage.bean.ElaborazioneGovernance;
 import it.almaviva.foliage.bean.RisultatiMonitoraggioBean;
 import it.almaviva.foliage.services.MonitoraggioDal;
 import jakarta.servlet.http.HttpServletRequest;
@@ -62,6 +63,21 @@ public class MonitoraggioController {
 			HttpStatus.OK
 		);		
 	}
+	@PutMapping(path="/risultati-monitoraggio/{idRichiesta}/{nomeFile}")
+	public Object salvataggioAttita(
+		@PathVariable Integer idRichiesta,
+		@PathVariable String nomeFile,
+		HttpServletRequest request
+	) throws IOException {
+		InputStream stream = request.getInputStream();
+		String s = new String(stream.readAllBytes());
+		dal.salvataggioRisultati(idRichiesta, nomeFile, s);
+		return new ResponseEntity<>(
+			"OK",
+			HttpStatus.OK
+		);
+	}
+
 	
 	@PutMapping(path="/attivita/{clientId}")
 	public Object salvataggioAttita(
@@ -81,6 +97,18 @@ public class MonitoraggioController {
 		return new ResponseEntity<>(
 			"OK",
 			HttpStatus.OK
-		);		
+		);
 	}
+
+	// @PutMapping(path="/fasi-attivita/{idRichiesta}")
+	// public Object salvaFaseAttivita(
+	// 	@RequestBody FaseAttivitaMonitoraggio elaborazione
+	// ) {
+
+	// 	return new ResponseEntity<>(
+	// 		"OK",
+	// 		HttpStatus.OK
+	// 	);
+	// }
+
 }

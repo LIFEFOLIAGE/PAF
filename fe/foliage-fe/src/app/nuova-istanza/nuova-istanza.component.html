@@ -111,11 +111,24 @@
 			<!--				(formInit)="this.onFormTitolareInit($event)"-->
 
 			<app-formio-renderer
-				(componentInit)="this.onComponentInit($event)"
-				[form]="this.formTitolare"
+				[context]="this.contesto"
 				[formData]="{}"
-				(dataChanged)="this.onDataTitolareChanged($event)">
+				[form]="this.formTitolare"
+				(dataChanged)="this.onDataTitolareChanged($event)"
+				(componentInit)="this.onComponentInit($event)">
 			</app-formio-renderer>
+
+<!-- 
+			<app-formio-renderer
+				[context]="this.contesto"
+				[formData]="this.dati"
+				[form]="this.scheda.conf"
+				[isReadOnly]="this.isReadOnly"
+				[dictionariesData]="this.dictionariesData"
+				(dataChanged)="this.onDataChanged($event)"
+				(componentInit)="this.onComponentInit($event)">
+			</app-formio-renderer> -->
+
 		</div>
 	</div>
 	<div style="margin-top: 20px; display: flex;">

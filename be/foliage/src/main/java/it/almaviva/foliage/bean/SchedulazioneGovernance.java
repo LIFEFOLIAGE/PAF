@@ -25,7 +25,7 @@ public class SchedulazioneGovernance {
 
 	public static org.springframework.jdbc.core.RowMapper<SchedulazioneGovernance> RowMapper = (rs, rn) -> {
 		SchedulazioneGovernance outVal = new SchedulazioneGovernance();
-		outVal.dataAvvioRichiesta = DbUtils.GetLocalDateTime(rs, rn, "data_avvio");
+		outVal.dataAvvioRichiesta = DbUtils.GetLocalDateTime(rs, rn, "data_avvio_pianificata");
 		outVal.dataRife = DbUtils.GetLocalDate(rs, rn, "data_rife");
 		outVal.idBatch = DbUtils.GetInteger(rs, rn, "id_batch");
 		return outVal;
@@ -33,7 +33,7 @@ public class SchedulazioneGovernance {
 
 	public static SchedulazioneGovernance carica(AbstractDal dal, Integer idRichiesta) {
 		String sql = """
-select data_rife, b.id_batch, data_avvio
+select data_rife, b.id_batch, data_avvio_pianificata
 from foliage2.flgbatch_ondemand_tab bd
 	join foliage2.flgconf_batch_tab b using (id_batch)
 where b.id_batch = any (
@@ -275,7 +275,7 @@ where id_batch = :idBatch""";
 						sql = """
 INSERT INTO foliage2.flgbatch_ondemand_tab (
 		id_batch, 
-		id_utente, data_inserimento, data_rife, data_avvio
+		id_utente, data_inserimento, data_rife, data_avvio_pianificata
 	)
 values(
 	:idBatch,
@@ -287,13 +287,13 @@ values(
 						sql = """
 update foliage2.flgbatch_ondemand_tab
 set data_rife = :dataRife,
-	data_avvio = :dataAvvioRichiesta,
+	data_avvio_pianificata = :dataAvvioRichiesta,
 	id_batch = :idBatch,
 	id_utente = :idUtente
 where id_batch_ondemand = :idRichiesta""";
 					}
 					HashMap<String, String> errMap = new HashMap<>();
-					errMap.put("\"flgbatch_ondemand_unq\"", "Non è possibile fare richieste multiple per la stessa elaborazione e la stessa data di riferimento");
+					errMap.put("\"flgbatch_ondemand_unq\"", "Non è possibile fare richieste multiple della stessa elaborazione per uno stesso periodo");
 					dal.update(sql, pars, errMap);
 				}
 			}

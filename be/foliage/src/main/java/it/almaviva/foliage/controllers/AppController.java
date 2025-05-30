@@ -77,9 +77,11 @@ public class AppController {
 	public ResponseEntity<Utente> login() {
         Authentication a = SecurityContextHolder.getContext().getAuthentication();
         JwtAuthentication jwtAuth = (JwtAuthentication)a;
+		AccessToken token = jwtAuth.getAccessToken();
+		dal.checkAccettazionePrivacy(token);
         return new ResponseEntity<>(
 			dal.getLoginUtente(
-				jwtAuth.getUsername()
+				token.getUsername()
 			),
 			HttpStatus.OK
 		);
@@ -103,7 +105,7 @@ public class AppController {
 			dal.ricercaInstanze(
 				authority, authScope,
 				idUtente, codFiscaleUtente,
-				new ChiaviRicercaIstanza()
+				new ChiaviRicercaIstanza(), true
 			),
 			HttpStatus.OK
 		);
@@ -191,8 +193,8 @@ public class AppController {
 			return new ResponseEntity<List<Rilevamenti>>(lista, HttpStatus.OK);
 		}
 		else {
-			return new ResponseEntity<>(
-				null,
+			return new ResponseEntity<List<Rilevamenti>>(
+				(List<Rilevamenti>)null,
 				HttpStatus.FORBIDDEN
 			);
 		}
@@ -250,78 +252,20 @@ public class AppController {
 		@QueryParam("authScope") String authScope,
 		@RequestBody List<Rilevamenti> rilev
 	) throws Exception{
-		ResponseEntity<String> outVal = null;
-
 		Authentication a = SecurityContextHolder.getContext().getAuthentication();
 		JwtAuthentication jwtAuth = (JwtAuthentication)a;
 		AccessToken jwtToken = jwtAuth.getAccessToken();
 
 		String codFiscaleUtente = jwtToken.getCodiceFiscale();
 		Integer idUtente = jwtToken.getIdUtente();
-		// List<Integer> ids = rilev.stream().map(
-		// 	(Rilevamenti r) -> r.getIdIsta()
-		// ).distinct().toList();
-		Map<Integer, List<Rilevamenti>> groups = rilev.stream().collect(Collectors.groupingBy(Rilevamenti::getIdIsta));
-		
-		boolean ab = groups.keySet().stream().map(
-				(Integer id) -> {
-					try {
-						int realId = id/100;
-						int suff = id%100;
-						int idAuthority = suff/10;
-						int idScope = suff%10;
-						TipoAuthority auth = TipoAuthority.fromInt(idAuthority);
-						TipoAuthScope scope = TipoAuthScope.fromInt(idScope);
-						//return dal.getAbilitazioniIdIstanza(idUtente, codFiscaleUtente, id, authority, authScope);
-						return dal.getAbilitazioniIdIstanza(idUtente, codFiscaleUtente, realId, auth.name(), scope.name());
-					}
-					catch (Exception e){
-						return new AbilitazioniIstanza();
-					}
-				}
-			).allMatch(
-				(AbilitazioniIstanza abil) -> abil.compilazione || abil.consultazione
-			);
-		
-		if (ab) {
-			Unit<Exception> opt = new Unit<>(null);
-			String message = null;
-			HttpStatusCode code = HttpStatus.OK;
+			
+		String message = null;
+		HttpStatusCode code = HttpStatus.OK;
 
-			groups.entrySet().stream().forEach(
-				(Map.Entry<Integer, List<Rilevamenti>> e) -> {
-					if (opt.getValue0() == null) {
-						Integer id = e.getKey();
-						int realId = id/100;
-						int suff = id%100;
-						int idAuthority = suff/10;
-						int idScope = suff%10;
-						TipoAuthority auth = TipoAuthority.fromInt(idAuthority);
-						TipoAuthScope scope = TipoAuthScope.fromInt(idScope);
-						try {
-							dal.inserisciRilevamenti(realId, e.getValue(), idUtente, auth.name(), scope.name());
-						} catch (Exception e1) {
-							opt.setAt0(e1);
-						}
-					}
-				}
-			);
-			Exception e = opt.getValue0();
-			if (e == null) {
-				outVal = new ResponseEntity<String>(message,  code);
-			}
-			else {
-				throw new FoliageException("Si è verificato un problema durante il caricamento dei rilevamenti", e);
-			}
-		}
-		else {
-			return new ResponseEntity<>(
-				"Non hai accesso a tutte le istanze indicate",
-				HttpStatus.FORBIDDEN
-			);
-		}
-		return outVal;
+		message = dal.inserisciAllRilevamentiNew(idUtente, codFiscaleUtente, rilev);
+		return new ResponseEntity<String>(message,  code);
 	}
+
 	@Schema(description = "Elimina un rilevamento", implementation = Rilevamenti.class)
 	@DeleteMapping("/istanze/{idIsta}/rilevamenti/{idRile}")
 	public ResponseEntity<String> eliminaRilevamentoNew(
@@ -463,7 +407,7 @@ public class AppController {
 			"PROP", "GENERICO",
 			idUtente, codFiscale, 
 			new ChiaviRicercaIstanza(),
-			Istanza.RowMapper()
+			true, Istanza.RowMapper()
 		);
 		return new ResponseEntity<List<Istanza>>(lista, HttpStatus.OK);
 	}

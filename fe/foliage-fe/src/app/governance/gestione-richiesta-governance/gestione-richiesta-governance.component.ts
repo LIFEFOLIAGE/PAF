@@ -3,11 +3,12 @@ import { BreadcrumbModel } from 'src/app/models/breadcrumb';
 import { ActivatedRoute, Router } from "@angular/router";
 import { BaseAuthService } from "../../services/auth.service";
 import { SessionManagerService } from "../../services/session-manager.service";
-import { ChronoUnit, DateTimeFormatter, Duration, LocalDate, LocalDateTime, convert } from "@js-joda/core";
+import { ChronoUnit, DateTimeFormatter, Duration, LocalDate, LocalDateTime, Period, convert } from "@js-joda/core";
 import { Locale } from "@js-joda/locale_it";
 import { HtmlService } from "src/app/services/html.service";
 import { BreadcrumbService } from 'src/app/services/breadcrumb.service';
 import { TitleService } from 'src/app/services/title.service';
+import { PeriodDuration } from "src/app/utils/date-ext";
 
 @Component({
 	selector: 'app-gestione-richiesta-governance',
@@ -22,7 +23,9 @@ export class GestioneRichiestaGovernanceComponent implements OnInit {
 	reportGenerati?: any[];
 	errori: any = {};
 	dataRife!: LocalDate;
+	dataRifeOrig!: LocalDate;
 	dataText!: string;
+	durata!: PeriodDuration;
 
 	constructor(
 		private router: Router,
@@ -47,7 +50,7 @@ export class GestioneRichiestaGovernanceComponent implements OnInit {
 		if (this.idRichiesta) {
 			this.loadRichiesta();
 			
-			this.titolo = `Richiesta Governance ${this.idRichiesta}`;
+			//this.titolo = `Richiesta Governance ${this.idRichiesta}`;
 			const breadcrumbModel = new BreadcrumbModel(
 				[
 					{
@@ -59,7 +62,7 @@ export class GestioneRichiestaGovernanceComponent implements OnInit {
 				this.idRichiesta.toString()
 			);
 			this.breadcrumbService.breadcrumb = breadcrumbModel;
-			this.titleService.title = `Gestione Richiesta Governance ${this.idRichiesta.toString()}`;
+			this.titleService.title = `Gestione Richiesta ${this.idRichiesta.toString()}`;
 		}
 		else {
 			alert("Nessuna richiesta specificata");
@@ -113,7 +116,10 @@ export class GestioneRichiestaGovernanceComponent implements OnInit {
 			this.sessionManager.profileFetch(`/governance/${this.idRichiesta}`).then(
 				(res: any) => {
 					this.datiSchedulazione = res.datiSchedulazione;
-					this.dataRife = LocalDate.parse(res.datiSchedulazione.dataRife);
+					this.dataRifeOrig = LocalDate.parse(res.datiSchedulazione.dataRife);
+					this.durata = (res.durata) ? PeriodDuration.parse(res.durata) : new PeriodDuration(Period.ofYears(1), Duration.ZERO);
+					this.dataRifeOrig = LocalDate.parse(res.datiSchedulazione.dataRife);
+					this.dataRife = this.dataRifeOrig.minus(this.durata.period).minus(this.durata.duration);
 					this.dataText = this.dataRife.format(DateTimeFormatter.ISO_LOCAL_DATE);
 
 					this.reportGenerati = res.reportGenerati.map(
@@ -123,25 +129,31 @@ export class GestioneRichiestaGovernanceComponent implements OnInit {
 							nomeFileConData: `${rep.nomeFile}_${this.dataRife.format(DateTimeFormatter.ofPattern(rep.formatoDataFile))}`
 						})
 					);
-					this.datiEsecuzione = {
-						dataAvvio: LocalDateTime.parse(res.datiEsecuzione.dataInizio),
-						dataFine: LocalDateTime.parse(res.datiEsecuzione.dataFine)
-					};
-					
-					this.datiEsecuzione.strDataAvvio = this.datiEsecuzione.dataAvvio.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").withLocale(Locale.ITALY));
-					this.datiEsecuzione.durata = Duration.between(this.datiEsecuzione.dataAvvio, this.datiEsecuzione.dataFine);
-					this.datiEsecuzione.strDurata = this.datiEsecuzione.durata.toString();
-					this.datiEsecuzione.milliDurata = Math.trunc(this.datiEsecuzione.durata.get(ChronoUnit.NANOS)/1000000);
-					this.datiEsecuzione.secDurata = this.datiEsecuzione.durata.get(ChronoUnit.SECONDS);
-					
-					this.datiEsecuzione.minDurata = Math.trunc(this.datiEsecuzione.durata.get(ChronoUnit.SECONDS)/60);
-					this.datiEsecuzione.secDurata = this.datiEsecuzione.secDurata  % 60;
+					if (res.datiEsecuzione) {
+						this.datiEsecuzione = {
+							dataAvvio: LocalDateTime.parse(res.datiEsecuzione.dataInizio),
+							dataFine: LocalDateTime.parse(res.datiEsecuzione.dataFine)
+						};
+						
+						this.datiEsecuzione.strDataAvvio = this.datiEsecuzione.dataAvvio.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").withLocale(Locale.ITALY));
+						this.datiEsecuzione.durata = Duration.between(this.datiEsecuzione.dataAvvio, this.datiEsecuzione.dataFine);
+						this.datiEsecuzione.strDurata = this.datiEsecuzione.durata.toString();
+						this.datiEsecuzione.milliDurata = Math.trunc(this.datiEsecuzione.durata.get(ChronoUnit.NANOS)/1000000);
+						this.datiEsecuzione.secDurataTot = this.datiEsecuzione.durata.get(ChronoUnit.SECONDS);
+						
+						this.datiEsecuzione.minDurataTot = Math.trunc(this.datiEsecuzione.secDurataTot/60);
+						this.datiEsecuzione.secDurata = this.datiEsecuzione.secDurataTot  % 60;
 
-					this.datiEsecuzione.oreDurata = Math.trunc(this.datiEsecuzione.minDurata/24);
-					this.datiEsecuzione.minDurata = this.datiEsecuzione.minDurata % 60;
+						this.datiEsecuzione.oreDurata = Math.trunc(this.datiEsecuzione.minDurataTot/60);
+						this.datiEsecuzione.minDurata = this.datiEsecuzione.minDurataTot % 60;
 
-					this.datiEsecuzione.strDurata = `${this.datiEsecuzione.oreDurata.toString().padStart(2, '0')}:${this.datiEsecuzione.minDurata.toString().padStart(2, '0')}:${this.datiEsecuzione.secDurata.toString().padStart(2, '0')}.${this.datiEsecuzione.milliDurata.toString().padStart(3, '0')}`;
-					//.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").withLocale(Locale.ITALY));
+						this.datiEsecuzione.strDurata = `${this.datiEsecuzione.oreDurata.toString().padStart(2, '0')}:${this.datiEsecuzione.minDurata.toString().padStart(2, '0')}:${this.datiEsecuzione.secDurata.toString().padStart(2, '0')}.${this.datiEsecuzione.milliDurata.toString().padStart(3, '0')}`;
+						//.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").withLocale(Locale.ITALY));
+					}
+					else {
+						this.datiEsecuzione = undefined;
+					}
+					
 
 					console.log(this.datiEsecuzione);
 					

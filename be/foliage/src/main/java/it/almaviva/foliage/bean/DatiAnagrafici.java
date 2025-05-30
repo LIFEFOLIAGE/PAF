@@ -1,7 +1,5 @@
 package it.almaviva.foliage.bean;
 
-import it.almaviva.foliage.authentication.AccessToken;
-
 import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
@@ -52,17 +50,6 @@ public class DatiAnagrafici {
 	@Setter
 	protected String numeroCivico;
 
-	// @Getter
-	// @Setter
-	// protected String telefono;
-
-	// @Getter
-	// @Setter
-	// protected String email;
-
-	// @Getter
-	// @Setter
-	// protected String postaCertificata;
 	public DatiAnagrafici(){
 	}
 	public DatiAnagrafici(

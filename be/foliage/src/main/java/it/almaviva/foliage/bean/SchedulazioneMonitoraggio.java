@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.time.Period;
 import java.util.HashMap;
 
-import org.javatuples.Pair;
+import org.javatuples.Triplet;
 import org.threeten.extra.PeriodDuration;
 
 import it.almaviva.foliage.FoliageException;
@@ -16,12 +16,14 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SchedulazioneMonitoraggio {
 	public LocalDateTime dataAvvioRichiesta;
+	public LocalDate dataRife;
 	public LocalDate dataInizio;
 	public LocalDate dataFine;
 
 	public static org.springframework.jdbc.core.RowMapper<SchedulazioneMonitoraggio> RowMapper = (rs, rn) -> {
 		SchedulazioneMonitoraggio outVal = new SchedulazioneMonitoraggio();
-		outVal.dataAvvioRichiesta = DbUtils.GetLocalDateTime(rs, rn, "data_rife");
+		outVal.dataAvvioRichiesta = DbUtils.GetLocalDateTime(rs, rn, "data_avvio_pianificata");
+		outVal.dataRife = DbUtils.GetLocalDate(rs, rn, "data_rife");
 		outVal.dataInizio = DbUtils.GetLocalDate(rs, rn, "data_inizio");
 		outVal.dataFine = DbUtils.GetLocalDate(rs, rn, "data_fine");
 		return outVal;
@@ -29,7 +31,7 @@ public class SchedulazioneMonitoraggio {
 
 	public static SchedulazioneMonitoraggio carica(AbstractDal dal, Integer idRichiesta) {
 		String sql = """
-select data_rife,
+select data_rife, data_avvio_pianificata,
 	to_date(parametri->>'dataInizio', 'YYYY-MM-dd') as data_inizio, 
 	to_date(parametri->>'dataFine', 'YYYY-MM-dd') as data_fine
 from foliage2.flgbatch_ondemand_tab bd
@@ -48,6 +50,8 @@ where b.cod_batch = 'MONITORAGGIO_SAT'
 	}
 
 	public static void elimina(AbstractDal dal, Integer idRichiesta) {
+
+
 		String sql = """
 delete
 from foliage2.flgbatch_ondemand_tab as bd
@@ -55,24 +59,36 @@ from foliage2.flgbatch_ondemand_tab as bd
 where b.id_batch = bd.id_batch
 	and b.cod_batch = 'MONITORAGGIO_SAT'
 	and bd.id_batch_ondemand = :idRichiesta
-returning b.cod_batch, bd.data_rife""";
+returning b.cod_batch, b.id_batch, bd.data_rife""";
 		HashMap<String, Object> pars = new HashMap<>();
 		pars.put("idRichiesta", idRichiesta);
 		
-		Pair<String, LocalDate> tipoElab = dal.queryForObject(
+		Triplet<String, LocalDate, Integer> tipoElab = dal.queryForObject(
 			sql,
 			pars,
 			(rs, rn) -> {
 				String elab = rs.getString("cod_batch");
 				LocalDate dataRife = DbUtils.GetLocalDate(rs, rn, "data_rife");
-				return new Pair<String, LocalDate>(elab, dataRife);
+				Integer idBatch = DbUtils.GetInteger(rs, rn, "id_batch");
+				return new Triplet<String, LocalDate, Integer>(elab, dataRife, idBatch);
 			}
 		);
 
 		String elab = tipoElab.getValue0();
-		String tableName = null;
+		String[] tableNames = null;
 		Period period = null;
 		LocalDate dataRife  = tipoElab.getValue1();
+		Integer idBatch = tipoElab.getValue2();
+
+		pars.clear();
+		sql = """
+delete
+from foliage2.flgexecuted_batch_tab
+where id_batch = :idBatch
+	and data_rife = :dataRife""";
+		pars.put("idBatch", idBatch);
+		pars.put("dataRife", dataRife);
+		dal.update(sql, pars);
 
 		switch (elab) {
 			// case "AUTO_ACCETTAZIONE": {
@@ -94,45 +110,49 @@ returning b.cod_batch, bd.data_rife""";
 			// }; break;
 			case "MONITORAGGIO_SAT": {
 				// tableName = "foliage2.flgreport_p1_2_tab";
-				// period = Period.ofYears(1);
-				tableName = null;
+				period = null;
+				tableNames = new String[] {"FOLIAGE2.FLGALERT_MONITORAGGIO_TAB", "FOLIAGE2.FLGNAT2000_MONITORAGGIO_TAB"};
 			}; break;
 			default: {
 				throw new FoliageException("Non è possibile eliminare la richiesta");
 			}
 		}
-
-// 		if (tableName != null) {
-// 			pars.clear();;
-// 			pars.put("dataRife", dataRife);
-// 			if (period == null) {
-// 				sql = String.format(
-// """
-// delete
-// from %s
-// where data_rife = :dataRife""",
-// 					tableName
-// 				);
-// 			}
-// 			else {
-// 				pars.put("period", DbUtils.GetPgInterval(PeriodDuration.of(period)));
-// 				sql = String.format(
-// """
-// delete
-// from %s
-// where data_rife = :dataRife
-// 	and durata = :period""",
-// 					tableName
-// 				);
-// 			}
-// 			int nRows = dal.update(sql, pars);
-// 			log.info(
-// 				String.format(
-// 					"Eliminati %d record per i risultati dell'elaborazione",
-// 					nRows
-// 				)
-// 			);
-// 		}
+		if (tableNames != null) {
+			for (int i = 0; i < tableNames.length; i++) {
+				String tableName = tableNames[i];
+				if (tableName != null) {
+					pars.clear();;
+					pars.put("dataRife", dataRife);
+					if (period == null) {
+						sql = String.format(
+"""
+delete
+from %s
+where data_rife = :dataRife""",
+							tableName
+						);
+					}
+					else {
+						pars.put("period", DbUtils.GetPgInterval(PeriodDuration.of(period)));
+						sql = String.format(
+"""
+delete
+from %s
+where data_rife = :dataRife
+	and durata = :period""",
+							tableName
+						);
+					}
+					int nRows = dal.update(sql, pars);
+					log.info(
+						String.format(
+							"Eliminati %d record per i risultati dell'elaborazione",
+							nRows
+						)
+					);
+				}
+			}
+		}
 	}
 
 	public void salva(AbstractDal dal, Integer idRichiesta, Integer idUtente) {
@@ -152,6 +172,7 @@ returning b.cod_batch, bd.data_rife""";
 						if (dataFine.isAfter(dataInizio)) {
 							HashMap<String, Object> pars = new HashMap<>();
 							pars.put("dataAvvioRichiesta", dataAvvioRichiesta);
+							pars.put("dataRife", dataRife);
 							pars.put("dataInizio", dataInizio);
 							pars.put("dataFine", dataFine);
 							pars.put("idUtente", idUtente);
@@ -160,7 +181,7 @@ returning b.cod_batch, bd.data_rife""";
 								sql = """
 INSERT INTO foliage2.flgbatch_ondemand_tab (
 		id_batch, 
-		id_utente, data_inserimento, data_rife, data_avvio,
+		id_utente, data_inserimento, data_rife, data_avvio_pianificata,
 		parametri
 	)
 values(
@@ -169,7 +190,7 @@ values(
 			from foliage2.flgconf_batch_tab
 			where cod_batch = 'MONITORAGGIO_SAT'
 		),
-		:idUtente, localtimestamp, :dataAvvioRichiesta, :dataAvvioRichiesta,
+		:idUtente, localtimestamp, :dataRife, :dataAvvioRichiesta,
 		json_build_object(
 			'dataInizio', to_char(:dataInizio, 'YYYY-MM-dd'),
 			'dataFine', to_char(:dataFine, 'YYYY-MM-dd')
@@ -181,8 +202,8 @@ values(
 								pars.put("idRichiesta", idRichiesta);
 								sql = """
 update foliage2.flgbatch_ondemand_tab
-set data_rife = :dataAvvioRichiesta,
-	data_avvio = :dataAvvioRichiesta,
+set data_rife = :dataRife,
+	data_avvio_pianificata = :dataAvvioRichiesta,
 	id_utente = :idUtente,
 	parametri = json_build_object(
 			'dataInizio', to_char(:dataInizio, 'YYYY-MM-dd'),
@@ -190,7 +211,9 @@ set data_rife = :dataAvvioRichiesta,
 		)
 where id_batch_ondemand = :idRichiesta""";
 							}
-							dal.update(sql, pars);
+							HashMap<String, String> errMap = new HashMap<>();
+							errMap.put("\"flgbatch_ondemand_unq\"", "Non è possibile fare richieste di schedulazione del monitoraggio multiple per uno stesso periodo");
+							dal.update(sql, pars, errMap);
 						}
 						else {
 							throw new FoliageException("La data di fine deve essere successiva alla data di inizio");

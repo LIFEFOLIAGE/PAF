@@ -1,0 +1,15 @@
+<layer>
+  <name>LAZIO-decreti_archeologici_514</name>
+  <id>LayerInfoImpl-38d2ee29:18c61c4c18b:-7834</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--570ae188:124761b8d78:-7fe0</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-38d2ee29:18c61c4c18b:-7835</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+</layer>

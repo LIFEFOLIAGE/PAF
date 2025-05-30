@@ -223,3 +223,14 @@ h3 {
 		display: none;
 	}
 }
+
+p.titolo {
+	margin-bottom: 3em;
+	font-size: larger;
+}
+
+p.paragrafo {
+	margin-top: 3em;
+	margin-bottom: 2em;
+	font-size: large;
+}

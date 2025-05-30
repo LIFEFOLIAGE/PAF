@@ -131,7 +131,14 @@ delete from foliage2.flgente_root_tab;
 \i popolamento/flgprofili_report_tab.sql
 \i popolamento/flguten_tab.sql
 
---\i foliage_extra_lazio.dmp.sql
---\i foliage_extra_umbria.dmp.sql
 
-
+\i aggiornamenti/20240828.sql
+\i aggiornamenti/20240901.sql
+\i aggiornamenti/20241014.sql
+\i aggiornamenti/20241104.sql
+\i aggiornamenti/20250225.sql
+\i aggiornamenti/20250403-umbria.sql
+\i aggiornamenti/20250410.umbria.sql
+\i aggiornamenti/20250508.sql
+\i aggiornamenti/20250521.sql
+\i aggiornamenti/20250530.sql

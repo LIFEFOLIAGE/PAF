@@ -1,0 +1,51 @@
+<featureType>
+  <id>FeatureTypeInfoImpl-190bc922:18c009977e7:-7bfb</id>
+  <name>LAZIO-siti_natura_2000_lazio_umbria</name>
+  <nativeName>siti_natura_2000_lazio_umbria</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl-7cd53224:17ff4993504:-7ffe</id>
+  </namespace>
+  <title>siti_natura_2000_lazio_umbria</title>
+  <keywords>
+    <string>features</string>
+    <string>siti_natura_2000_lazio_umbria</string>
+  </keywords>
+  <nativeCRS>GEOGCS[&quot;RDN2008&quot;, 
+  DATUM[&quot;Rete Dinamica Nazionale 2008&quot;, 
+    SPHEROID[&quot;GRS 1980&quot;, 6378137.0, 298.257222101, AUTHORITY[&quot;EPSG&quot;,&quot;7019&quot;]], 
+    TOWGS84[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 
+    AUTHORITY[&quot;EPSG&quot;,&quot;1132&quot;]], 
+  PRIMEM[&quot;Greenwich&quot;, 0.0, AUTHORITY[&quot;EPSG&quot;,&quot;8901&quot;]], 
+  UNIT[&quot;degree&quot;, 0.017453292519943295], 
+  AXIS[&quot;Geodetic longitude&quot;, EAST], 
+  AXIS[&quot;Geodetic latitude&quot;, NORTH], 
+  AUTHORITY[&quot;EPSG&quot;,&quot;6706&quot;]]</nativeCRS>
+  <srs>EPSG:6706</srs>
+  <nativeBoundingBox>
+    <minx>5.93</minx>
+    <maxx>18.99</maxx>
+    <miny>34.76</miny>
+    <maxy>47.1</maxy>
+    <crs>EPSG:6706</crs>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>5.93</minx>
+    <maxx>18.99</maxx>
+    <miny>34.76</miny>
+    <maxy>47.1</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <metadata>
+    <entry key="cachingEnabled">false</entry>
+  </metadata>
+  <store class="dataStore">
+    <id>DataStoreInfoImpl-190bc922:18c009977e7:-7bfc</id>
+  </store>
+  <maxFeatures>0</maxFeatures>
+  <numDecimals>0</numDecimals>
+  <overridingServiceSRS>false</overridingServiceSRS>
+  <skipNumberMatched>false</skipNumberMatched>
+  <circularArcPresent>false</circularArcPresent>
+</featureType>

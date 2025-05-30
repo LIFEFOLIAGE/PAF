@@ -55,14 +55,7 @@ public class FoliagePeriodicTaskExecution extends FoliageTaskExecution<FoliagePe
 			Integer idTask = DbUtils.GetInteger(rs, rn, "id_batch");
 			FoliagePeriodicTaskExecution outVal = new FoliagePeriodicTaskExecution();
 			outVal.task = tasksMap.get(idTask);
-			// Timestamp t = rs.getTimestamp("data_batch");
-			// if (t != null) {
-			// 	outVal.batchTime = t.toLocalDateTime();
-			// }
 			outVal.batchTime = DbUtils.GetLocalDateTime(rs, rn, "data_batch");
-
-			
-
 			return outVal;
 		};
 	}

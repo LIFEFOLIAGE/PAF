@@ -1,11 +1,16 @@
 package it.almaviva.foliage.function;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.LinkedList;
+
+import org.springframework.security.access.method.P;
+import org.threeten.extra.PeriodDuration;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -210,6 +215,32 @@ public class JsonIO {
 				else {
 					String strVal = elem.getAsString();
 					return LocalDate.parse(strVal, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+				}
+			}
+			return null;
+		}
+	);
+	
+	public static final JsonIO IntervalIo = new JsonIO(
+		(JsonObject json, String name, Object value) -> {
+			if (value == null) {
+				json.add(name, JsonNull.INSTANCE);
+			}
+			else {
+				String pdString = Converters.IntervalToString((PeriodDuration)value);
+				json.addProperty(name, pdString);
+			}
+		},
+		(JsonObject object, String propName) -> {
+			if (object != null) {
+				JsonElement elem = object.get(propName);
+				if (elem.isJsonNull())
+				{
+					return null;
+				}
+				else {
+					String strVal = elem.getAsString();
+					return Converters.StringToInterval(strVal);
 				}
 			}
 			return null;

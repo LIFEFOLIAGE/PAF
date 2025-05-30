@@ -60,14 +60,16 @@ export class DettagliUnitaOmogeneaComponent implements ComponentType<SimpleObjec
 					// this.modifiche = {};
 				}; break;
 				case "resources": {
-					currValue.categorie.then(
-						(categorie: any) => {
-							this.categorie = categorie;
-							this.categoria = (this.categorie) ? this.categorie.find(c => c.id_categoria == this.datiEffettivi["idCategoria"]) : [];
-							this.sottocategorie = (this.categoria) ? this.categoria.subCats : [];
-							this.checkErrors();
-						}
-					)
+					if (currValue.categorie) {
+						currValue.categorie.then(
+							(categorie: any) => {
+								this.categorie = categorie;
+								this.categoria = (this.categorie) ? this.categorie.find(c => c.id_categoria == this.datiEffettivi["idCategoria"]) : [];
+								this.sottocategorie = (this.categoria) ? this.categoria.subCats : [];
+								this.checkErrors();
+							}
+						);
+					}
 				}; break;
 			}
 		}

@@ -95,25 +95,30 @@ export class GestioneRichiestaMonitoraggioComponent implements OnInit {
 					this.datiSchedulazione = res.datiSchedulazione;
 					
 					
-					
-					this.datiEsecuzione = {
-						dataAvvio: LocalDateTime.parse(res.datiEsecuzione.dataInizio),
-						dataFine: LocalDateTime.parse(res.datiEsecuzione.dataFine)
-					};
-					
-					this.datiEsecuzione.strDataAvvio = this.datiEsecuzione.dataAvvio.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").withLocale(Locale.ITALY));
-					this.datiEsecuzione.durata = Duration.between(this.datiEsecuzione.dataAvvio, this.datiEsecuzione.dataFine);
-					this.datiEsecuzione.strDurata = this.datiEsecuzione.durata.toString();
-					this.datiEsecuzione.milliDurata = Math.trunc(this.datiEsecuzione.durata.get(ChronoUnit.NANOS)/1000000);
-					this.datiEsecuzione.secDurata = this.datiEsecuzione.durata.get(ChronoUnit.SECONDS);
-					
-					this.datiEsecuzione.minDurata = Math.trunc(this.datiEsecuzione.durata.get(ChronoUnit.SECONDS)/60);
-					this.datiEsecuzione.secDurata = this.datiEsecuzione.secDurata  % 60;
+					if (res.datiEsecuzione) {
+						this.datiEsecuzione = {
+							dataAvvio: LocalDateTime.parse(res.datiEsecuzione.dataInizio),
+							dataFine: LocalDateTime.parse(res.datiEsecuzione.dataFine)
+						};
+						
+						this.datiEsecuzione.strDataAvvio = this.datiEsecuzione.dataAvvio.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").withLocale(Locale.ITALY));
+						this.datiEsecuzione.durata = Duration.between(this.datiEsecuzione.dataAvvio, this.datiEsecuzione.dataFine);
+						this.datiEsecuzione.strDurata = this.datiEsecuzione.durata.toString();
+						this.datiEsecuzione.milliDurata = Math.trunc(this.datiEsecuzione.durata.get(ChronoUnit.NANOS)/1000000);
+						this.datiEsecuzione.secDurataTot = this.datiEsecuzione.durata.get(ChronoUnit.SECONDS);
+						
+						this.datiEsecuzione.minDurataTot = Math.trunc(this.datiEsecuzione.secDurataTot/60);
+						this.datiEsecuzione.secDurata = this.datiEsecuzione.secDurataTot  % 60;
 
-					this.datiEsecuzione.oreDurata = Math.trunc(this.datiEsecuzione.minDurata/24);
-					this.datiEsecuzione.minDurata = this.datiEsecuzione.minDurata % 60;
+						this.datiEsecuzione.oreDurata = Math.trunc(this.datiEsecuzione.minDurataTot/60);
+						this.datiEsecuzione.minDurata = this.datiEsecuzione.minDurataTot % 60;
 
-					this.datiEsecuzione.strDurata = `${this.datiEsecuzione.oreDurata.toString().padStart(2, '0')}:${this.datiEsecuzione.minDurata.toString().padStart(2, '0')}:${this.datiEsecuzione.secDurata.toString().padStart(2, '0')}.${this.datiEsecuzione.milliDurata.toString().padStart(3, '0')}`;
+						this.datiEsecuzione.strDurata = `${this.datiEsecuzione.oreDurata.toString().padStart(2, '0')}:${this.datiEsecuzione.minDurata.toString().padStart(2, '0')}:${this.datiEsecuzione.secDurata.toString().padStart(2, '0')}.${this.datiEsecuzione.milliDurata.toString().padStart(3, '0')}`;
+					}
+					else {	
+						this.datiEsecuzione = undefined;
+					}
+					
 				},
 				(e: any) => {
 					this.vaiAlleRichieste();

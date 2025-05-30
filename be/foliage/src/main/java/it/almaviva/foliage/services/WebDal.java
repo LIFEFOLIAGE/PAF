@@ -182,6 +182,34 @@ where codi_istat_regione = :codRegione""";
 		//this.codRegione = codRegione;
 	}
 
+	// public Dal(
+	// 	JdbcTemplate jdbcTemplate,
+	// 	TransactionTemplate transactionTemplate,
+	// 	PlatformTransactionManager platformTransactionManager,
+	// 	String name
+	// ) throws Exception {
+	// 	log.debug(name);
+	// 	this.jdbcTemplate = jdbcTemplate;
+	// 	this.template = new NamedParameterJdbcTemplate(jdbcTemplate);
+	// 	this.transactionTemplate = transactionTemplate;
+	// 	this.platformTransactionManager = platformTransactionManager;
+
+	// 	// DriverManagerDataSource dataSource = new DriverManagerDataSource();
+	// 	// //dataSource.setDriverClassName("org.postgresql.Driver");
+	// 	// dataSource.setUrl("jdbc:postgresql://unioneeuropea-foliage-svil.cs5b2t1vzg63.eu-west-1.rds.amazonaws.com/foliage");
+	// 	// //dataSource.setUrl("jdbc:postgresql://127.0.0.1/foliage");
+	// 	// dataSource.setUsername("foliage");
+	// 	// dataSource.setPassword("foliage.01");
+	// 	//this.connection = dataSource.getConnection();
+	// 	this.connection = jdbcTemplate.getDataSource().getConnection();
+
+		
+	// 	PreparedStatement statement = connection.prepareStatement("set search_path to foliage2, public");
+	// 	log.debug("set search_path to foliage2, public");
+	// 	statement.execute();
+
+	// }
+
 	
 	
 
@@ -593,6 +621,7 @@ order by i.id_ista desc
 		Integer idUtente,
 		String codFiscaleUtente,
 		ChiaviRicercaIstanza parametri,
+		boolean isApp,
 		RowMapper<T> rowMapper
 	) throws SQLException, FoliageException, Exception {
 		List<T> result = null;
@@ -644,6 +673,18 @@ order by i.id_ista desc
 
 		String codFiscaleIstruttore = parametri.getCodFiscaleIstruttore();
 		String usernameIstruttore = parametri.getUsernameIstruttore();
+ 
+		if (isApp) {
+			conditions.addLast(
+				"""
+exists (
+		select *
+		from foliage2.flgparticella_forestale_shape_tab pfs
+		where pfs.id_ista = i.id_ista
+			and pfs.shape is not null
+	)"""
+			);
+		}
 		
 		if (tipoIstanza != null) {
 			parameters.put("tipoIstanza", tipoIstanza);
@@ -798,13 +839,14 @@ exists (
 		String tipoProfilo, String authScope,
 		Integer idUtente,
 		String codFiscaleUtente,
-		ChiaviRicercaIstanza parametri
+		ChiaviRicercaIstanza parametri,
+		boolean isApp
 	) throws SQLException, FoliageException, Exception {
 		return ricercaInstanze(
 			tipoProfilo, authScope, 
 			idUtente, codFiscaleUtente,
 			parametri,
-			RisultatoRicercaIstanza.RowMapper(tipoProfilo, authScope)
+			isApp, RisultatoRicercaIstanza.RowMapper(tipoProfilo, authScope)
 		);
 
 // 		List<RisultatoRicercaIstanza> result = null;
@@ -1713,7 +1755,7 @@ where ID_ISTA = ?
 // 			}
 // 		);
 		String query = """
-select CODICE_FISCALE, COGNOME, NOME, DATA_NASCITA, LUOGO_NASCITA,
+select CODICE_FISCALE, COGNOME, NOME, DATA_NASCITA, LUOGO_NASCITA, GENERE,
 	ID_PROVINCIA, ID_COMUNE, CAP, INDIRIZZO, NUM_CIVICO,
 	TELEFONO, EMAIL, PEC, 
 	ID_FILE_DELEGA
@@ -1726,35 +1768,22 @@ where ID_TITOLARE = :idTitolare""";
 		SqlRowSet result = queryForRowSet(query, pars);
 
 		if (result.next()) {
-			Integer idFileDelega = result.getInt(8);
-			if (result.wasNull()) {
-				idFileDelega = null;
-			}
-			final Integer idFileDelegaFin = idFileDelega;
-			java.sql.Date dataNasc = result.getDate("data_nascita");
-			if (result.wasNull()) {
-				dataNasc = null;
-			}
-			final java.sql.Date dataNascFin = dataNasc;
-			return new DatiTitolare() {{
-				codiceFiscale = result.getString("codice_fiscale");
-				cognome = result.getString("cognome");
-				nome = result.getString("nome");
-				dataDiNascita = (dataNascFin == null) ? null : dataNascFin.toLocalDate();
-				luogoDiNascita = result.getString("luogo_nascita");
-				provincia = result.getInt("id_provincia");
-				if (result.wasNull()) {
-					provincia = null;
-				}
-				comune = result.getInt("id_comune");
-				if (result.wasNull()) {
-					comune = null;
-				}
-				cap = result.getString("cap");
-				indirizzo = result.getString("indirizzo");
-				numeroCivico = result.getString("num_civico");
-				fileDelegaProfesssionista = getBase64FormioFiles(idFileDelegaFin);
-			}};
+			Integer idFileDelega = DbUtils.GetInteger(result, 1, "ID_FILE_DELEGA");
+			DatiTitolare dt = new DatiTitolare(
+				result.getString("codice_fiscale"),
+				result.getString("cognome"),
+				result.getString("nome"),
+				DbUtils.GetLocalDate(result, 1, "data_nascita"),
+				result.getString("luogo_nascita"),
+				result.getString("genere"),
+				DbUtils.GetInteger(result, 1, "id_provincia"),
+				DbUtils.GetInteger(result, 1, "id_comune"),
+				result.getString("cap"),
+				result.getString("indirizzo"),
+				result.getString("num_civico"),
+				DbUtils.getBase64FormioFiles(this, idFileDelega)
+			);
+			return dt;
 		}
 		else {
 			return null;
@@ -2374,11 +2403,30 @@ where i.codi_ista = ? """);
 		DatiUtente outval = null;
 
 		String query = """
-select u.id_uten, nome, cognome, user_name, codi_fisc, flag_accettazione, data_nascita,
+with priv as (
+		select *
+		from FOLIAGE2.FLGPRIVACY_POLICY_TAB p
+		where p.is_current
+	)
+select u.id_uten, nome, cognome, user_name, codi_fisc, data_nascita,
 	luogo_nascita, sesso, c.id_provincia, c.id_comune, cap, indirizzo, num_civico,
 	telefono, email, pec,
 	pu.id_profilo as id_profilo_default,
-	(up.id_utente is not null) as test_prof
+	(up.id_utente is not null) as test_prof,
+	case when not exists (
+			select *
+			from priv
+		) then
+			null
+		else
+			exists (
+				select *
+				from FOLIAGE2.FLGUTEN_PRIVACY_POLICY_TAB up
+					join priv p using (id_privacy_policy)
+				where up.id_utente = u.id_uten
+					and p.is_current
+			)
+	end as flag_accettazione
 from foliage2.flguten_tab u
 	left join foliage2.FLGPROFILI_UTENTE_TAB pu on (pu.id_utente = u.id_uten and pu.flag_default = true)
 	left join foliage2.FLGUTE_PROFESSIONISTI_TAB up on (up.id_utente = u.id_uten)
@@ -2392,12 +2440,8 @@ where user_name = :username""";
 
 		if (result.next()) {
 			AutocertificazioneProfessionista autocertProf = null;
-			Boolean isProfessionista = null;
-			final int idUtente = result.getInt("id_uten");
-			isProfessionista = result.getBoolean("test_prof");
-			if (result.wasNull()) {
-				isProfessionista = false;
-			}
+			Integer idUtente = DbUtils.GetInteger(result, 1, "id_uten");
+			Boolean isProfessionista = DbUtils.GetBoolean(result, 1, "test_prof");
 			
 			if (isProfessionista) {
 				String sqlAutocert = """
@@ -2410,84 +2454,69 @@ where ID_UTENTE = :idUtente
 				final SqlRowSet result2 = queryForRowSet(sqlAutocert, pars2);
 				
 				if (result2.next()) {
-					autocertProf = new AutocertificazioneProfessionista() {{
-						categoria = result2.getString(1);
-						sottocategoria = result2.getString(2);
-						collegio = result2.getString(3);
-						numeroIscrizione = result2.getString(4);
-						provinciaIscrizione = result2.getInt(5);
-						postaCertificata = result2.getString(6);
-					}};
+					autocertProf = new AutocertificazioneProfessionista(
+						result2.getString(1),
+						result2.getString(2),
+						result2.getString(3),
+						result2.getString(4),
+						result2.getInt(5),
+						result2.getString(6)
+					);
 				}
 				else {
 					throw new FoliageException("Non è stata trovata un'autocertificazione valida");
 				}
 			}
-			final AutocertificazioneProfessionista autoCertFin = autocertProf;
-			final Boolean isProfessionistaFin = isProfessionista;
-			java.sql.Date d = result.getDate("data_nascita");
-			LocalDate dataNasc = (result.wasNull()) ? null : d.toLocalDate();
+			
+			outval = new DatiUtente(
+				result.getString("codi_fisc"),
+				result.getString("cognome"),
+				result.getString("nome"),
+				DbUtils.GetLocalDate(result, 1, "data_nascita"),
+				result.getString("luogo_nascita"),
+				result.getString("sesso"),
+				DbUtils.GetInteger(result, 1, "id_provincia"),
+				DbUtils.GetInteger(result, 1, "id_comune"),
+				result.getString("cap"),
+				result.getString("indirizzo"),
+				result.getString("num_civico"),
+				idUtente,
+				result.getString("user_name"),
+				DbUtils.GetBoolean(result, 1, "flag_accettazione"),
+				result.getInt("id_profilo_default"),
+				isProfessionista,
+				autocertProf
+			);
+			// {{
+			// 	idUten = idUtente;
+			// 	nome = result.getString("nome");
+			// 	cognome = result.getString("cognome");
+			// 	userName = result.getString("user_name");
+			// 	codiceFiscale = result.getString("codi_fisc");
+			// 	flagAccettazione = DbUtils.GetBoolean(result, 1, "flag_accettazione");
+			// 	dataDiNascita = dataNasc;
+			// 	luogoDiNascita = result.getString("luogo_nascita");
+			// 	genere = result.getString("sesso");
 
-			outval = new DatiUtente() {{
-				idUten = idUtente;
-				nome = result.getString("nome");
-				cognome = result.getString("cognome");
-				userName = result.getString("user_name");
-				codiceFiscale = result.getString("codi_fisc");
-				flagAccettazione = result.getBoolean("flag_accettazione");
-				if (result.wasNull()) {
-					flagAccettazione = false;
-				}
-				dataDiNascita = dataNasc;
-				luogoDiNascita = result.getString("luogo_nascita");
-				genere = result.getString("sesso");
+			// 	provincia = DbUtils.GetInteger(result, 1, "id_provincia");
+			// 	comune = DbUtils.GetInteger(result, 1, "id_comune");
 
-				provincia = result.getInt("id_provincia");
-				if (result.wasNull()) {
-					provincia = null;
-				}
-
-				comune = result.getInt("id_comune");
-				if (result.wasNull()) {
-					comune = null;
-				}
-
-				cap = result.getString("cap");
-				indirizzo = result.getString("indirizzo");
-				numeroCivico = result.getString("num_civico");
-				// telefono = result.getString("telefono");
-				// email = result.getString("email");
-				// postaCertificata = result.getString("pec");
-				rouloPredefinito = result.getInt("id_profilo_default");
-				isProfessionistaForestale = isProfessionistaFin;
-				autocertificazioneProf = autoCertFin;
-			}};
+			// 	cap = result.getString("cap");
+			// 	indirizzo = result.getString("indirizzo");
+			// 	numeroCivico = result.getString("num_civico");
+				
+			// 	rouloPredefinito = result.getInt("id_profilo_default");
+			// 	isProfessionistaForestale = isProfessionistaFin;
+			// 	autocertificazioneProf = autoCertFin;
+			// }};
 		}
 		return outval;
 		//return result;
 	}
 
-	Base64FormioFile[] getBase64FormioFiles(Integer idFile) {
-		return DbUtils.getBase64FormioFiles(this, idFile);
-
-// 		if (idFile == null) {
-// 			return null;
-// 		}
-// 		else {
-// 			String sqlFile = """
-// select FILE_NAME, ORIGINAL_FILE_NAME, FILE_SIZE, STORAGE,
-// FILE_TYPE, HASH_FILE, FILE_DATA
-// from FOLIAGE2.FLGBASE64_FORMIO_FILE_TAB
-// where ID_FILE = :idFile
-// 				""";
-// 			Map<String, Object> mapFileParam = new HashMap<String, Object>();
-// 			mapFileParam.put("idFile", idFile);
-// 			SqlParameterSource filePars = new MapSqlParameterSource(mapFileParam);
-// 			List<Base64FormioFile> outList = template.query(sqlFile, filePars, Base64FormioFile.RowMapper());
-// 			Base64FormioFile[] arr = new Base64FormioFile[0];
-// 			return outList.toArray(arr);
-// 		}
-	}
+	// Base64FormioFile[] getBase64FormioFiles(Integer idFile) {
+	// 	return DbUtils.getBase64FormioFiles(this, idFile);
+	// }
 
 	public Object getRichiestaUtente(
 		Integer idUtente,
@@ -2698,24 +2727,26 @@ where RP.ID_RICHIESTA = :idRichiesta
 				sql,
 				mapParam,
 				(rs, rowNum)-> {
+					Object richiestaResp = null;
 					Integer idRichiestaResp = rs.getInt("id_richiesta_resp");
-					if (rs.wasNull()) {
+					boolean wasNull = rs.wasNull();
+					if (wasNull) {
 						idRichiestaResp = null;
 					}
-					Object richiestaResp = null;
 					if (idRichiestaResp != null) {
-						
 						Base64FormioFile[] fileAttoNomina = null;
 						Base64FormioFile[] fileDocIdentita = null;
 						Integer idFileAttoNomina = rs.getInt("id_file_atto_nomina");
-						if (rs.wasNull()) {
+						wasNull = rs.wasNull();
+						if (wasNull) {
 							idFileAttoNomina = null;
 						}
 						else {
 							fileAttoNomina = DbUtils.getBase64FormioFiles(this, idFileAttoNomina);
 						}
 						Integer idFileDocIdentita = rs.getInt("id_file_doc_identita");
-						if (rs.wasNull()) {
+						wasNull = rs.wasNull();
+						if (wasNull) {
 							idFileDocIdentita = null;
 						}
 						else {
@@ -2732,7 +2763,8 @@ where RP.ID_RICHIESTA = :idRichiesta
 						};
 					}
 					Boolean esitoApp = rs.getBoolean("esito_approvazione");
-					if (rs.wasNull()) {
+					wasNull = rs.wasNull();
+					if (wasNull) {
 						esitoApp = null;
 					}
 					final Boolean esitoApp2 = esitoApp;
@@ -3314,19 +3346,25 @@ exists (
 		);
 	}
 
-	public String effettuaAccettazionePrivacy(String username) {
+	public String effettuaAccettazionePrivacy(Integer idUtente) {
 		DefaultTransactionDefinition paramTransactionDefinition = new DefaultTransactionDefinition();
 		TransactionStatus status = platformTransactionManager.getTransaction(paramTransactionDefinition );
 
 		try {
 			HashMap<String, Object> mapParam = new HashMap<String, Object>();
-			mapParam.put("username", username);
+			mapParam.put("idUtente", idUtente);
 			SqlParameterSource parameters = new MapSqlParameterSource(mapParam);
+// 			String sql = """
+// update foliage2.flguten_tab
+// set flag_accettazione = true
+// where user_name = :username 
+// 				""";
+			
 			String sql = """
-update foliage2.flguten_tab
-set flag_accettazione = true
-where user_name = :username 
-				""";
+insert into FOLIAGE2.FLGUTEN_PRIVACY_POLICY_TAB(id_utente, id_privacy_policy, data_visione)
+select :idUtente, id_privacy_policy, localtimestamp
+from FOLIAGE2.FLGPRIVACY_POLICY_TAB p
+where p.is_current""";
 			template.update(sql, parameters);
 			platformTransactionManager.commit(status);
 		}catch (Exception e) {
@@ -6714,7 +6752,8 @@ returning id_file_tavola as id_file_tavola""";
 	) throws Exception {
 		boolean isAmmi = "AMMI".equals(authority);
 		boolean isResp = !isAmmi && ("RESP".equals(authority) && "TERRITORIALE".equals(authScope));
-		if (isAmmi || isResp) {
+		boolean isSorv = !isAmmi && !isResp && ("SORV".equals(authority));
+		if (isAmmi || isResp || isSorv) {
 			
 			LinkedList<ReportBuiler> builders = new LinkedList<>();
 			HashMap<String, Object> pars = new HashMap<>();
@@ -6726,52 +6765,77 @@ returning id_file_tavola as id_file_tavola""";
 			}
 			switch (codReport) {
 				case "AUTO_ACCETTAZIONE": {
-					ReportBuiler builder = isAmmi ? ReportBuiler.ReportAutoaccettazioneAmmi : ReportBuiler.ReportAutoaccettazioneResp;
-					builders.add(builder);
+					///TODO: al momento si potrebbe togliere poiché la configurazione di questo report è stata cancellata dal database
+					if (isAmmi || isResp)  {
+						ReportBuiler builder = isAmmi ? ReportBuiler.ReportAutoaccettazioneAmmi : ReportBuiler.ReportAutoaccettazioneResp;
+						builders.add(builder);
+					}
+					else {
+						throw new FoliageAuthorizationException("Il profilo utilizzato non è autorizzato ad effettuare questa richiesta");
+					}
 				}; break;
 				case "P1_M": {
-					if ("csv".equals(formato)) {
-						ReportBuiler builder = isAmmi ? ReportBuiler.ReportP1Ammi : ReportBuiler.ReportP1Resp;
-						builders.add(builder);
+					if (isAmmi || isResp)  {
+						if ("csv".equals(formato)) {
+							ReportBuiler builder = isAmmi ? ReportBuiler.ReportP1Ammi : ReportBuiler.ReportP1Resp;
+							builders.add(builder);
+						}
+						else {
+							ReportBuiler builder1 = isAmmi ? ReportBuiler.ReportP1Ammi : ReportBuiler.ReportP1Resp;
+							builders.add(builder1);
+							ReportBuiler builder = isAmmi ? ReportBuiler.ReportP1AmmiAgg : ReportBuiler.ReportP1RespPdf;
+							builders.add(builder);
+						}
+						PeriodDuration pd = PeriodDuration.of(Period.ofMonths(1));
+						pars.put("durata", DbUtils.GetPgInterval(pd));
 					}
 					else {
-						ReportBuiler builder1 = isAmmi ? ReportBuiler.ReportP1Ammi : ReportBuiler.ReportP1Resp;
-						builders.add(builder1);
-						ReportBuiler builder = isAmmi ? ReportBuiler.ReportP1AmmiAgg : ReportBuiler.ReportP1RespPdf;
-						builders.add(builder);
+						throw new FoliageAuthorizationException("Il profilo utilizzato non è autorizzato ad effettuare questa richiesta");
 					}
-					PeriodDuration pd = PeriodDuration.of(Period.ofMonths(1));
-					pars.put("durata", DbUtils.GetPgInterval(pd));
 				}; break;
 				case "P1_A": {
-					if ("csv".equals(formato)) {
-						ReportBuiler builder = isAmmi ? ReportBuiler.ReportP1Ammi : ReportBuiler.ReportP1Resp;
-						builders.add(builder);
+					if (isAmmi || isResp)  {
+						if ("csv".equals(formato)) {
+							ReportBuiler builder = isAmmi ? ReportBuiler.ReportP1Ammi : ReportBuiler.ReportP1Resp;
+							builders.add(builder);
+						}
+						else {
+							ReportBuiler builder1 = isAmmi ? ReportBuiler.ReportP1Ammi : ReportBuiler.ReportP1Resp;
+							builders.add(builder1);
+							ReportBuiler builder = isAmmi ? ReportBuiler.ReportP1AmmiAgg : ReportBuiler.ReportP1RespPdf;
+							builders.add(builder);
+						}
+						PeriodDuration pd = PeriodDuration.of(Period.ofYears(1));
+						pars.put("durata", DbUtils.GetPgInterval(pd));
 					}
 					else {
-						ReportBuiler builder1 = isAmmi ? ReportBuiler.ReportP1Ammi : ReportBuiler.ReportP1Resp;
-						builders.add(builder1);
-						ReportBuiler builder = isAmmi ? ReportBuiler.ReportP1AmmiAgg : ReportBuiler.ReportP1RespPdf;
-						builders.add(builder);
+						throw new FoliageAuthorizationException("Il profilo utilizzato non è autorizzato ad effettuare questa richiesta");
 					}
-					PeriodDuration pd = PeriodDuration.of(Period.ofYears(1));
-					pars.put("durata", DbUtils.GetPgInterval(pd));
 				}; break;
 				case "P2_M": {
-					ReportBuiler builder = isAmmi ? ReportBuiler.ReportP2Ammi : ReportBuiler.ReportP2Resp;
-					builders.add(builder);
-					PeriodDuration pd = PeriodDuration.of(Period.ofMonths(1));
-					pars.put("durata", DbUtils.GetPgInterval(pd));
-					
+					if (isAmmi || isResp)  {
+						ReportBuiler builder = isAmmi ? ReportBuiler.ReportP2Ammi : ReportBuiler.ReportP2Resp;
+						builders.add(builder);
+						PeriodDuration pd = PeriodDuration.of(Period.ofMonths(1));
+						pars.put("durata", DbUtils.GetPgInterval(pd));
+					}
+					else {
+						throw new FoliageAuthorizationException("Il profilo utilizzato non è autorizzato ad effettuare questa richiesta");
+					}
 				}; break;
 				case "P2_A": {
-					ReportBuiler builder = isAmmi ? ReportBuiler.ReportP2Ammi : ReportBuiler.ReportP2Resp;
-					builders.add(builder);
-					PeriodDuration pd = PeriodDuration.of(Period.ofYears(1));
-					pars.put("durata", DbUtils.GetPgInterval(pd));
+					if (isAmmi || isResp)  {
+						ReportBuiler builder = isAmmi ? ReportBuiler.ReportP2Ammi : ReportBuiler.ReportP2Resp;
+						builders.add(builder);
+						PeriodDuration pd = PeriodDuration.of(Period.ofYears(1));
+						pars.put("durata", DbUtils.GetPgInterval(pd));
+					}
+					else {
+						throw new FoliageAuthorizationException("Il profilo utilizzato non è autorizzato ad effettuare questa richiesta");
+					}
 				}; break;
 				case "P3_NAT1": {
-					if (isAmmi)  {
+					if (isAmmi || isSorv)  {
 						pars.put("sridGeometrie", sridGeometrie);
 						if ("GeoJSON".equals(formato)) {
 							ReportBuiler builder = ReportBuiler.ReportP3Nat1GeoJson;
@@ -6787,7 +6851,7 @@ returning id_file_tavola as id_file_tavola""";
 					}
 				}; break;
 				case "P3_NAT2": {
-					if (isAmmi) {
+					if (isAmmi || isSorv) {
 						pars.put("sridGeometrie", sridGeometrie);
 						if ("GeoJSON".equals(formato)) {
 							ReportBuiler builder = ReportBuiler.ReportP3Nat2GeoJson;
@@ -6803,11 +6867,25 @@ returning id_file_tavola as id_file_tavola""";
 					}
 				}; break;
 				case "P4": {
-					ReportBuiler builder = ReportBuiler.GetReportP4(this, data.getYear());
-					builders.add(builder);
-					//rs = GetReportP4(data, idUtente, authority, authScope);
-					// xlsxTemplate = "reportModels/P4.xlsx";
-					// shapeColumn = "shape";
+					if (isAmmi) {
+						ReportBuiler builder = ReportBuiler.GetReportP4(this, data.getYear());
+						builders.add(builder);
+						//rs = GetReportP4(data, idUtente, authority, authScope);
+						// xlsxTemplate = "reportModels/P4.xlsx";
+						// shapeColumn = "shape";
+					}
+					else {
+						throw new FoliageAuthorizationException("Il profilo utilizzato non è autorizzato ad effettuare questa richiesta");
+					}
+				}; break;
+				case "ALERT": {
+					if (isAmmi || isSorv) {
+						ReportBuiler builder = ReportBuiler.ReportAlertGeoJson;
+						builders.add(builder);
+					}
+					else {
+						throw new FoliageAuthorizationException("Il profilo utilizzato non è autorizzato ad effettuare questa richiesta");
+					}
 				}; break;
 				default: {
 					throw new FoliageException("Tipologia di report non gestita");
@@ -6890,8 +6968,9 @@ returning id_file_tavola as id_file_tavola""";
 
 	public SqlRowSet getTipoElaborazioniGovernance() {
 		String sql = """
-select b.id_batch, b.cod_batch, b.desc_batch
+select b.id_batch, b.cod_batch, b.desc_batch, bs.data_partenza, bs.intervallo_frequenza, bs.intervallo_offset
 from foliage2.flgconf_batch_tab b
+	left join foliage2.flgbatch_scheduling_tab bs using (id_batch)
 where b.id_batch = any (
 		select r.id_batch 
 		from foliage2.flgconf_batch_report_tab r
@@ -6911,7 +6990,7 @@ where b.id_batch = any (
 	public SqlRowSet getElaborazioniGovernance() {
 		String sql = """
 select bd.id_batch_ondemand, b.cod_batch, data_rife,
-	bd.data_avvio as data_di_esecuzione_richiesta, 
+	bd.data_avvio_pianificata as data_di_esecuzione_richiesta, 
 	u.codi_fisc||': '||u.cognome||' '||u.nome as utente_sottomissione,
 	data_inserimento, parametri, id_exec_batch, data_submission, eb.data_avvio, data_termine, cnt_err
 from foliage2.flgbatch_ondemand_tab bd
@@ -6942,8 +7021,8 @@ where b.id_batch = any (
 
 	public SqlRowSet getElaborazioniMonitoraggio() {
 		String sql = """
-select bd.id_batch_ondemand, data_rife,
-	bd.data_avvio as data_di_esecuzione_richiesta, 
+select bd.id_batch_ondemand, data_rife, date_part('year', date(data_rife) -1) as annualita,
+	bd.data_avvio_pianificata as data_di_esecuzione_richiesta, 
 	u.codi_fisc||': '||u.cognome||' '||u.nome as utente_sottomissione,
 	data_inserimento, parametri, id_exec_batch, data_submission, eb.data_avvio, data_termine, cnt_err
 from foliage2.flgbatch_ondemand_tab bd

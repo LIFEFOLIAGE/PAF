@@ -3,7 +3,7 @@ import { BreadcrumbModel } from 'src/app/models/breadcrumb';
 import { ActivatedRoute, Router } from "@angular/router";
 import { BaseAuthService } from "../../services/auth.service";
 import { SessionManagerService } from "../../services/session-manager.service";
-import { ChronoUnit, LocalDateTime } from "@js-joda/core";
+import { ChronoUnit, DateTimeFormatter, LocalDateTime } from "@js-joda/core";
 import { BreadcrumbService } from 'src/app/services/breadcrumb.service';
 import { TitleService } from 'src/app/services/title.service';
 
@@ -13,7 +13,7 @@ import { TitleService } from 'src/app/services/title.service';
 })
 export class ModificaRichiestaMonitoraggioComponent implements OnInit {
 	idRichiesta?: number;
-	titolo: string = "";
+	//titolo: string = "";
 
 	datiSchedulazione: any = {};
 	errori: any = {}
@@ -36,7 +36,7 @@ export class ModificaRichiestaMonitoraggioComponent implements OnInit {
 		if (this.idRichiesta) {
 			this.loadRichiesta();
 			
-			this.titolo = `Modifica Richiesta ${this.idRichiesta}`;
+			//this.titolo = `Modifica Richiesta ${this.idRichiesta}`;
 			const breadcrumbModel = new BreadcrumbModel(
 				[
 					{
@@ -55,7 +55,7 @@ export class ModificaRichiestaMonitoraggioComponent implements OnInit {
 			this.titleService.title = `Modifica Richiesta Monitoraggio ${this.idRichiesta}`;
 		}
 		else {
-			this.titolo = "Nuova Richiesta Monitoraggio";
+			//this.titolo = "Nuova Richiesta Monitoraggio";
 			const breadcrumbModel = new BreadcrumbModel(
 				[
 					{
@@ -69,7 +69,7 @@ export class ModificaRichiestaMonitoraggioComponent implements OnInit {
 			this.breadcrumbService.breadcrumb = breadcrumbModel;
 			this.titleService.title = `Nuova Richiesta Monitoraggio`;
 
-			this.datiSchedulazione.dataAvvioRichiesta = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+			this.datiSchedulazione.dataAvvioRichiesta = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 		}
 	}
 
@@ -146,7 +146,7 @@ export class ModificaRichiestaMonitoraggioComponent implements OnInit {
 			);
 		}
 		else {
-			alert();
+			alert("aaa");
 		}
 	}
 }

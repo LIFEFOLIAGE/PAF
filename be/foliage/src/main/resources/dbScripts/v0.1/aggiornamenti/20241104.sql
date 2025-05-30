@@ -40,4 +40,3 @@ create table FOLIAGE2.FLGDATI_PRE_MONITORAGGIO_TAB (
 
 
 alter table foliage2.flgserver_requests_tab add column headers varchar;
-

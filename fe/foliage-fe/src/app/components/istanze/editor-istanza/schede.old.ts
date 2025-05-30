@@ -328,7 +328,7 @@ const fileUpload = {
 	"key": "file2",
 	//"customConditional": "show = submission.metadata.contesto.cfTitolare != data.codiceFiscale",
 	"type": "file",
-	"url": `${environment.apiServerPath}/istanze/upload/{{submission.metadata.context.codIstanza}}/delegaProfessionista`,
+	"url": `${environment.apiUrl}/istanze/upload/{{submission.metadata.context.codIstanza}}/delegaProfessionista`,
 	//"options": "{\n  \"headers\": {\n    \"Authorization\": \"Bearer eyJ4NXQiOiJNell4TW1Ga09HWXdNV0kwWldObU5EY3hOR1l3WW1NNFpUQTNNV0kyTkRBelpHUXpOR00wWkdSbE5qSmtPREZrWkRSaU9URmtNV0ZoTXpVMlpHVmxOZyIsImtpZCI6Ik16WXhNbUZrT0dZd01XSTBaV05tTkRjeE5HWXdZbU00WlRBM01XSTJOREF6WkdRek5HTTBaR1JsTmpKa09ERmtaRFJpT1RGa01XRmhNelUyWkdWbE5nX1JTMjU2IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJDTVBNUkM3Mk0xN0g1MDFOIiwiYXV0IjoiQVBQTElDQVRJT05fVVNFUiIsImNvdW50cnkiOiJSb21hIiwiYmlydGhkYXRlIjoiMTBcLzEwXC8xOTgwIiwiZ2VuZGVyIjoiTSIsImlzcyI6Imh0dHBzOlwvXC9sb2NhbGhvc3Q6OTQ0M1wvb2F1dGgyXC90b2tlbiIsImdyb3VwcyI6WyJJbnRlcm5hbFwvYWRtaW4iLCJBcHBsaWNhdGlvblwvRm9saWFnZSIsIkludGVybmFsXC9ldmVyeW9uZSIsImFkbWluIl0sImdpdmVuX25hbWUiOiJDTVBNUkM3Mk0xN0g1MDFOIiwiYXVkIjoiTTNKQUFuQzVLRFBJS2ltVWJ6UEtRNjFpSjRFYSIsInVwbiI6ImNhbXBlbGxpIiwibmJmIjoxNjg4NzQxNDY3LCJ1cGRhdGVkX2F0IjoxNjgwMTc4NTk3MDAwLCJhenAiOiJNM0pBQW5DNUtEUElLaW1VYnpQS1E2MWlKNEVhIiwic2NvcGUiOiJvcGVuaWQiLCJvcmdhbml6YXRpb24iOiJNQ0FNUEVMTEkiLCJuaWNrbmFtZSI6Im1hcmNvIiwibmFtZSI6ImNhbXBlbGxpIiwiZXhwIjoxNjg4NzQ1MDY3LCJpYXQiOjE2ODg3NDE0NjcsImZhbWlseV9uYW1lIjoiY2FtcGVsbGkiLCJqdGkiOiIyZjY2ZTk0MS1jMzM4LTQ0ZjMtYjc2YS0wZGM2YjM5NDg4OTIiLCJlbWFpbCI6ImFhQGFhLml0In0.YKUWkC_-EnwLLDizdupH5-qMYFaOdrMmMFESphSyQ4hIRYyojTIQImXL_P5EtalSyVXWXz759gkj8C7HflmeSKeU21YDmQB7lajjdRAUz3xxPLPD6RF1nuHnkhzlPX9ES0Y5uI0HmMrMNPFJxe8YG2hwkqNqOToqqVA4JBGAe5G0mw-obmZi2aG5loeKMF36M92mbLHW8FWU8U8BxAbaZYxtvWm9RCSGXOnieBIKhqAA6QOGo6E4vD6_6dbBQiM37AJlw9pKLf4rc9f6iAfhISgnLKnpo37R6X8MDg6wJyOMiykgPJY_VytP8tuXSSOeNqDGOgNS15b3rz0VKjLMQA\"\n  }\n}",
 	//"options": "{\n  \"headers\": {\n    \"Authorization\": \"{{submission.getAccessToken()}}\"  }\n}",
 	// "options": {
@@ -387,11 +387,11 @@ const tabSchedaParticelle = {
 								"tableView": true,
 								"dataSrc": "url",
 								"data": {
-									"url": `${environment.apiServerPath}/provincie-host`,
+									"url": `${environment.apiUrl}/provincie-host`,
 									"headers": [
 										{
 											"key": "Authorization",
-											"value": "{{submission.metadata.getAccessToken()}}"
+											"value": "{{window.getAccessToken()}}"
 										}
 									]
 								},
@@ -420,11 +420,11 @@ const tabSchedaParticelle = {
 								"tableView": true,
 								"dataSrc": "url",
 								"data": {
-									"url": `${environment.apiServerPath}/istanze/comuni/{{data.provincia}}`,
+									"url": `${environment.apiUrl}/istanze/comuni/{{data.provincia}}`,
 									"headers": [
 										{
 											"key": "Authorization",
-											"value": "{{submission.metadata.getAccessToken()}}"
+											"value": "{{window.getAccessToken()}}"
 										}
 									]
 								},
@@ -1063,11 +1063,11 @@ const schedaTipoGestione = {
 			"tableView": true,
 			"dataSrc": "url",
 			"data": {
-				"url": `${environment.apiServerPath}/istanze/lista-tipi-azienda`,
+				"url": `${environment.apiUrl}/istanze/lista-tipi-azienda`,
 				"headers": [
 					{
 						"key": "Authorization",
-						"value": "{{submission.metadata.getAccessToken()}}"
+						"value": "{{window.getAccessToken()}}"
 					}
 				]
 			},
@@ -1086,11 +1086,11 @@ const schedaTipoGestione = {
 			"tableView": true,
 			"dataSrc": "url",
 			"data": {
-				"url": `${environment.apiServerPath}/istanze/lista-natura-proprieta`,
+				"url": `${environment.apiUrl}/istanze/lista-natura-proprieta`,
 				"headers": [
 					{
 						"key": "Authorization",
-						"value": "{{submission.metadata.getAccessToken()}}"
+						"value": "{{window.getAccessToken()}}"
 					}
 				]
 			},
@@ -1109,11 +1109,11 @@ const schedaTipoGestione = {
 			"tableView": true,
 			"dataSrc": "url",
 			"data": {
-				"url": `${environment.apiServerPath}/istanze/lista-tipi-proprieta`,
+				"url": `${environment.apiUrl}/istanze/lista-tipi-proprieta`,
 				"headers": [
 					{
 						"key": "Authorization",
-						"value": "{{submission.metadata.getAccessToken()}}"
+						"value": "{{window.getAccessToken()}}"
 					}
 				]
 			},
@@ -1132,11 +1132,11 @@ const schedaTipoGestione = {
 			"tableView": true,
 			"dataSrc": "url",
 			"data": {
-				"url": `${environment.apiServerPath}/istanze/lista-qualificazioni-proprietario`,
+				"url": `${environment.apiUrl}/istanze/lista-qualificazioni-proprietario`,
 				"headers": [
 					{
 						"key": "Authorization",
-						"value": "{{submission.metadata.getAccessToken()}}"
+						"value": "{{window.getAccessToken()}}"
 					}
 				]
 			},

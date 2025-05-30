@@ -370,7 +370,7 @@ const pannelloDomicilio = {
 						// 		"headers": [
 						// 			{
 						// 				"key": "Authorization",
-						// 				"value": "{{submission.metadata.getAccessToken()}}"
+						// 				"value": "{{window.getAccessToken()}}"
 						// 			}
 						// 		]
 						// 	},
@@ -417,7 +417,7 @@ const pannelloDomicilio = {
 						// 		"headers": [
 						// 			{
 						// 				"key": "Authorization",
-						// 				"value": "{{submission.metadata.getAccessToken()}}"
+						// 				"value": "{{window.getAccessToken()}}"
 						// 			}
 						// 		]
 						// 	},
@@ -612,9 +612,7 @@ const fileUploadBase64 = {
 	  "required": true
 	},
 	"key": "fileDelegaProfesssionista",
-	"conditional": {
-		"show": true
-	},
+	"customConditional": "show = (data.fileDelegaProfesssionista != undefined);",
 	"fileMaxSize": "5MB",
 	//"customConditional": "show = submission.isProfessionista",
 	"type": "file",
@@ -639,7 +637,7 @@ function postSalvaParticella(newPart: any) {
 		newPart.sub = ' ';
 	}
 }
-const apiUrl = `${environment.apiOrigin??window.origin}${environment.apiServerPath}`;
+const apiUrl = `${environment.apiOrigin??window.origin}${environment.apiUrl}`;
 const confSchedaParticelleSotto = {
 	"components": [
 		{
@@ -657,7 +655,7 @@ const confSchedaParticelleSotto = {
 								"headers": [
 									{
 										"key": "Authorization",
-										"value": "{{submission.metadata.getAccessToken()}}"
+										"value": "{{window.getAccessToken()}}"
 									}
 								]
 							},
@@ -694,7 +692,7 @@ const confSchedaParticelleSotto = {
 								"headers": [
 									{
 										"key": "Authorization",
-										"value": "{{submission.metadata.getAccessToken()}}"
+										"value": "{{window.getAccessToken()}}"
 									}
 								]
 							},
@@ -818,7 +816,7 @@ const confSchedaParticelleSotto = {
 				{
 					"components": [
 						{
-							"label": "Superficie catastale (mq)",
+							"label": "Superficie catastale (ha)",
 							"applyMaskOn": "change",
 							"mask": false,
 							"tableView": false,
@@ -879,7 +877,7 @@ const confSchedaParticelleSopra = {
 								"headers": [
 									{
 										"key": "Authorization",
-										"value": "{{submission.metadata.getAccessToken()}}"
+										"value": "{{window.getAccessToken()}}"
 									}
 								]
 							},
@@ -916,7 +914,7 @@ const confSchedaParticelleSopra = {
 								"headers": [
 									{
 										"key": "Authorization",
-										"value": "{{submission.metadata.getAccessToken()}}"
+										"value": "{{window.getAccessToken()}}"
 									}
 								]
 							},
@@ -1040,7 +1038,7 @@ const confSchedaParticelleSopra = {
 				{
 					"components": [
 						{
-							"label": "Superficie catastale (mq)",
+							"label": "Superficie catastale (ha)",
 							"applyMaskOn": "change",
 							"mask": false,
 							"tableView": false,
@@ -1230,7 +1228,9 @@ const tabSchedaParticelleSotto = {
 			label: "Totale superficie catastale (ha)",
 			startVal: 0,
 			formula: (prevValue: any, currValue: {data: any, idx: number}) => (prevValue + (currValue.data["superficie"]/10000)),
-			alignment: "right"
+			alignment: "right",
+			formatValue: (res: any) => res * 10000,
+			dataFormat: DataFormat.Ettari
 		}
 	]
 };
@@ -1316,13 +1316,17 @@ const tabSchedaParticelleSopra = {
 			label: "Totale superficie di intervento (ha)",
 			startVal: 0,
 			formula: (prevValue: any, currValue: {data: any, idx: number}) => (prevValue + (currValue.data["superficieInterventoPart"]/10000)),
-			alignment: "right"
+			formatValue: (res: any) => res * 10000,
+			alignment: "right",
+			dataFormat: DataFormat.Ettari
 		},
 		{
 			label: "Totale superficie catastale (ha)",
 			startVal: 0,
 			formula: (prevValue: any, currValue: {data: any, idx: number}) => (prevValue + (currValue.data["superficie"]/10000)),
-			alignment: "right"
+			formatValue: (res: any) => res * 10000,
+			alignment: "right",
+			dataFormat: DataFormat.Ettari
 		}
 	]
 }
@@ -1966,7 +1970,7 @@ const schedaTipoGestione = {
 				"headers": [
 					{
 						"key": "Authorization",
-						"value": "{{submission.metadata.getAccessToken()}}"
+						"value": "{{window.getAccessToken()}}"
 					}
 				]
 			},
@@ -1992,7 +1996,7 @@ const schedaTipoGestione = {
 				"headers": [
 					{
 						"key": "Authorization",
-						"value": "{{submission.metadata.getAccessToken()}}"
+						"value": "{{window.getAccessToken()}}"
 					}
 				]
 			},
@@ -2018,7 +2022,7 @@ const schedaTipoGestione = {
 				"headers": [
 					{
 						"key": "Authorization",
-						"value": "{{submission.metadata.getAccessToken()}}"
+						"value": "{{window.getAccessToken()}}"
 					}
 				]
 			},
@@ -2044,7 +2048,7 @@ const schedaTipoGestione = {
 				"headers": [
 					{
 						"key": "Authorization",
-						"value": "{{submission.metadata.getAccessToken()}}"
+						"value": "{{window.getAccessToken()}}"
 					}
 				]
 			},
@@ -2511,7 +2515,7 @@ const tabProspettiRiepilogativi = {
 			dataField: "metodoDiCubatura"
 		},
 		{
-			header: "Superficie Utile (ha)",
+			header: "Supeficie Utile(ha)",
 			dataField: "superficieUtile",
 			dataFormat: DataFormat.Ettari
 

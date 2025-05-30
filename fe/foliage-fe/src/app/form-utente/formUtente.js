@@ -1,6 +1,6 @@
 import { environment } from "src/environments/environment";
 
-const apiUrl = `${environment.apiOrigin??window.origin}${environment.apiServerPath}`;
+const apiUrl = `${environment.apiOrigin??window.origin}${environment.apiUrl}`;
 
 export default {
 	"display": "form",
@@ -255,7 +255,7 @@ export default {
 										"headers": [
 											{
 												"key": "Authorization",
-												"value": "{{submission.metadata.getAccessToken()}}"
+												"value": "{{window.getAccessToken()}}"
 											}
 										]
 									},
@@ -291,7 +291,7 @@ export default {
 										"headers": [
 											{
 												"key": "Authorization",
-												"value": "{{submission.metadata.getAccessToken()}}"
+												"value": "{{window.getAccessToken()}}"
 											}
 										]
 									},
@@ -636,11 +636,11 @@ export default {
 							"tableView": true,
 							"dataSrc": "url",
 							"data": {
-								"url": `${apiUrl}/provincie`,
+								"url": "{{submission.metadata.environment.apiUrl}}/provincie",
 								"headers": [
 									{
 										"key": "authorization",
-										"value": "{{submission.metadata.getAccessToken()}}"
+										"value": "{{window.getAccessToken()}}"
 									}
 								]
 							},

@@ -1,10 +1,16 @@
 package it.almaviva.foliage.services;
 
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.javatuples.Pair;
+import org.postgresql.util.PGInterval;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -15,6 +21,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.threeten.extra.PeriodDuration;
 
 import it.almaviva.foliage.FoliageException;
 import it.almaviva.foliage.bean.AttivitaMonitoraggioBean;
@@ -79,7 +86,7 @@ where codi_istat_regione = :codRegione""";
 INSERT INTO foliage2.flgexecuted_batch_tab (
 		id_batch, data_batch, data_rife, data_submission, data_avvio, data_termine, num_record_elaborati
 	)
-select bd.id_batch, bd.data_rife, bd.data_rife, em.data_acquisizione, :dataAvvio, localtimestamp, 0
+select bd.id_batch, bd.data_avvio_pianificata, bd.data_rife, em.data_acquisizione, :dataAvvio, localtimestamp, 0
 from foliage2.flgbatch_ondemand_tab bd
 	join foliage2.flgesecuzioni_monitoraggio_tab em on (em.id_batch_ondemand = bd.id_batch_ondemand)
 where bd.id_batch_ondemand = :idRichiesta""";
@@ -103,8 +110,14 @@ where dpm.id_batch_ondemand = :idRichiesta""";
 		sql = """
 SELECT json_build_object(
 		'type', 'FeatureCollection',
-		'features', json_agg(ST_AsGeoJSON(t.*)::json)
-    ) as res
+		'crs', json_build_object(
+			'type', 'name',
+			'properties', json_build_object(
+				'name', 'urn:ogc:def:crs:EPSG::3035'
+			)
+		),
+		'features', coalesce(json_agg(ST_AsGeoJSON(t.*)::json), '[]'::json)
+	) as res
 FROM (
 		select codi_ista, cod_tipo_istanza,
 			nome_uog, cod_forma_trattamento_fustaia, cod_forma_trattamento_ceduo,
@@ -112,8 +125,7 @@ FROM (
 			shape
 		from FOLIAGE2.FLGDATI_PRE_MONITORAGGIO_TAB dpm
 		where dpm.id_batch_ondemand = :idRichiesta
-     ) as t;
-				""";
+	 ) as t""";
 		HashMap<String, Object> pars = new HashMap<>();	
 		pars.put("idRichiesta", idRichiesta);
 		//List<RecordPreelaborazioneMonitoraggio> outVal = query(sql, pars, RecordPreelaborazioneMonitoraggio.RowMapper);
@@ -158,7 +170,7 @@ with execution as (
 			:clientId, :hostName, :ipAddress
 		from foliage2.flgbatch_ondemand_tab bd
 			join foliage2.flgconf_batch_tab b using (id_batch)
-		where bd.data_avvio <= localtimestamp
+		where bd.data_avvio_pianificata <= localtimestamp
 			and b.cod_batch = 'MONITORAGGIO_SAT'
 			and bd.id_batch_ondemand not in (
 				select m.id_batch_ondemand
@@ -167,7 +179,7 @@ with execution as (
 		limit 1
 		returning id_batch_ondemand
 	)
-select m.id_batch_ondemand, bd2.parametri
+select m.id_batch_ondemand, bd2.data_avvio_pianificata, bd2.data_rife, bd2.parametri
 from execution as m
 	join foliage2.flgbatch_ondemand_tab bd2 using (id_batch_ondemand)""";
 			pars.clear();
@@ -257,14 +269,18 @@ from foliage2.flgista_tab i
 	) as uo
 where cod_tipo_istanza_specifico in ('SOPRA_SOGLIA', 'IN_DEROGA', 'TAGLIO_BOSCHIVO', 'ATTUAZIONE_PIANI')
 	and val.esito_valutazione
---	and (
---		inv.data_invio < :dataRife
---		and inv.data_invio >= :dataRife - :interval
---	)
+	and (
+		val.data_valutazione < :dataRife
+		and val.data_fine_validita >= :dataRife - :interval
+	)
 --returning codi_ista, nome_uog, cod_forma_trattamento_fustaia, cod_forma_trattamento_ceduo, superficie_utile, data_inizio_autorizzazione, data_fine_autorizzazione, shape
 """;
 				pars.clear();
+				PGInterval intervalloAnno = DbUtils.GetPgInterval(PeriodDuration.of(Period.ofYears(1)));
 				pars.put("idRichiesta", outVal.idRichiesta);
+				pars.put("dataRife", outVal.dataRiferimento);
+				pars.put("interval", intervalloAnno);
+
 				update(sql, pars);
 				// outVal.datiPreelaborazione = query(
 				// 	sql,
@@ -284,5 +300,129 @@ where cod_tipo_istanza_specifico in ('SOPRA_SOGLIA', 'IN_DEROGA', 'TAGLIO_BOSCHI
 			status = null;
 		}
 		return outVal;
+	}
+
+	private static class TabellaMonitoraggio {
+		public TabellaMonitoraggio(String tableName, LinkedList<Pair<String, String>> columns){
+			this.tableName = tableName;
+			this.columns = columns;
+		}
+		public String tableName;
+		public LinkedList<Pair<String, String>> columns;
+	}
+	private static Map<String, TabellaMonitoraggio> tabelleMonitoraggio = getTabelleMonitoraggio();
+	private static Map<String, TabellaMonitoraggio> getTabelleMonitoraggio() {
+
+		LinkedList<Pair<String, String>> list1 = new LinkedList<>();
+		list1.add(new Pair<String, String>("ID_EOP", "numeric"));
+		list1.add(new Pair<String, String>("AREA_EOP", "numeric"));
+		list1.add(new Pair<String, String>("ID_FMP", "varchar"));
+		list1.add(new Pair<String, String>("AREA_TOT_DECLARED", "numeric"));
+		list1.add(new Pair<String, String>("AREA_TOT_INTERSECT", "numeric"));
+		list1.add(new Pair<String, String>("AREA_TOT_REQUESTED", "numeric"));
+		list1.add(new Pair<String, String>("AMM_TYPE", "numeric"));
+		list1.add(new Pair<String, String>("ALERT", "varchar"));
+
+
+		TabellaMonitoraggio tabAlert = new TabellaMonitoraggio(
+			"FLGALERT_MONITORAGGIO_TAB",
+			list1
+		);
+
+		LinkedList<Pair<String, String>> list2 = new LinkedList<>();
+		list2.add(new Pair<String, String>("id_sito", "varchar"));
+		list2.add(new Pair<String, String>("nome_sito", "varchar"));
+		list2.add(new Pair<String, String>("sup_sito", "numeric"));
+		list2.add(new Pair<String, String>("sup_boschiva", "numeric"));
+		list2.add(new Pair<String, String>("perc_dist", "numeric"));
+		list2.add(new Pair<String, String>("perc_tagli", "numeric"));
+		list2.add(new Pair<String, String>("indice_biodiv", "numeric"));
+
+		TabellaMonitoraggio tabNat2000 = new TabellaMonitoraggio(
+			"FLGNAT2000_MONITORAGGIO_TAB",
+			list2
+		);
+
+		HashMap<String, TabellaMonitoraggio> map = new HashMap<>();
+		map.put(
+			"alert",
+			tabAlert
+		);
+		map.put(
+			"nat2000",
+			tabNat2000
+		);
+		return map;
+	}
+	public void salvataggioRisultati(Integer idRichiesta, String nomefile, String geoJson) {
+
+		DefaultTransactionDefinition paramTransactionDefinition = new DefaultTransactionDefinition();
+		TransactionStatus status = platformTransactionManager.getTransaction(paramTransactionDefinition );
+		try {
+			TabellaMonitoraggio descTab = tabelleMonitoraggio.get(nomefile);
+			if (descTab != null) {
+				String tableName = descTab.tableName;
+				String selString = descTab.columns.stream().map(
+					(Pair<String, String> p) -> {
+						return String.format(
+						"""
+,
+			(feat->'properties'->>'%s')::%s  AS %s""",
+							p.getValue0(),
+							p.getValue1(),
+							p.getValue0()
+						);
+					}
+				).collect(Collectors.joining());
+				String colList = descTab.columns.stream().map(
+					(Pair<String, String> p) -> {
+						return String.format(
+							", %s",
+							p.getValue0()
+						);
+					}
+				).collect(Collectors.joining());
+				String sql = String.format(
+					"""
+with t as ( 
+		select :geojson::json AS fc
+	), t1 as ( 
+		select ST_GeomFromGeoJSON(feat->>'geometry') as SHAPE%s
+		from (
+				SELECT json_array_elements(fc->'features') AS feat
+				from t
+		) AS f
+	)
+insert into FOLIAGE2.%s(
+		data_rife, id%s,
+		shape
+	)
+select (
+		select data_rife
+		from foliage2.flgbatch_ondemand_tab
+		where id_batch_ondemand = :idRichiesta
+	), row_number() over ()%s,
+	shape
+from t1""",
+					selString,
+					tableName,
+					colList,
+					colList
+				);
+				HashMap<String, Object> parsMap = new HashMap<>();
+				parsMap.put("geojson", geoJson);
+				parsMap.put("idRichiesta", idRichiesta);
+				this.update(sql, parsMap);
+			}
+
+			platformTransactionManager.commit(status);
+		}
+		catch (Exception e) {
+			platformTransactionManager.rollback(status);
+			throw e;
+		}
+		finally {
+			status = null;
+		}
 	}
 }

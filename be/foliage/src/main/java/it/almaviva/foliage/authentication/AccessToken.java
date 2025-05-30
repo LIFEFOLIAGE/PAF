@@ -92,6 +92,10 @@ public class AccessToken {
 	@Setter
 	private String gender;
 
+	@Getter
+	@Setter
+	private Boolean flagAccettazione;
+
 	// @Getter
 	// @Setter
 	// private String email;
@@ -156,6 +160,7 @@ public class AccessToken {
 					birthDate = LocalDate.parse(birthDateStr, DateTimeFormatter.ofPattern(dateFormat));
 				}
 				catch (Exception e) {
+					log.error(FoliageException.GetExceptionStackTrace(e));
 					log.error(String.format("Stringa birtDate(%s) con formato data non corrispondente a quello indicatao per il token", birthDateStr, dateFormat));
 				}
 			}
@@ -203,6 +208,7 @@ public class AccessToken {
 				);
 		}
 		catch (RuntimeException exception) {
+			log.error(FoliageException.GetExceptionStackTrace(exception));
 			throw new FoliageAuthenticationException("Invalid JWT or JSON format of each of the jwt parts", exception);
 		}
 	}

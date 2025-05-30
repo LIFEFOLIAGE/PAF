@@ -226,7 +226,7 @@ const schedaTitolare = {
 			],
 			"key": "file2",
 			"type": "file",
-			"url": `${environment.apiServerPath}/istanze/upload/{{submission.metadata.context.codIstanza}}/delegaProfessionista`,
+			"url": `${environment.apiUrl}/istanze/upload/{{submission.metadata.context.codIstanza}}/delegaProfessionista`,
 			"input": true
 		}
 	]

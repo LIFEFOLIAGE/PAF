@@ -1,6 +1,11 @@
 {
   "name": "foliage-fe",
   "version": "0.0.0",
+  "license":"Apache-2.0",
+  "publisher": "Almaviva SPA",
+  "repository": {
+    "url": "https://github.com/LIFEFOLIAGE/PAF"
+  },
   "scripts": {
     "ng": "ng",
     "exe_umbria": "ng serve --configuration umbria-dev --proxy-config proxy.conf.js --serve-path=/foliage/umbria/",
